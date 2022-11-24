@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <title>Map Maker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.3.0/rxjs.umd.min.js" integrity="sha512-y3JTS47nnpKORJX8Jn1Rlm+QgRIIZHtu3hWxal0e81avPrqUH48yk+aCi+gprT0RMAcpYa0WCkapxe+bpBHD6g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <div class="gradient" id="app">
+    <header id="app-header">
+      <div id="app-header-left"></div>
+      <div id="app-header-center">
+        <div id="header-center-top">Current map:</div>
+        <div id="header-center-bottom">
+          <h2>Mappy Mapper Man</h2>
+        </div>
+      </div>
+      <div id="app-header-right">
+        <button class="app-button" id="save-map" data-tile-type="barrier">Save</button>
+        <button class="app-button" id="load-map">Load</button>
+        <input type="file" id="file-input">
+      </div>
+    </header>
+    <section id="app-body">
+      <div id="map" class="initial-map"></div>
+    </section>
+    <footer id="app-footer">
+      <div id="controls-label" class="label">Tiles</div>
+      <div id="controls" class="container">
+        <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
+        <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
+        <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
+        <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
+        <button class="app-button tile-selector" data-tile-type="start">Start</button>
+      </div>
+    </footer>
+  </div>
+  <script src="./main.js" type="module"></script>
+
+  <template id="cell-template">
+    <div class="cell" data-symbol="#" data-cell-type-id="0" data-cell-type-name="barrier" data-id="ctuv84hulg8skl8vc6au" data-has-character="false" data-row="0" data-column="0">
+      <div class="cell-content"></div>
+    </div>
+  </template>
+
+  <template id="map-template">
+    <div id="map" class="map template-map">
+      <div class="cells"></div>
+    </div>
+  </template>
+
+  <template id="load-view-template">
+    <div id="load-view">
+      <div class="saved-map-list"></div>
+    </div>
+  </template>
+
+  <template id="map-list-item-template">
+    <div class="map-list-item app-button">
+    </div>
+  </template>
+
+  <template id="save-view-template">
+    <div id="save-view">
+      <header id="save-view-header" class="header">
+        <h2 id="save-view-title">Save</h2>
+      </header>
+      <section id="save-form">
+        <label for="map-name-input">Map Name</label>
+        <input type="text" name="map-name-input" id="map-name-input" value="" />
+
+        <input name="map-name-submit" id="map-name-submit" class="app-button" type="button" value="Done" />
+      </section>
+    </div>
+  </template>
+</body>
+
+</html>
