@@ -11,6 +11,24 @@ const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, inter
 const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 
+
+const sqrt = Math.sqrt(1+1);
+console.warn('sqrt', sqrt)
+export class Vector {
+  #x;
+  #y;
+
+  constructor(x, y) {
+    this.#x = x;
+    this.#y = y;
+  }
+
+  get x() { return this.#x };
+  get y() { return this.#y };
+  // set prop(v) { this.#prop = v };
+}
+
+
 const handleFileSelection = (e) => {
   console.warn('handleFileSelection', { e });
   ui.inputs.file.addEventListener('change', handleFileSelection)
@@ -43,7 +61,7 @@ const ui = {
     }
 
     this.viewHistory.push(name);
-    
+
     this.body.append(this.activeView);
 
     if (name === 'save') {
@@ -75,13 +93,13 @@ let loadButtonState = null;
 
 ui.buttons.save.addEventListener('click', e => {
   const jsonMap = mapView.saveMap();
-  
+
   saveButtonState = saveButtonState === 'save' ? 'map' : 'save';
   ui.buttons.save.dataset.buttonState = saveButtonState;
   ui.buttons.save.textContent = saveButtonState;
-  
+
   ui.setActiveView(saveButtonState);
-  
+
   download('map-maker-save-1.json', jsonMap)
 });
 
@@ -121,13 +139,13 @@ ui.mapList.addEventListener('click', e => {
 
     mapView.loadMap(map2);
 
-  loadButtonState = 'map';
-  ui.setActiveView('map');
-  console.warn('map', map2.mapName)
-  ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
+    loadButtonState = 'map';
+    ui.setActiveView('map');
+    console.warn('map', map2.mapName)
+    ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
 
-  ui.buttons.save.dataset.buttonState = loadButtonState;
-  ui.buttons.save.textContent = loadButtonState;
+    ui.buttons.save.dataset.buttonState = loadButtonState;
+    ui.buttons.save.textContent = loadButtonState;
   }
 });
 
@@ -148,11 +166,11 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
       data.savedMaps[map.key] = map
     } else {}
 
-    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data))
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
   }
 
-  ui.inputs.file.click()
-  ui.inputs.file.addEventListener('change', handleFileSelection)
+  ui.inputs.file.click();
+  ui.inputs.file.addEventListener('change', handleFileSelection);
 
   const map = localStorage.getItem('map-maker-save-1')
 

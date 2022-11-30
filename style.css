@@ -26,7 +26,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  /* background: #3B3B3B; */
+  background: #3B3B3B;
   color: #EFEFEF;
 }
 
@@ -62,28 +62,40 @@ body {
   background: #191A2015;
 }
 
-.app-header-center {
+#app-header-center {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   gap: 0px;
+}
+
+#header-center-top {
+  font-size: 14px;
 }
 
 #app-body {
   position: relative;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   gap: 0px;
   width: 100%;
   height: 100%;
   overflow: scroll;
-
 }
 
 
+#map-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 2px;
+  /* padding: 4px; */
+  /* filter: brightness(120%); */
+}
 
 #map {
   display: grid;
@@ -356,3 +368,23 @@ body {
   padding: 16px;
   background: #44484A;
 }
+
+
+.property-input {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px;
+  background: #3B3B3B;
+  background: #25272F;
+  font-size: 14px;
+  
+}
+
+.property-input-label {}
+
+.property-input-input {}
+
+.property-input[data-editing=true] .property-input-input {}

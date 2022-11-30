@@ -26,9 +26,6 @@ export const DEFAULT_MAP_DIMENSIONS = {
   scale: 32,
 };
 
-
-
-
 const appBody = document.querySelector('#app-body')
 
 
@@ -68,7 +65,6 @@ export class MapView {
         return document.querySelector('#map-column')
       },
     };
-    console.log('this._self', this._self)
     const dragTargets = {
       start: null,
       over: null,
@@ -169,6 +165,12 @@ export class MapView {
     headerColumn.id = 'map-header-column'
 
     this.createMap(this.dims, null);
+
+
+    setTimeout(() => {
+
+      console.log('MAP VIEW', [...this.tiles.keys()]);
+    }, 2000)
   }
 
   get tileSize() { return this.dims.unitSize * this.dims.scale }
@@ -241,7 +243,6 @@ export class MapView {
     }
   }
 
-
   #saveMap() {
     const data = { key: 'map-maker-save-1', mapName: 'test1', map: { dims: this.dims, tiles: [] } }
     const tiles = [...this.self.querySelectorAll('.tile')]
@@ -292,14 +293,14 @@ export class MapView {
   }
 
   handleTileClick({ x, y, targetBounds, target }) {
-    const t = this.tiles.get(target.dataset.address)
+    const t = this.tiles.get(target.dataset.address);
 
     if (t && !!this.rangeFillStart && t !== this.rangeFillStart) {
-      const [c1, r1] = this.rangeFillStart.address.split(',').map(_ => +_)
-      const [c2, r2] = t.dataset.address.split(',').map(_ => +_)
+      const [c1, r1] = this.rangeFillStart.address.split(',').map(_ => +_);
+      const [c2, r2] = t.dataset.address.split(',').map(_ => +_);
 
       this.tiles.forEach((tile, address, i) => {
-        const [c, r] = tile.address.split(',').map(_ => +_)
+        const [c, r] = tile.address.split(',').map(_ => +_);
 
         if (
           c >= c1 && c <= c2 &&

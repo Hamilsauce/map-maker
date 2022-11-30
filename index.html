@@ -20,7 +20,7 @@
       <div id="app-header-center">
         <div id="header-center-top">Current map:</div>
         <div id="header-center-bottom">
-          <h2>Mappy Mapper Man</h2>
+          <h3>Mappy Mapper Man</h3>
         </div>
       </div>
       <div id="app-header-right">
@@ -30,6 +30,17 @@
       </div>
     </header>
     <section id="app-body">
+      <div id="map-options">
+        <div id="map-width-input" class="property-input">
+          <div id="map-width-input-label" class="property-input-label">WIDTH:</div>
+          <div id="map-width-input-label" class="property-input-input">64</div>
+        </div>
+        <div id="map-height-input" class="property-input">
+          <div id="map-width-input-label" class="property-input-label">HEIGHT:</div>
+          <div id="map-width-input-label" class="property-input-input">64</div>
+        </div>
+
+      </div>
       <div id="map" class="initial-map"></div>
     </section>
     <footer id="app-footer">
@@ -48,6 +59,13 @@
   <template id="cell-template">
     <div class="cell" data-symbol="#" data-cell-type-id="0" data-cell-type-name="barrier" data-id="ctuv84hulg8skl8vc6au" data-has-character="false" data-row="0" data-column="0">
       <div class="cell-content"></div>
+    </div>
+  </template>
+
+  <template id="property-input-template">
+    <div class="property-input" data-name="">
+      <label for="" class="property-label"></label>
+      <input class="property-input-input" type="text" name="" id="">
     </div>
   </template>
 
