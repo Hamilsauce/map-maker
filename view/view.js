@@ -1,5 +1,5 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-import { EventEmitter } from 'https://hamilsauce.github.io/event-emitter.js';
+import { EventEmitter } from 'https://hamilsauce.github.io/hamhelper/event-emitter.js';
 const { template } = ham;
 
 export class View extends EventEmitter {
@@ -16,11 +16,19 @@ export class View extends EventEmitter {
     this.#self = View.#getTemplate(name);
   };
 
+  get self() { return this.#self };
+
   get dom() { return this.#self };
 
   get name() { return this.#name };
 
   static #getTemplate(name) {
     return template(name);
+  }
+
+  selectDOM(selector) {
+    const result = [...this.#self.querySelectorAll(selector)];
+
+    return result.length === 1 ? result[0] : result;
   }
 };

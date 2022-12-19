@@ -59,11 +59,13 @@ body {
   gap: 4px;
   padding: 8px;
   overflow: hidden;
+row-gap: 16px;
 }
 
 #app-header button {
   padding: 4px;
   height: fit-content;
+  
 }
 
 #app-header-top {
@@ -74,7 +76,7 @@ body {
   gap: 0px;
   width: 100%;
   height: fit-content;
-  padding: 4px 8px;
+  padding: 0px 8px;
   overflow: hidden;
 }
 
@@ -83,11 +85,12 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 0px;
+  gap: 2px;
+  font-size:  14px;
 }
 
 #header-center-top {
-  font-size: 14px;
+  font-size: 13px;
   color: #CDCDCD;
 }
 
@@ -120,7 +123,7 @@ body {
   top: 32px;
   left: 32px;
   display: grid;
-  gap: 1px;
+  gap: 0px;
   background: #AFAFAF;
   z-index: 101;
 }
@@ -133,7 +136,7 @@ body {
   display: grid;
   grid-template-columns: repeat(32, 32px);
   grid-template-rows: 32px;
-  gap: 1px;
+  gap: 0px;
   height: 32px;
   width: 100%;
   border-right: 1px solid #D1D1D1;
@@ -148,22 +151,22 @@ body {
   display: grid;
   grid-template-columns: 32px;
   grid-template-rows: repeat(32, 32px);
-  gap: 1px;
+  gap: 0px;
   border-bottom: 1px solid #D1D1D1;
   z-index: 102;
 }
 
 #map-rows,
 #map-cols {
-  gap: 1px;
+  gap: 0px;
   backdrop-filter: invert(0.3) brightness(90%);
   /* opacity: 0.9; */
   color: #C1C1C1A3;
 
 }
 
-#map-rows *,
-#map-cols * {
+#map-rows div,
+#map-cols div {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -171,6 +174,9 @@ body {
   font-size: 13px;
   color: #C1C1C1;
   gap: 0px;
+  border-bottom: 1px solid #46484A;
+  border-right: 1px solid #46484A;
+  
   background: #2E2F31
 }
 

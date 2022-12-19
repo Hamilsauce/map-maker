@@ -71,21 +71,6 @@ export class MapView {
 
     this.setDimensions(dims ? dims : DEFAULT_MAP_DIMENSIONS);
 
-    this._self = {
-      get map() {
-        return document.querySelector('#map');
-      },
-      get body() {
-        return document.querySelector('#map-body');
-      },
-      get headerRow() {
-        return document.querySelector('#map-row');
-      },
-      get headerColumn() {
-        return document.querySelector('#map-column');
-      },
-    };
-
     const dragTargets = {
       start: null,
       over: null,
@@ -187,14 +172,14 @@ export class MapView {
     // this.pointerDown$.subscribe()
     // this.tileClicks$.subscribe()
 
-    const body = document.createElement('div');
-    body.id = 'map-body'
+    // const body = document.createElement('div');
+    // body.id = 'map-body'
 
-    const headerRow = document.createElement('div');
-    headerRow.id = 'map-header-row'
+    // const headerRow = document.createElement('div');
+    // headerRow.id = 'map-header-row'
 
-    const headerColumn = document.createElement('div');
-    headerColumn.id = 'map-header-column'
+    // const headerColumn = document.createElement('div');
+    // headerColumn.id = 'map-header-column'
 
     this.createMap(this.dims, null);
   }
@@ -280,6 +265,7 @@ export class MapView {
     type = type.toLowerCase();
 
     const h = document.createElement('div');
+    h.classList.add('header')
     const group = this[`${type}HeaderGroup`];
 
     h.dataset.headerType = type;
@@ -362,10 +348,10 @@ export class MapView {
 
     col.forEach((tile, i) => {
       if (!tile || !tile.address) return;
-      
+
       this.removeTile(tile.address);
     });
-    
+
     this.setDimensions({ ...this.dims, width: this.dims.width - 1 });
   }
 
@@ -375,7 +361,7 @@ export class MapView {
     r.forEach((tile, i) => {
       this.removeTile(tile.address);
     });
-    
+
     this.setDimensions({ ...this.dims, height: this.dims.height - 1 });
   }
 
@@ -456,7 +442,7 @@ export class MapView {
       });
 
     const serialized = JSON.stringify(data, null, 2);
-  
+
     localStorage.setItem(data.key, serialized);
 
     return serialized;
@@ -464,8 +450,8 @@ export class MapView {
 
   #loadMap(savedMap) {
     const { dims, tiles } = savedMap;
-    this.createMap(dims, tiles);
     this.render();
+    this.createMap(dims, tiles);
   }
 
   positionToAddress(rowOrPosition, col = 0) {

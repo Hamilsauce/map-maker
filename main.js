@@ -4,7 +4,7 @@ import { MapModel } from './store/map.model.js';
 import { getStream } from './view/tile-view-updates.stream.js';
 // import { MapLoader } from '../lib/map-loader.js';
 import { gridOptions } from './view/grid-options.view.js';
-
+import { AppMenu } from './view/app-menu.view.js';
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { DEFAULT_STATE } from './store/StateModel.js';
 const { download, template, utils } = ham;
@@ -42,13 +42,14 @@ const ui = {
   app: document.querySelector('#app'),
   body: document.querySelector('#app-body'),
   header: document.querySelector('#app-header'),
-
+  menu: document.querySelector('#app-menu'),
   views: {
     save: template('save-view'),
     load: template('load-view'),
     map: document.querySelector('#map'),
   },
   buttons: {
+    menuOpen: document.querySelector('#menu-open'),
     save: document.querySelector('#save-map'),
     load: document.querySelector('#load-map'),
     tileBrushes: document.querySelectorAll('#controls'),
@@ -87,13 +88,19 @@ document.querySelector('#app-body').append(ui.activeView);
 
 const mapModel = new MapModel();
 const mapView = new MapView();
+const appMenu = new AppMenu();
 
 ui.header.querySelector('#map-options').innerHTML = '';
 ui.header.querySelector('#map-options').append(gridOptions)
+// ui.header.querySelector('#app-header-right').innerHTML = '';
+// ui.header.querySelector('#app-header-right')
+ui.app.append(appMenu.dom)
 
 ui.app.addEventListener('option:change', ({ detail }) => {
   console.warn('option:change', detail)
-  mapView.setDimensions({[detail.name]: detail.value})
+  mapView.setDimensions({
+    [detail.name]: detail.value
+  })
 });
 
 
@@ -104,22 +111,51 @@ let loadButtonState = null;
 
 
 
-ui.buttons.save.addEventListener('click', e => {
-  const jsonMap = mapView.saveMap();
+// ui.buttons.save.addEventListener('click', e => {
+//   appMenu.open()
+//   return
 
-  saveButtonState = saveButtonState === 'save' ? 'map' : 'save';
-  ui.buttons.save.dataset.buttonState = saveButtonState;
-  ui.buttons.save.textContent = saveButtonState;
+//   const jsonMap = mapView.saveMap();
 
-  ui.setActiveView(saveButtonState);
+//   saveButtonState = saveButtonState === 'save' ? 'map' : 'save';
+//   ui.buttons.save.dataset.buttonState = saveButtonState;
+//   ui.buttons.save.textContent = saveButtonState;
 
-  download('map-maker-save-1.json', jsonMap)
-});
+//   ui.setActiveView(saveButtonState);
 
-ui.buttons.load.addEventListener('click', e => {
+//   download('map-maker-save-1.json', jsonMap)
+// });
+// ui.buttons.load.addEventListener('click', e => {
+//   appMenu.open()
+//   return
+
+//   loadButtonState = loadButtonState === 'load' ? 'map' : 'load';
+//   ui.buttons.load.dataset.buttonState = loadButtonState;
+//   ui.buttons.load.textContent = loadButtonState;
+
+//   ui.setActiveView(loadButtonState);
+
+//   if (loadButtonState === 'load') {
+//     ui.mapList.innerHTML = '';
+//   }
+
+//   const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
+
+//   Object.values(data.savedMaps).forEach((m, i) => {
+//     const item = template('map-list-item');
+
+//     item.dataset.mapKey = m.key;
+//     item.textContent = m.mapName;
+//     ui.mapList.append(item);
+//   });
+// });
+ui.buttons.menuOpen.addEventListener('click', e => {
+  appMenu.open()
+  return
+
   loadButtonState = loadButtonState === 'load' ? 'map' : 'load';
-  ui.buttons.save.dataset.buttonState = loadButtonState;
-  ui.buttons.save.textContent = loadButtonState;
+  ui.buttons.load.dataset.buttonState = loadButtonState;
+  ui.buttons.load.textContent = loadButtonState;
 
   ui.setActiveView(loadButtonState);
 
@@ -138,6 +174,17 @@ ui.buttons.load.addEventListener('click', e => {
   });
 });
 
+appMenu.on('menu:save-map', e => {
+  console.warn('HEARD SAVE IN APP');
+  ui.setActiveView(saveButtonState);
+});
+
+appMenu.on('menu:load-map', e => {
+  console.warn('HEARD LOAD IN APP');
+  ui.setActiveView(loadButtonState);
+});
+
+
 
 ui.mapList.addEventListener('click', e => {
   const item = e.target.closest('.map-list-item');
@@ -150,10 +197,10 @@ ui.mapList.addEventListener('click', e => {
 
     console.warn('LOADED', map2);
 
+    ui.setActiveView('map');
     mapView.loadMap(map2);
 
     loadButtonState = 'map';
-    ui.setActiveView('map');
     console.warn('map', map2.mapName)
     ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
 
@@ -192,6 +239,17 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
     mapView.loadMap(parsed)
   }
 });
+
+ui.header.querySelector('#header-center-bottom')
+  .addEventListener('click', e => {
+    ui.menu.dataset.show = true;
+  })
+
+const closeMenu = document.querySelector('#app-menu-close')
+closeMenu.addEventListener('click', e => {
+  ui.menu.dataset.show = false;
+})
+
 
 mapView.render();
 

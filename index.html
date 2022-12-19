@@ -12,6 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.3.0/rxjs.umd.min.js" integrity="sha512-y3JTS47nnpKORJX8Jn1Rlm+QgRIIZHtu3hWxal0e81avPrqUH48yk+aCi+gprT0RMAcpYa0WCkapxe+bpBHD6g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="./css/grid-options.css" />
+  <link rel="stylesheet" href="./css/app-menu.css" />
 </head>
 
 <body>
@@ -25,22 +26,23 @@
           </div>
         </div>
         <div id="app-header-right">
-          <button class="app-button" id="save-map" data-tile-type="barrier">Save</button>
-          <button class="app-button" id="load-map">Load</button>
-          <input type="file" id="file-input">
+          <button class="app-button" id="menu-open">Menu</button>
+          <!-- <button class="app-button" id="load-map">Load</button> -->
+        <!-- <button class="app-button" id="save-map" data-tile-type="barrier">Save</button> -->
+          <!-- <input type="file" id="file-input"> -->
         </div>
       </div>
-        <div id="map-options">
-          <div id="map-width-input" class="property-input">
-            <div id="map-width-input-label" class="property-input-label">WIDTH:</div>
-            <div id="map-width-input-label" class="property-input-input">64</div>
-          </div>
-          <div id="map-height-input" class="property-input">
-            <div id="map-width-input-label" class="property-input-label">HEIGHT:</div>
-            <div id="map-width-input-label" class="property-input-input">64</div>
-          </div>
-      
+      <div id="map-options">
+        <div id="map-width-input" class="property-input">
+          <div id="map-width-input-label" class="property-input-label">WIDTH:</div>
+          <div id="map-width-input-label" class="property-input-input">64</div>
         </div>
+        <div id="map-height-input" class="property-input">
+          <div id="map-width-input-label" class="property-input-label">HEIGHT:</div>
+          <div id="map-width-input-label" class="property-input-input">64</div>
+        </div>
+
+      </div>
     </header>
     <section id="app-body">
       <div id="map" class="initial-map gradient">
@@ -61,7 +63,17 @@
         <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
       </div>
     </footer>
+    <div id="app-menu">
+      <a id="app-menu-close">×</a>
+      <div class="app-menu-items">
+        <a class="app-menu-item" data-action="save" href="https://hamilsauce.github.io">Home</a>
+        <a class="app-menu-item" data-action="load" href="#">Go Here</a>
+        <a class="app-menu-item" data-action="" href="#">Go There</a>
+        <a class="app-menu-item" data-action="" href="#">Do this thing</a>
+      </div>
+    </div>
   </div>
+
   <script src="./main.js" type="module"></script>
 
   <template id="cell-template">
@@ -72,6 +84,18 @@
 
   <template id="grid-options-template">
     <div id="grid-options">
+    </div>
+  </template>
+
+  <template id="app-menu-template">
+    <div id="app-menu">
+      <div id="app-menu-close">×</div>
+      <div id="app-menu-items">
+        <div class="app-menu-item" data-action="save" href="https://hamilsauce.github.io">Home</div>
+        <div class="app-menu-item" data-action="load" href="#">Go Here</div>
+        <div class="app-menu-item" data-action="" href="#">Go There</div>
+        <div class="app-menu-item" data-action="" href="#">Do this thing</div>
+      </div>
     </div>
   </template>
 

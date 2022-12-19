@@ -1,6 +1,6 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-const { template, utils, DOM } = ham;
-
+const { template, utils, DOM, event } = ham;
+console.log('event', event)
 const GRID_OPTIONS_CONFIG = [
   {
     name: 'width',
@@ -26,6 +26,10 @@ export const gridOptions = DOM.createElement({
     templateName: 'grid-options',
     elementProperties: {
       onclick: (e) => {
+        const opt = e.target.closest('.grid-option')
+      if (!opt) return;
+      opt.querySelector('input').focus();
+      event.selectAllContent(opt.querySelector('input'))
         console.warn('onclick', e)
       }
     }

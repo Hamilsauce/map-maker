@@ -3,10 +3,10 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   width: 100%;
   height: 100%;
-  /* padding: 4px; */
+  padding: 4px 4px 4px 24px;
   /* border: 1px solid #FFFFFF; */
 }
 
@@ -15,7 +15,15 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+  width: fit-content;
+  background: #47494B;
+  padding: 2px 2px;
+  transition: 0.2s;
+}
+
+.grid-option:hover {
+  outline: 1px solid orange;
 }
 
 .grid-option label {
@@ -24,9 +32,10 @@
   justify-content: flex-start;
   align-items: center;
   gap: 0px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   text-transform: uppercase;
+  padding: 0 2px;
 }
 
 .grid-option input {
@@ -35,7 +44,14 @@
   justify-content: flex-start;
   align-items: center;
   gap: 0px;
-  width: 50px;
+  width: 32px;
+
   font-size: 13px;
-  padding: 2px 2px;
+  padding: 1px 4px;
+  background: none;
+  border: none;
+  color: #DFDFDF;
+  text-align: right;
+  outline: none;
+user-select: all;
 }

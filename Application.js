@@ -11,7 +11,8 @@ export class Application extends EventEmitter {
     if (!name) throw new Error('No name passed to constructor for ', this.constructor.name);
    
     this.#self = template(name);
-  };
+  }
+  
   
   get self() { return this.#self };
 };
