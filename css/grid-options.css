@@ -1,0 +1,39 @@
+#grid-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  border: 1px solid #FFFFFF;
+}
+
+.grid-option {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  /* gap: 4px; */
+}
+
+.grid-option label {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0px;
+  font-size: 13px;
+}
+
+.grid-option input {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0px;
+  width: 50px;
+  font-size: 13px;
+  padding: 2px 2px;
+}

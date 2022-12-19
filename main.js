@@ -3,6 +3,8 @@ import { MapView } from './view/map.view.js';
 import { MapModel } from './store/map.model.js';
 import { getStream } from './view/tile-view-updates.stream.js';
 // import { MapLoader } from '../lib/map-loader.js';
+import { gridOptions } from './view/grid-options.view.js';
+
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { DEFAULT_STATE } from './store/StateModel.js';
 const { download, template, utils } = ham;
@@ -12,8 +14,6 @@ const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, 
 const { fromFetch } = rxjs.fetch;
 
 
-const sqrt = Math.sqrt(1+1);
-console.warn('sqrt', sqrt)
 export class Vector {
   #x;
   #y;
@@ -36,11 +36,12 @@ const handleFileSelection = (e) => {
 
 
 const ui = {
-  viewHistory: ['map'],
   get activeView() { return this.views[this.viewHistory[this.viewHistory.length - 1]] },
+  get mapList() { return this.views.load.querySelector('.saved-map-list') },
+  viewHistory: ['map'],
+  app: document.querySelector('#app'),
   body: document.querySelector('#app-body'),
   header: document.querySelector('#app-header'),
-  get mapList() { return this.views.load.querySelector('.saved-map-list') },
 
   views: {
     save: template('save-view'),
@@ -69,11 +70,12 @@ const ui = {
     }
   },
 }
-
 window.ui = ui
 
 const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
   .pipe(
+    // tap(e => e.preventDefault()),
+    tap(e => e.stopPropagation()),
     map(e => e.target.closest('.tile-selector')),
     filter(b => b),
     map(b => ({ activeBrush: b.dataset.tileType })),
@@ -86,10 +88,21 @@ document.querySelector('#app-body').append(ui.activeView);
 const mapModel = new MapModel();
 const mapView = new MapView();
 
+ui.header.querySelector('#map-options').innerHTML = '';
+ui.header.querySelector('#map-options').append(gridOptions)
+
+ui.app.addEventListener('option:change', ({ detail }) => {
+  console.warn('option:change', detail)
+  mapView.setDimensions({[detail.name]: detail.value})
+});
+
+
 const LOCALSTORAGE_KEY = 'MAP_MAKER';
 
 let saveButtonState = null;
 let loadButtonState = null;
+
+
 
 ui.buttons.save.addEventListener('click', e => {
   const jsonMap = mapView.saveMap();
@@ -102,7 +115,6 @@ ui.buttons.save.addEventListener('click', e => {
 
   download('map-maker-save-1.json', jsonMap)
 });
-
 
 ui.buttons.load.addEventListener('click', e => {
   loadButtonState = loadButtonState === 'load' ? 'map' : 'load';
@@ -125,6 +137,7 @@ ui.buttons.load.addEventListener('click', e => {
     ui.mapList.append(item);
   });
 });
+
 
 ui.mapList.addEventListener('click', e => {
   const item = e.target.closest('.map-list-item');
@@ -181,3 +194,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 });
 
 mapView.render();
+
+// const col0 = mapView.getColumn(0)
+
+// console.log('col0', col0)

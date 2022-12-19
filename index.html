@@ -11,37 +11,44 @@
   <title>Map Maker</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.3.0/rxjs.umd.min.js" integrity="sha512-y3JTS47nnpKORJX8Jn1Rlm+QgRIIZHtu3hWxal0e81avPrqUH48yk+aCi+gprT0RMAcpYa0WCkapxe+bpBHD6g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./css/grid-options.css" />
 </head>
 
 <body>
   <div class="gradient" id="app">
     <header id="app-header">
-      <div id="app-header-left"></div>
-      <div id="app-header-center">
-        <div id="header-center-top">Current map:</div>
-        <div id="header-center-bottom">
-          <h3>Mappy Mapper Man</h3>
+      <div id="app-header-top">
+        <div id="app-header-center">
+          <div id="header-center-top">Current map:</div>
+          <div id="header-center-bottom">
+            <h3>Mappy Mapper Man</h3>
+          </div>
+        </div>
+        <div id="app-header-right">
+          <button class="app-button" id="save-map" data-tile-type="barrier">Save</button>
+          <button class="app-button" id="load-map">Load</button>
+          <input type="file" id="file-input">
         </div>
       </div>
-      <div id="app-header-right">
-        <button class="app-button" id="save-map" data-tile-type="barrier">Save</button>
-        <button class="app-button" id="load-map">Load</button>
-        <input type="file" id="file-input">
-      </div>
+        <div id="map-options">
+          <div id="map-width-input" class="property-input">
+            <div id="map-width-input-label" class="property-input-label">WIDTH:</div>
+            <div id="map-width-input-label" class="property-input-input">64</div>
+          </div>
+          <div id="map-height-input" class="property-input">
+            <div id="map-width-input-label" class="property-input-label">HEIGHT:</div>
+            <div id="map-width-input-label" class="property-input-input">64</div>
+          </div>
+      
+        </div>
     </header>
     <section id="app-body">
-      <div id="map-options">
-        <div id="map-width-input" class="property-input">
-          <div id="map-width-input-label" class="property-input-label">WIDTH:</div>
-          <div id="map-width-input-label" class="property-input-input">64</div>
-        </div>
-        <div id="map-height-input" class="property-input">
-          <div id="map-width-input-label" class="property-input-label">HEIGHT:</div>
-          <div id="map-width-input-label" class="property-input-input">64</div>
-        </div>
-
+      <div id="map" class="initial-map gradient">
+        <div id="map-body"></div>
+        <div id="map-cols"></div>
+        <div id="map-rows"></div>
+        <div id="map-corn"></div>
       </div>
-      <div id="map" class="initial-map"></div>
     </section>
     <footer id="app-footer">
       <div id="controls-label" class="label">Tiles</div>
@@ -51,6 +58,7 @@
         <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
         <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
         <button class="app-button tile-selector" data-tile-type="start">Start</button>
+        <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
       </div>
     </footer>
   </div>
@@ -62,6 +70,19 @@
     </div>
   </template>
 
+  <template id="grid-options-template">
+    <div id="grid-options">
+    </div>
+  </template>
+
+  <template id="grid-option-template">
+    <div class="grid-option">
+      <label for="" class="option-label"></label>
+      <input type="text" name="" id="" class="option-input">
+    </div>
+  </template>
+
+
   <template id="property-input-template">
     <div class="property-input" data-name="">
       <label for="" class="property-label"></label>
@@ -69,11 +90,11 @@
     </div>
   </template>
 
-  <template id="map-template">
+  <!-- <template id="map-template">
     <div id="map" class="map template-map">
       <div class="cells"></div>
     </div>
-  </template>
+  </template> -->
 
   <template id="load-view-template">
     <div id="load-view">

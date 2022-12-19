@@ -5,7 +5,7 @@ import { TileView } from '../view/tile.view.js';
 import { push } from './tile-view-updates.stream.js';
 
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
-const { bufferCount, flatMap, takeUntil, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
+const { debounceTime, buffer, bufferCount, flatMap, takeUntil, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
@@ -28,14 +28,36 @@ export const DEFAULT_MAP_DIMENSIONS = {
 
 const appBody = document.querySelector('#app-body')
 
+const getClicks$ = (target) => {
+  const mouse$ = fromEvent(target, 'click')
+
+  const buff$ = mouse$.pipe(debounceTime(200))
+
+  const bufferedClicks$ = mouse$.pipe(
+    buffer(buff$),
+    map(list => list)
+  );
+
+  return {
+    click$: bufferedClicks$.pipe(
+      filter(x => x.length === 1),
+    ),
+    dblClick$: bufferedClicks$.pipe(
+      filter(x => x.length === 2),
+    ),
+  }
+}
+
 
 export class MapView {
   #selector;
   #dimensions = {
+    width: 0,
+    height: 0,
     rows: 0,
     columns: 0,
-    unitSize: 1,
-    scale: 1,
+    unitSize: 32,
+    scale: 32,
   }
 
   constructor(selector, dims) {
@@ -48,8 +70,6 @@ export class MapView {
     this.tiles = new Map();
 
     this.setDimensions(dims ? dims : DEFAULT_MAP_DIMENSIONS)
-
-
 
     this._self = {
       get map() {
@@ -78,53 +98,60 @@ export class MapView {
     }
 
     const clickCount = 2;
-    const clickWindow = 300;
+    const clickWindow = 250;
 
-    this.dblClick$ = fromEvent(this.self, 'click')
+    this.clickStreams$ = getClicks$(this.self)
+
+    merge(
+      this.clickStreams$.click$
       .pipe(
-        map(e => ({ target: e.target, timestamp: new Date().getTime() })),
-        bufferCount(clickCount, 1),
-        filter((timestamps) => {
-          return timestamps[0].target === timestamps[1].target && timestamps[0].timestamp > new Date().getTime() - clickWindow;
-        }),
+        map(([event]) => event),
+        map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
+        map(this.handleTileClick.bind(this)),
+        tap(push),
+      ),
+      this.clickStreams$.dblClick$.pipe(
+        filter(([first, second]) => first.target === second.target),
         map(([first, second]) => second),
         map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
         tap(t => this.handleTileLongPress.bind(this)(t)),
-      ).subscribe()
+        tap(x => console.warn('AFTER DELAY', x)),
+        // tap(push),
+      )).subscribe()
 
     this.scroll$ = fromEvent(appBody, 'scroll').pipe(
-      map(x => x),
-      tap(x => console.log('appbody scroll$', x))
+      map((x) => x),
+      tap(x => console.warn('appbody scroll$', x))
     )
 
-    // this.scroll$.subscribe()
+    // this.pointerDown$ = fromEvent(appBody, 'pointerdown').pipe(
+    //   takeUntil(this.dblClick$),
+    //   delay(clickWindow),
+    //   map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
+    //   tap(e => this.pointerStart = e),
+    //   map(this.handleTileClick.bind(this)),
+    // );
 
-    this.pointerDown$ = fromEvent(appBody, 'pointerdown').pipe(
-      map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
-      tap(e => this.pointerStart = e),
-      map(this.handleTileClick.bind(this)),
-    );
+    // this.pointerMove$ = fromEvent(appBody, 'pointermove').pipe(
+    //   tap(x => console.log('Pointer move on body', x)),
+    //   filter(({ clientX, clientY }) => {
+    //     return (clientX < this.pointerStart.targetBounds.left || clientX > this.pointerStart.targetBounds.right) ||
+    //       (clientY < this.pointerStart.targetBounds.top || clientY > this.pointerStart.targetBounds.bottom)
+    //   }),
+    // );
 
-    this.pointerMove$ = fromEvent(appBody, 'pointermove').pipe(
-      tap(x => console.log('Pointer move on body', x)),
-      filter(({ clientX, clientY }) => {
-        return (clientX < this.pointerStart.targetBounds.left || clientX > this.pointerStart.targetBounds.right) ||
-          (clientY < this.pointerStart.targetBounds.top || clientY > this.pointerStart.targetBounds.bottom)
-      }),
-    );
+    // this.pointerUp$ = fromEvent(appBody, 'pointerup').pipe(tap(() => this.pointerStart = null), );
 
-    this.pointerUp$ = fromEvent(appBody, 'pointerup').pipe(tap(() => this.pointerStart = null), );
-
-    this.longpress$ = this.pointerDown$.pipe(
-      mergeMap((e) => of (e)
-        .pipe(
-          delay(450),
-          takeUntil(this.scroll$),
-          takeUntil(this.pointerMove$),
-          takeUntil(this.pointerUp$),
-          tap(() => this.handleTileLongPress.bind(this)(this.pointerStart)),
-        ))
-    );
+    // this.longpress$ = this.pointerDown$.pipe(
+    //   mergeMap((e) => of (e)
+    //     .pipe(
+    //       delay(450),
+    //       takeUntil(this.scroll$),
+    //       takeUntil(this.pointerMove$),
+    //       takeUntil(this.pointerUp$),
+    //       tap(() => this.handleTileLongPress.bind(this)(this.pointerStart)),
+    //     ))
+    // );
 
     // this.longpress$.subscribe()
 
@@ -147,13 +174,17 @@ export class MapView {
 
     this.tileEventSubject$ = new Subject()
 
-    this.tileClicks$ = fromEvent(this.self, 'click').pipe(
-      map(this.handleTileClick.bind(this)),
-      tap(this.tileEventSubject$),
-      tap(push),
-    );
+    // this.tileClicks$ = fromEvent(this.self, 'click').pipe(
+    //   takeUntil(this.dblClick$),
+    //   delay(clickWindow),
 
-    this.tileClicks$.subscribe()
+    //   map(this.handleTileClick.bind(this)),
+    //   tap(this.tileEventSubject$),
+    //   tap(push),
+    // );
+
+    // this.pointerDown$.subscribe()
+    // this.tileClicks$.subscribe()
 
     const body = document.createElement('div');
     body.id = 'map-body'
@@ -165,24 +196,126 @@ export class MapView {
     headerColumn.id = 'map-header-column'
 
     this.createMap(this.dims, null);
+    console.log('this.dims', this.dims)
 
-
-    setTimeout(() => {
-
-      console.log('MAP VIEW', [...this.tiles.keys()]);
-    }, 2000)
+    // setTimeout(() => {
+    //   console.log('MAP VIEW', [...this.tiles.keys()]);
+    // }, 2000)
   }
 
-  get tileSize() { return this.dims.unitSize * this.dims.scale }
+  get body() {
+    return document.querySelector('#map-body')
+  }
+
+  get rowHeaderGroup() {
+    return document.querySelector('#map-rows')
+  }
+
+  get columnHeaderGroup() {
+    return document.querySelector('#map-cols')
+  }
+
+  get unitSize() {
+    console.log('this.dims.unitSize * this.dims.scale', this.dims.unitSize * this.dims.scale)
+    return this.dims.unitSize * this.dims.scale
+  }
 
   get dims() { return this.#dimensions }
+
+  // set width(v) {
+  //   console.warn('width', v)
+  //   if (v < this.dims.width) {
+  //     for (let i = 0; i < this.dims.width - v; i++) {
+  //       // this.removeColumn(this.dims.width - i)
+  //       this.dims.width = this.dims.width - i
+  //     }
+  //     this.#dimensions.width = v
+  //     // this.setGridTemplateSize()
+  //     this.self.style.gridTemplateColumns = `repeat(${ dims.width || this.#dimensions.width }, ${this.unitSize}px)`;
+  //   }
+  //   else if (v > this.dims.width) {
+  //     const diff = v - this.dims.width;
+
+  //     for (let i = 0; i < v - this.dims.width; i++) {
+  //       // this.addColumn(this.dims.width + i)
+  //       this.dims.width = this.dims.width + i
+  //     }
+
+  //     this.self.style.gridTemplateColumns = `repeat(${ this.dims.width || this.#dimensions.width }, ${this.unitSize}px)`;
+  //   }
+  //   this.#dimensions.width = v
+  //   this.setGridTemplateSize()
+  // }
+
+  // set height(v) {
+  //   if (v < this.dims.height) {
+  //     for (let i = 0; i < this.dims.height - v; i++) {
+  //       // this.removeRow(this.dims.height - i)
+  //       this.dims.height = this.dims.height - i
+  //     }
+  //     this.#dimensions.height = v
+  //     this.self.style.gridTemplateRows = `repeat(${ dims.height || this.#dimensions.height }, ${this.unitSize}px)`;
+  //   }
+  //   else if (v > this.dims.height) {
+  //     const diff = v - this.dims.height;
+
+  //     for (let i = 0; i < v - this.dims.height; i++) {
+  //       // this.addRow(this.dims.height + i)
+  //       this.dims.height = this.dims.height + i
+  //     }
+
+  //     this.#dimensions.height = v
+  //     this.self.style.gridTemplateRows = `repeat(${ this.dims.height || this.#dimensions.height }, ${this.unitSize}px)`;
+  //   }
+  //   // this.setGridTemplateSize()
+  // }
+
+  // set unitSize(v) {
+  //   this.#dimensions.unitSize = v
+  //   // this.setGridTemplateSize()
+
+  // }
 
   get selectedTiles() {
     return [...this.self.querySelectorAll('.tile[data-selected=true]')]
   }
 
+  insertHeader(type = 'column', value, before) {
+    type = type.toLowerCase();
+
+    const h = document.createElement('div'); // template('header');
+    const group = this[`${type}HeaderGroup`];
+    console.log('group', group)
+    h.dataset.headerType = type;
+    h.dataset[type] = value;
+    h.dataset.address = value;
+    h.textContent = value;
+
+    // this[`${type}s`].set(h, h);
+
+    if (!before) { group.append(h) }
+
+    else if (typeof before === 'number') { group.insertAdjacentElement(before, h); }
+
+    else { group.insertBefore(h, before) }
+
+    return h;
+  }
+
+
   createTile(row, column, tileType) {
-    const tile = TileView.create({ address: [row, column].toString(), tileType })
+    const tile = TileView.create({ address: this.positionToAddress(row, column), tileType })
+
+    return tile;
+  }
+
+  removeTile(addressOrPosition, tileType) {
+    const tile = this.getTile(addressOrPosition)
+
+    if (tile) {
+      tile.remove(({ address }) => this.tiles.delete(address))
+    }
+
     return tile;
   }
 
@@ -191,13 +324,81 @@ export class MapView {
     return this.tiles.set(tile.address, tile).get(tile.address);
   }
 
+  getColumn(column, callback) {
+    const col = new Array(this.dims.height).fill('')
+      .map((v, row) => {
+        const t = this.getTile([row, column].toString())
+        return t;
+      })
+
+    return col;
+  }
+
+  getRow(row, callback) {
+    const r = new Array(this.dims.width).fill('')
+      .map((v, col) => {
+        const t = this.getTile([row, col].toString())
+        return t;
+      })
+
+    return r;
+  }
+
+  addColumn(column) {
+    const col = []
+
+    for (let row = 0; row < this.dims.height; row++) {
+      col.push(this.insertTile(row, column, 'empty'));
+    }
+
+    return col;
+  }
+
+  addRow(row) {
+    const r = []
+
+    for (let column = 0; column < this.dims.height; column++) {
+      r.push(this.insertTile(row, column, 'empty'));
+    }
+
+    return r;
+  }
+
+  removeColumn(column) {
+    const col = this.getColumn(column)
+    // .filter(_=>_.address)
+
+    col.forEach((tile, i) => {
+      console.log('tile', tile)
+      if (!tile || !tile.address) return;
+      this.removeTile(tile.address)
+    });
+    this.setDimensions({ ...this.dims, width: this.dims.width - 1 });
+  }
+
+  removeRow(row) {
+    const r = this.getRow(row - 1);
+
+    r.forEach((tile, i) => {
+      this.removeTile(tile.address)
+    });
+    this.setDimensions({ ...this.dims, height: this.dims.height - 1 });
+
+  }
+
   createMap(dims, savedTiles) {
     this.tiles.clear();
     this.setDimensions(dims);
-    // this.setGridTemplateSize(dims);
+    for (let column = 0; column < dims.width; column++) {
+      this.insertHeader('column', column) // this.getColumnName(column))
+    }
 
-    for (var row = 0; row < dims.height; row++) {
-      for (var col = 0; col < dims.width; col++) {
+    for (let row = 0; row < dims.height; row++) {
+      this.insertHeader('row', row )
+    }
+
+    for (let row = 0; row < dims.height; row++) {
+      for (let col = 0; col < dims.width; col++) {
         const st = savedTiles ? savedTiles.find(t => t.address == [row, col].toString()) : null;
 
         if (st) {
@@ -210,21 +411,22 @@ export class MapView {
     }
   }
 
-  getRange() {}
+  getRange(start, end) {}
 
   setDimensions(dims = {}) {
     const dimNames = ['width', 'height', 'unitSize', 'scale']
     const cleaned = Object.fromEntries(Object.entries(dims).filter(([k, v]) => dimNames.includes(k) && !!(+v)))
-
     Object.assign(this.#dimensions, cleaned);
-
     this.setGridTemplateSize();
   }
 
   setGridTemplateSize(dims) {
-    dims = dims ? dims : this.dims
-    this.self.style.gridTemplateColumns = `repeat(${ dims.width || this.#dimensions.width }, ${this.#dimensions.scale}px)`;
-    this.self.style.gridTemplateRows = `repeat(${ dims.height || this.#dimensions.height }, ${this.#dimensions.scale}px)`;
+    this.#dimensions = dims ? dims : this.dims;
+
+    this.body.style.gridTemplateColumns = `repeat(${ this.#dimensions.width || this.#dimensions.width }, ${this.unitSize}px)`;
+    this.body.style.gridTemplateRows = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
+    // console.warn('this.self.style.gridTemplateColumns', this.body.style.gridTemplateColumns)
+    // console.warn('this.self.style.gridTemplateRows', this.self.style.gridTemplateRows)
   }
 
   eachTile(callback) {}
@@ -233,7 +435,6 @@ export class MapView {
     const tiles = [...this.self.querySelectorAll('.tile')]
 
     return {
-      // id: this.id,
       dims: this.dims,
       tiles: tiles
         .filter((t, i) => t.dataset.tileType != 'empty')
@@ -268,6 +469,16 @@ export class MapView {
     this.render();
   }
 
+  positionToAddress(rowOrPosition, col = 0) {
+    const { row, column } = rowOrPosition;
+
+    if (row && column) return [row, column].toString();
+
+    else if (!isNaN(rowOrPosition) && !isNaN(col)) return [rowOrPosition, col].toString();
+
+    return null;
+  }
+
   parseTileAddress(tile) {
     if (!(!!tile)) return;
     return tile.dataset.address.split(',').map(_ => +_)
@@ -283,47 +494,71 @@ export class MapView {
   render() {
     console.time('RENDER');
 
-    this.self.innerHTML = '';
 
-    this.append(
+    const body = this.self.querySelector('#map-body')
+    body.innerHTML = '';
+    console.log('this.self.querySelector(map-body', { bod: this.self.querySelector('#map-body') })
+    body.append(
       ...[...this.tiles.values()].map((t, i) => t.render())
     );
 
     console.timeEnd('RENDER');
   }
 
+  getTile(addressOrPosition) {
+    if (typeof addressOrPosition === 'string') return this.tiles.get(addressOrPosition);
+
+    else if (typeof addressOrPosition === 'object') {
+      const { row, column } = addressOrPosition;
+
+      return row && column ? this.tiles.get(this.positionToAddress(row, column)) : null;
+    }
+
+    return null;
+  }
+
   handleTileClick({ x, y, targetBounds, target }) {
     const t = this.tiles.get(target.dataset.address);
 
-    if (t && !!this.rangeFillStart && t !== this.rangeFillStart) {
-      const [c1, r1] = this.rangeFillStart.address.split(',').map(_ => +_);
-      const [c2, r2] = t.dataset.address.split(',').map(_ => +_);
+    if (t && this.rangeFillStart && t !== this.rangeFillStart) {
+      const [row1, col1] = this.rangeFillStart.address.split(',').map(_ => +_);
+      const [row2, col2] = t.address.split(',').map(_ => +_);
 
-      this.tiles.forEach((tile, address, i) => {
-        const [c, r] = tile.address.split(',').map(_ => +_);
+      this.tiles.forEach((tile, i) => {
+        const [r, c] = tile.address.split(',').map(_ => +_);
 
         if (
-          c >= c1 && c <= c2 &&
-          r >= r1 && r <= r2
+          r >= row1 && r <= row2 &&
+          c >= col1 && c <= col2
         ) {
-          tile.dataset.tileType = t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
-          tile.dataset.selected = true;
+          if (this.activeBrush === 'delete') this.removeTile(tile.address);
+
+          else {
+            tile.dataset.tileType = t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
+            tile.dataset.selected = true;
+          }
         }
       });
 
-      setTimeout(() => {
-        this.selectedTiles.forEach((tile, address, i) => {
-          tile.dataset.selected = false;
-        });
-      }, 250);
+      if (this.activeBrush !== 'delete') {
+        setTimeout(() => {
+          this.selectedTiles.forEach((tile, address, i) => {
+            tile.dataset.selected = false;
+          });
+        }, 0);
 
-      this.rangeFillStart.dataset.selected = false;
+        this.rangeFillStart.dataset.selected = false;
 
-      this.rangeFillStart = null;
+        this.rangeFillStart = null;
+      }
     }
 
     else if (t) {
-      t.dataset.tileType = t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
+      if (this.activeBrush === 'delete') this.removeTile(t.address);
+
+      else {
+        t.dataset.tileType = t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
+      }
     }
 
     return t;

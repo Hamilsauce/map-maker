@@ -289,6 +289,9 @@ export class MapView {
           c >= c1 && c <= c2 &&
           r >= r1 && r <= r2
         ) {
+          if (this.activeBrush === 'delete') {
+           this.re 
+          }
           tile.dataset.tileType = t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
           tile.dataset.selected = true;
         }
