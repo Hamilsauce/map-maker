@@ -60,7 +60,8 @@ body {
   padding: 8px;
   overflow: hidden;
 }
-#app-header button{
+
+#app-header button {
   padding: 4px;
   height: fit-content;
 }
@@ -156,6 +157,8 @@ body {
 #map-cols {
   gap: 1px;
   backdrop-filter: invert(0.3) brightness(90%);
+  /* opacity: 0.9; */
+  color: #C1C1C1A3;
 
 }
 
@@ -165,6 +168,8 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  font-size: 13px;
+  color: #C1C1C1;
   gap: 0px;
   background: #2E2F31
 }
