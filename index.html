@@ -28,7 +28,7 @@
         <div id="app-header-right">
           <button class="app-button" id="menu-open">Menu</button>
           <!-- <button class="app-button" id="load-map">Load</button> -->
-        <!-- <button class="app-button" id="save-map" data-tile-type="barrier">Save</button> -->
+          <!-- <button class="app-button" id="save-map" data-tile-type="barrier">Save</button> -->
           <!-- <input type="file" id="file-input"> -->
         </div>
       </div>
@@ -45,12 +45,12 @@
       </div>
     </header>
     <section id="app-body">
-      <div id="map" class="initial-map gradient">
-        <div id="map-body"></div>
+      <!-- <div id="map" class="initial-map gradient">
         <div id="map-cols"></div>
+        <div id="map-body"></div>
         <div id="map-rows"></div>
         <div id="map-corn"></div>
-      </div>
+      </div> -->
     </section>
     <footer id="app-footer">
       <div id="controls-label" class="label">Tiles</div>
@@ -114,15 +114,21 @@
     </div>
   </template>
 
-  <!-- <template id="map-template">
-    <div id="map" class="map template-map">
-      <div class="cells"></div>
+  <template id="map-template">
+    <div id="map" class="map template-map gradient">
+        <div id="map-cols"></div>
+        <div id="map-body"></div>
+        <div id="map-rows"></div>
+        <div id="map-corn"></div>
     </div>
-  </template> -->
+  </template>
 
   <template id="load-view-template">
     <div id="load-view">
       <div class="saved-map-list"></div>
+      <div class="load-view-bottom">
+        <button class="app-button cancel-button">Cancel</button>
+      </div>
     </div>
   </template>
 
@@ -141,6 +147,7 @@
         <input type="text" name="map-name-input" id="map-name-input" value="" />
 
         <input name="map-name-submit" id="map-name-submit" class="app-button" type="button" value="Done" />
+        <button class="app-button cancel-button">Cancel</button>
       </section>
     </div>
   </template>

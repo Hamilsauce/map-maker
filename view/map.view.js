@@ -9,7 +9,7 @@ const { debounceTime, buffer, bufferCount, flatMap, takeUntil, reduce, groupBy, 
 const { fromFetch } = rxjs.fetch;
 
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-const { download, date, array, utils, text, event } = ham;
+const { download, template, date, array, utils, text, event } = ham;
 
 export const TileTypes = {
   barrier: 'barrier',
@@ -62,7 +62,9 @@ export class MapView {
 
   constructor(selector, dims) {
     this.#selector = selector;
-    this.self = document.querySelector('#map');
+    // this.self = document.querySelector('#map');
+    this.self = template('map')
+    console.log('this.self', { mapview: this.self })
     this.rangeFillStart = null;
     this.saveMap = this.#saveMap.bind(this);
     this.loadMap = this.#loadMap.bind(this);
@@ -184,13 +186,13 @@ export class MapView {
     this.createMap(this.dims, null);
   }
 
-  get body() { return document.querySelector('#map-body') }
+  get body() { return this.self.querySelector('#map-body') }
 
-  get rowHeaderGroup() { return document.querySelector('#map-rows') }
+  get rowHeaderGroup() { return this.self.querySelector('#map-rows') }
 
-  get columnHeaderGroup() { return document.querySelector('#map-cols') }
+  get columnHeaderGroup() { return this.self.querySelector('#map-cols') }
 
-  get corner() { return document.querySelector('#map-corn') }
+  get corner() { return this.self.querySelector('#map-corn') }
 
   set unitSize(v) {
     this.rowHeaderGroup.style.gridTemplateRows = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
@@ -278,7 +280,15 @@ export class MapView {
     else if (typeof before === 'number') { group.insertAdjacentElement(before, h); }
 
     else { group.insertBefore(h, before) }
+    if (type === 'row') {
+      group.style.gridTemplateRows = `repeat(${ group.children.length}, ${this.unitSize}px)`;
+    }
+    else if (type === 'column') {
+      group.style.gridTemplateColumns = `repeat(${ group.children.length}, ${this.unitSize}px)`;
 
+    }
+    // group.style.gridTemplateCos = `repeat(${ group.children.length}, ${this.unitSize}px)`;
+    // console.log('group.style.gridTemplateColumns', group.style.gridTemplateColumns)
     return h;
   }
 
@@ -367,13 +377,31 @@ export class MapView {
 
   createMap(dims, savedTiles) {
     this.tiles.clear();
+
     this.setDimensions(dims);
+    console.log('dims', dims)
     for (let column = 0; column < dims.width; column++) {
-      this.insertHeader('column', column) // this.getColumnName(column))
+      const colLength = this.columnHeaderGroup.children.length;
+
+      if (!(column < colLength)) {
+        this.insertHeader('column', column);
+      }
+
+      else if (column > colLength) {
+        this.insertHeader('column', column + colLength);
+      }
+
     }
 
     for (let row = 0; row < dims.height; row++) {
-      this.insertHeader('row', row)
+      const rowLength = this.rowHeaderGroup.children.length;
+
+      if (!(row < rowLength)) {
+        this.insertHeader('row', row);
+      }
+      else if (row > rowLength) {
+        this.insertHeader('row', row + rowLength);
+      }
     }
 
     for (let row = 0; row < dims.height; row++) {
@@ -450,8 +478,8 @@ export class MapView {
 
   #loadMap(savedMap) {
     const { dims, tiles } = savedMap;
-    this.render();
     this.createMap(dims, tiles);
+    this.render();
   }
 
   positionToAddress(rowOrPosition, col = 0) {
@@ -487,6 +515,7 @@ export class MapView {
     );
 
     console.timeEnd('RENDER');
+    return this.self
   }
 
   getTile(addressOrPosition) {

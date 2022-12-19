@@ -59,13 +59,13 @@ body {
   gap: 4px;
   padding: 8px;
   overflow: hidden;
-row-gap: 16px;
+  row-gap: 12px;
 }
 
 #app-header button {
   padding: 4px;
   height: fit-content;
-  
+
 }
 
 #app-header-top {
@@ -86,7 +86,14 @@ row-gap: 16px;
   justify-content: flex-start;
   align-items: flex-start;
   gap: 2px;
-  font-size:  14px;
+  font-size: 14px;
+}
+
+#app-header-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #header-center-top {
@@ -105,23 +112,21 @@ row-gap: 16px;
 }
 
 #map {
-  position: relative;
-  top: 0px;
-  left: 0;
+  /* position: relative; */
+  /* top: 0px; */
+  /* left: 0; */
   display: grid;
   gap: 0px;
   grid-template-areas:
     "corn cols"
     "rows body";
-  width: 100%;
-  height: 100%;
+  /* width: 100%; */
+  /* height: 100%; */
 }
 
 #map-body {
   grid-area: body;
   position: sticky;
-  top: 32px;
-  left: 32px;
   display: grid;
   gap: 0px;
   background: #AFAFAF;
@@ -131,13 +136,11 @@ row-gap: 16px;
 #map-cols {
   position: sticky;
   top: 0;
-  left: 32px;
   grid-area: cols;
   display: grid;
   grid-template-columns: repeat(32, 32px);
-  grid-template-rows: 32px;
+  grid-template-rows: 24px;
   gap: 0px;
-  height: 32px;
   width: 100%;
   border-right: 1px solid #D1D1D1;
   z-index: 102;
@@ -146,10 +149,9 @@ row-gap: 16px;
 #map-rows {
   grid-area: rows;
   position: sticky;
-  top: 32px;
   left: 0;
   display: grid;
-  grid-template-columns: 32px;
+  grid-template-columns: 24px;
   grid-template-rows: repeat(32, 32px);
   gap: 0px;
   border-bottom: 1px solid #D1D1D1;
@@ -176,7 +178,7 @@ row-gap: 16px;
   gap: 0px;
   border-bottom: 1px solid #46484A;
   border-right: 1px solid #46484A;
-  
+
   background: #2E2F31
 }
 
@@ -186,8 +188,8 @@ row-gap: 16px;
   grid-area: corn;
   top: 0;
   left: 0;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   background: #2E2F31;
   /* background: #15CF50; */
 }
@@ -320,7 +322,7 @@ row-gap: 16px;
   gap: 0px;
   width: 100%;
   height: 100%;
-  font-size: 17px;
+  font-size: 14px;
   color: #EFEFEF90;
 }
 
@@ -345,7 +347,7 @@ row-gap: 16px;
   border-radius: 3px;
   color: #EFEFEF;
   font-size: 18px;
-  padding: 8px
+  padding: 4px 8px
 }
 
 .app-button:active {

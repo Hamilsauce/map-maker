@@ -124,6 +124,7 @@ export class AppMenu extends View {
 
     if (item) {
       this.emit('menu:' + item.action.type, item.action)
+      this.close();
     }
 
   }

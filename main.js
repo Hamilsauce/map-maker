@@ -8,7 +8,7 @@ import { AppMenu } from './view/app-menu.view.js';
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { DEFAULT_STATE } from './store/StateModel.js';
 const { download, template, utils } = ham;
-
+import { LOCALSTORAGE_KEY } from './lib/constants.js';
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
 const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
@@ -34,11 +34,21 @@ const handleFileSelection = (e) => {
   ui.inputs.file.addEventListener('change', handleFileSelection)
 };
 
+const handleCancel = () => {
+  // console.log('handl/ e cancel: this', this);
+  ui.setActiveView(ui.viewHistory[ui.viewHistory.length - 1])
+}
+
+console.log(JSON.parse(localStorage.getItem('MAP_MAKER')))
+const mapModel = new MapModel();
+const mapView = new MapView();
+const appMenu = new AppMenu();
+
 
 const ui = {
   get activeView() { return this.views[this.viewHistory[this.viewHistory.length - 1]] },
   get mapList() { return this.views.load.querySelector('.saved-map-list') },
-  viewHistory: ['map'],
+  viewHistory: [],
   app: document.querySelector('#app'),
   body: document.querySelector('#app-body'),
   header: document.querySelector('#app-header'),
@@ -46,31 +56,60 @@ const ui = {
   views: {
     save: template('save-view'),
     load: template('load-view'),
-    map: document.querySelector('#map'),
+    map: mapView.render(),
   },
   buttons: {
     menuOpen: document.querySelector('#menu-open'),
     save: document.querySelector('#save-map'),
     load: document.querySelector('#load-map'),
     tileBrushes: document.querySelectorAll('#controls'),
+    cancelButtons: document.querySelectorAll('.cancel-button'),
   },
   inputs: {
     file: document.querySelector('#file-input'),
   },
-  setActiveView(name) {
+  handleCancel: handleCancel.bind(this),
+
+  setActiveView(name, options) {
+    if (!name) return;
+    console.log('options', options)
+    console.warn('this.activeView', { active: (this.activeView || {}).id })
+    const viewHistoryHead = this.viewHistory[this.viewHistory.length - 1];
+
+    // ui.buttons.cancelButtons.forEach((b) => {
+    //   b.removeEventListener('click', handleCancel);
+    // });
     if (this.activeView && this.viewHistory.length > 0) {
       this.activeView.remove();
     }
 
-    this.viewHistory.push(name);
+    if (name === viewHistoryHead) {
+      this.viewHistory.pop();
+    }
+    else this.viewHistory.push(name);
 
+    console.log('name', name)
+    const newViewHistoryHead = this.viewHistory[this.viewHistory.length - 1];
+    console.log('newViewHistoryHead', newViewHistoryHead)
+    if ([undefined, null].includes(this.activeView)) return;
     this.body.append(this.activeView);
+    console.warn('this.activeView id', { active: (this.activeView || {}).id })
+    // console.warn('this.activeView', this.activeView)
+
+    this.activeView.querySelectorAll('.cancel-button')
+      // ui.buttons.cancelButtons
+      .forEach((b) => {
+        console.log('cancelButtons', b, handleCancel);
+        b.addEventListener('click', handleCancel);
+      });
+
 
     if (name === 'save') {
-      this.activeView.querySelector('#map-name-input').focus()
+      this.activeView.querySelector('#map-name-input').focus();
     }
   },
 }
+
 window.ui = ui
 
 const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
@@ -84,11 +123,7 @@ const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
 
 tileBrushSelectionEvents$.subscribe(selection => tileBrushStore.update(selection))
 
-document.querySelector('#app-body').append(ui.activeView);
-
-const mapModel = new MapModel();
-const mapView = new MapView();
-const appMenu = new AppMenu();
+// document.querySelector('#app-body').append(ui.activeView);
 
 ui.header.querySelector('#map-options').innerHTML = '';
 ui.header.querySelector('#map-options').append(gridOptions)
@@ -104,7 +139,6 @@ ui.app.addEventListener('option:change', ({ detail }) => {
 });
 
 
-const LOCALSTORAGE_KEY = 'MAP_MAKER';
 
 let saveButtonState = null;
 let loadButtonState = null;
@@ -163,6 +197,19 @@ ui.buttons.menuOpen.addEventListener('click', e => {
     ui.mapList.innerHTML = '';
   }
 
+  console.warn('v ui.mapList data', data)
+});
+
+appMenu.on('menu:save-map', e => {
+  console.warn('HEARD SAVE IN APP');
+  ui.setActiveView('save');
+
+});
+
+appMenu.on('menu:load-map', e => {
+  console.warn('HEARD LOAD IN APP');
+  ui.setActiveView('load');
+  ui.mapList.innerHTML = '';
   const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
 
   Object.values(data.savedMaps).forEach((m, i) => {
@@ -172,16 +219,6 @@ ui.buttons.menuOpen.addEventListener('click', e => {
     item.textContent = m.mapName;
     ui.mapList.append(item);
   });
-});
-
-appMenu.on('menu:save-map', e => {
-  console.warn('HEARD SAVE IN APP');
-  ui.setActiveView(saveButtonState);
-});
-
-appMenu.on('menu:load-map', e => {
-  console.warn('HEARD LOAD IN APP');
-  ui.setActiveView(loadButtonState);
 });
 
 
@@ -195,19 +232,26 @@ ui.mapList.addEventListener('click', e => {
     const mapData = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) //|| DEFAULT_STATE;
     const map2 = mapData.savedMaps[item.dataset.mapKey];
 
-    console.warn('LOADED', map2);
+    console.warn('LOADED', {map2});
 
     ui.setActiveView('map');
     mapView.loadMap(map2);
 
-    loadButtonState = 'map';
+    // loadButtonState = 'map';
     console.warn('map', map2.mapName)
     ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
 
-    ui.buttons.save.dataset.buttonState = loadButtonState;
-    ui.buttons.save.textContent = loadButtonState;
+    // ui.buttons.save.dataset.buttonState = loadButtonState;
+    // ui.buttons.save.textContent = loadButtonState;
   }
 });
+
+// ui.buttons.cancelButtons.forEach((b) => {
+//   b.addEventListener('click', e => {
+//     console.log('cancelButtons close')
+
+//   });
+// });
 
 ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
   const input = ui.views.save.querySelector('#map-name-input');
@@ -220,10 +264,12 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 
     if (data) {
       const map = mapView.getMapState();
-      map['tile'] = input.value;
+      map['tile'] = map.tiles;
       map.mapName = input.value;
       map.key = map.key ? map.key : 'm' + utils.uuid();
-      data.savedMaps[map.key] = map
+      data.savedMaps[map.key] = map;
+      console.warn('map', map)
+      ui.setActiveView('map');
     } else {}
 
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
@@ -242,7 +288,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 
 ui.header.querySelector('#header-center-bottom')
   .addEventListener('click', e => {
-    ui.menu.dataset.show = true;
+    gridOptions.dataset.show = gridOptions.dataset.show === 'true' ? 'false' : 'true';
   })
 
 const closeMenu = document.querySelector('#app-menu-close')
@@ -251,7 +297,7 @@ closeMenu.addEventListener('click', e => {
 })
 
 
-mapView.render();
+ui.setActiveView('map', { message: 'called after render' })
 
 // const col0 = mapView.getColumn(0)
 

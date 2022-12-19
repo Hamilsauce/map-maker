@@ -1,6 +1,6 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 const { template, utils, DOM, event } = ham;
-console.log('event', event)
+
 const GRID_OPTIONS_CONFIG = [
   {
     name: 'width',
@@ -27,10 +27,21 @@ export const gridOptions = DOM.createElement({
     elementProperties: {
       onclick: (e) => {
         const opt = e.target.closest('.grid-option')
-      if (!opt) return;
-      opt.querySelector('input').focus();
-      event.selectAllContent(opt.querySelector('input'))
-        console.warn('onclick', e)
+
+        if (!opt) return;
+
+        opt.querySelector('input').focus();
+
+        event.selectAllContent(opt.querySelector('input'));
+        // event.selectAllContent(gridOptions)
+      },
+      onchange: (e) => {
+        const targ = e.target.closest('input');
+        const opt = targ.closest('.grid-option');
+        const optionName = opt.dataset.optionName;
+        const value = !isNaN(+targ.value.trim()) ? +e.target.closest('input').value.trim() : 0;
+
+        gridOptions.dispatchEvent(new CustomEvent('option:change', { bubbles: true, detail: { name: optionName, value } }))
       }
     }
   },
@@ -46,16 +57,3 @@ export const gridOptions = DOM.createElement({
     return o;
   })
 );
-
-gridOptions.addEventListener('change', e => {
-  const targ = e.target.closest('input');
-  const opt = targ.closest('.grid-option');
-  const optionName = opt.dataset.optionName;
-  const value = !isNaN(+targ.value.trim()) ? +e.target.closest('input').value.trim() : 0;
-
-  gridOptions.dispatchEvent(new CustomEvent('option:change', { bubbles: true, detail: { name: optionName, value } }))
-});
-
-
-
-// appHeader.append(gridOptions)
