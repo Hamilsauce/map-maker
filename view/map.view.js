@@ -62,50 +62,51 @@ export class MapView {
 
   constructor(selector, dims) {
     this.#selector = selector;
-    this.self = document.querySelector('#map')
+    this.self = document.querySelector('#map');
     this.rangeFillStart = null;
-    this.saveMap = this.#saveMap.bind(this)
-    this.loadMap = this.#loadMap.bind(this)
+    this.saveMap = this.#saveMap.bind(this);
+    this.loadMap = this.#loadMap.bind(this);
 
     this.tiles = new Map();
 
-    this.setDimensions(dims ? dims : DEFAULT_MAP_DIMENSIONS)
+    this.setDimensions(dims ? dims : DEFAULT_MAP_DIMENSIONS);
 
     this._self = {
       get map() {
-        return document.querySelector('#map')
+        return document.querySelector('#map');
       },
       get body() {
-        return document.querySelector('#map-body')
+        return document.querySelector('#map-body');
       },
       get headerRow() {
-        return document.querySelector('#map-row')
+        return document.querySelector('#map-row');
       },
       get headerColumn() {
-        return document.querySelector('#map-column')
+        return document.querySelector('#map-column');
       },
     };
+
     const dragTargets = {
       start: null,
       over: null,
       end: null,
-    }
+    };
 
     this.pointerStart = {
       x: null,
       y: null,
       target: null
-    }
+    };
 
     const clickCount = 2;
     const clickWindow = 250;
 
-    this.clickStreams$ = getClicks$(this.self)
+    this.clickStreams$ = getClicks$(this.self);
 
     merge(
-      this.clickStreams$.click$
-      .pipe(
+      this.clickStreams$.click$.pipe(
         map(([event]) => event),
+        filter(e => e.target.closest('.tile')),
         map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
         map(this.handleTileClick.bind(this)),
         tap(push),
@@ -196,31 +197,30 @@ export class MapView {
     headerColumn.id = 'map-header-column'
 
     this.createMap(this.dims, null);
-    console.log('this.dims', this.dims)
-
-    // setTimeout(() => {
-    //   console.log('MAP VIEW', [...this.tiles.keys()]);
-    // }, 2000)
   }
 
-  get body() {
-    return document.querySelector('#map-body')
+  get body() { return document.querySelector('#map-body') }
+
+  get rowHeaderGroup() { return document.querySelector('#map-rows') }
+
+  get columnHeaderGroup() { return document.querySelector('#map-cols') }
+
+  get corner() { return document.querySelector('#map-corn') }
+
+  set unitSize(v) {
+    this.rowHeaderGroup.style.gridTemplateRows = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
+    this.rowHeaderGroup.style.gridTemplateColumns = `${this.unitSize}px)`;
+    this.columnHeaderGroup.style.gridTemplateRows = `${this.unitSize}px)`;
+    this.columnHeaderGroup.style.gridTemplateColumns = `repeat(${ this.#dimensions.width || this.#dimensions.width }, ${this.unitSize}px)`;
+
+    return this.dims.unitSize * this.dims.scale;
   }
 
-  get rowHeaderGroup() {
-    return document.querySelector('#map-rows')
-  }
-
-  get columnHeaderGroup() {
-    return document.querySelector('#map-cols')
-  }
-
-  get unitSize() {
-    console.log('this.dims.unitSize * this.dims.scale', this.dims.unitSize * this.dims.scale)
-    return this.dims.unitSize * this.dims.scale
-  }
+  get unitSize() { return this.dims.unitSize * this.dims.scale }
 
   get dims() { return this.#dimensions }
+
+  get selectedTiles() { return [...this.self.querySelectorAll('.tile[data-selected=true]')] }
 
   // set width(v) {
   //   console.warn('width', v)
@@ -276,22 +276,16 @@ export class MapView {
 
   // }
 
-  get selectedTiles() {
-    return [...this.self.querySelectorAll('.tile[data-selected=true]')]
-  }
-
   insertHeader(type = 'column', value, before) {
     type = type.toLowerCase();
 
-    const h = document.createElement('div'); // template('header');
+    const h = document.createElement('div');
     const group = this[`${type}HeaderGroup`];
-    console.log('group', group)
+
     h.dataset.headerType = type;
     h.dataset[type] = value;
     h.dataset.address = value;
     h.textContent = value;
-
-    // this[`${type}s`].set(h, h);
 
     if (!before) { group.append(h) }
 
@@ -302,7 +296,6 @@ export class MapView {
     return h;
   }
 
-
   createTile(row, column, tileType) {
     const tile = TileView.create({ address: this.positionToAddress(row, column), tileType })
 
@@ -312,9 +305,7 @@ export class MapView {
   removeTile(addressOrPosition, tileType) {
     const tile = this.getTile(addressOrPosition)
 
-    if (tile) {
-      tile.remove(({ address }) => this.tiles.delete(address))
-    }
+    if (tile) tile.remove(({ address }) => this.tiles.delete(address))
 
     return tile;
   }
@@ -325,21 +316,23 @@ export class MapView {
   }
 
   getColumn(column, callback) {
-    const col = new Array(this.dims.height).fill('')
+    const col = new Array(this.dims.height)
+      .fill('')
       .map((v, row) => {
         const t = this.getTile([row, column].toString())
         return t;
-      })
+      });
 
     return col;
   }
 
   getRow(row, callback) {
-    const r = new Array(this.dims.width).fill('')
+    const r = new Array(this.dims.width)
+      .fill('')
       .map((v, col) => {
         const t = this.getTile([row, col].toString())
         return t;
-      })
+      });
 
     return r;
   }
@@ -366,13 +359,13 @@ export class MapView {
 
   removeColumn(column) {
     const col = this.getColumn(column)
-    // .filter(_=>_.address)
 
     col.forEach((tile, i) => {
-      console.log('tile', tile)
       if (!tile || !tile.address) return;
-      this.removeTile(tile.address)
+      
+      this.removeTile(tile.address);
     });
+    
     this.setDimensions({ ...this.dims, width: this.dims.width - 1 });
   }
 
@@ -380,10 +373,10 @@ export class MapView {
     const r = this.getRow(row - 1);
 
     r.forEach((tile, i) => {
-      this.removeTile(tile.address)
+      this.removeTile(tile.address);
     });
+    
     this.setDimensions({ ...this.dims, height: this.dims.height - 1 });
-
   }
 
   createMap(dims, savedTiles) {
@@ -394,7 +387,7 @@ export class MapView {
     }
 
     for (let row = 0; row < dims.height; row++) {
-      this.insertHeader('row', row )
+      this.insertHeader('row', row)
     }
 
     for (let row = 0; row < dims.height; row++) {
@@ -425,13 +418,16 @@ export class MapView {
 
     this.body.style.gridTemplateColumns = `repeat(${ this.#dimensions.width || this.#dimensions.width }, ${this.unitSize}px)`;
     this.body.style.gridTemplateRows = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
-    this.rowHeaderGroup.style.gridTemplateColumns = `${this.unitSize}px`;
+    this.body.style.top = `${this.unitSize}px)`;
+    this.body.style.left = `${this.unitSize}px)`;
+
+    this.rowHeaderGroup.style.top = `${this.unitSize}px)`;
     this.rowHeaderGroup.style.gridTemplateRows = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
-    this.columnHeaderGroup.style.gridTemplateRows = `${this.unitSize}px`;
+    this.columnHeaderGroup.style.left = `${this.unitSize}px)`;
     this.columnHeaderGroup.style.gridTemplateColumns = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
-    
-    // console.warn('this.self.style.gridTemplateColumns', this.body.style.gridTemplateColumns)
-    // console.warn('this.self.style.gridTemplateRows', this.self.style.gridTemplateRows)
+
+    this.corner.style.width = `${this.unitSize}px)`;
+    this.corner.style.height = `${this.unitSize}px)`;
   }
 
   eachTile(callback) {}
@@ -459,18 +455,16 @@ export class MapView {
         return { address: t.dataset.address, type: tileTypeCodes.get(t.dataset.tileType) }
       });
 
-    const serialized = JSON.stringify(data, null, 2)
+    const serialized = JSON.stringify(data, null, 2);
+  
     localStorage.setItem(data.key, serialized);
 
     return serialized;
   }
 
   #loadMap(savedMap) {
-    console.log('savedMap.name', savedMap)
-    const { dims, tiles } = savedMap
-
-    this.createMap(dims, tiles)
-
+    const { dims, tiles } = savedMap;
+    this.createMap(dims, tiles);
     this.render();
   }
 
@@ -486,7 +480,8 @@ export class MapView {
 
   parseTileAddress(tile) {
     if (!(!!tile)) return;
-    return tile.dataset.address.split(',').map(_ => +_)
+
+    return tile.dataset.address.split(',').map(_ => +_);
   }
 
   async append(...tiles) {
@@ -499,11 +494,9 @@ export class MapView {
   render() {
     console.time('RENDER');
 
+    this.body.innerHTML = '';
 
-    const body = this.self.querySelector('#map-body')
-    body.innerHTML = '';
-    console.log('this.self.querySelector(map-body', { bod: this.self.querySelector('#map-body') })
-    body.append(
+    this.body.append(
       ...[...this.tiles.values()].map((t, i) => t.render())
     );
 
@@ -532,10 +525,7 @@ export class MapView {
       this.tiles.forEach((tile, i) => {
         const [r, c] = tile.address.split(',').map(_ => +_);
 
-        if (
-          r >= row1 && r <= row2 &&
-          c >= col1 && c <= col2
-        ) {
+        if ((r >= row1 && r <= row2) && (c >= col1 && c <= col2)) {
           if (this.activeBrush === 'delete') this.removeTile(tile.address);
 
           else {
@@ -570,16 +560,16 @@ export class MapView {
   }
 
   handleTileLongPress({ x, y, targetBounds, target }) {
-    const t = this.tiles.get(target.dataset.address)
+    const t = this.tiles.get(target.dataset.address);
 
     if (t) {
       this.selectedTiles.forEach((t, i) => {
-        t.selected = false
+        t.selected = false;
       });
 
       this.rangeFillStart = t;
       t.tileType = this.activeBrush || 'empty';
-      t.selected = true
+      t.selected = true;
     }
 
     return t;
