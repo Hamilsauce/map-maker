@@ -425,6 +425,11 @@ export class MapView {
 
     this.body.style.gridTemplateColumns = `repeat(${ this.#dimensions.width || this.#dimensions.width }, ${this.unitSize}px)`;
     this.body.style.gridTemplateRows = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
+    this.rowHeaderGroup.style.gridTemplateColumns = `${this.unitSize}px`;
+    this.rowHeaderGroup.style.gridTemplateRows = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
+    this.columnHeaderGroup.style.gridTemplateRows = `${this.unitSize}px`;
+    this.columnHeaderGroup.style.gridTemplateColumns = `repeat(${ this.#dimensions.height || this.#dimensions.height }, ${this.unitSize}px)`;
+    
     // console.warn('this.self.style.gridTemplateColumns', this.body.style.gridTemplateColumns)
     // console.warn('this.self.style.gridTemplateRows', this.self.style.gridTemplateRows)
   }
