@@ -28,10 +28,13 @@ export class Vector {
   get y() { return this.#y };
 }
 
+
 const handleFileSelection = (e) => {
   console.warn('handleFileSelection', { e });
   ui.inputs.file.addEventListener('change', handleFileSelection)
 };
+
+
 
 const handleCancel = () => {
   ui.setActiveView(ui.viewHistory[ui.viewHistory.length - 1])
@@ -302,8 +305,8 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
       map.mapName = input.value;
       map.key = map.key ? map.key : 'm' + utils.uuid();
       data.savedMaps[map.key] = map;
-console.warn('data.savedMaps', Object.entries(data.savedMaps).length)
-console.log('data.savedMaps[mqy4929bxxw1glnte6f5', data.savedMaps['mqy4929bxxw1glnte6f5'])
+      console.warn('data.savedMaps', Object.entries(data.savedMaps).length)
+      console.log('data.savedMaps[mqy4929bxxw1glnte6f5', data.savedMaps['mqy4929bxxw1glnte6f5'])
       ui.setActiveView('map');
     }
 
@@ -336,7 +339,6 @@ closeMenu.addEventListener('click', e => {
 
 ui.setActiveView('map', { message: 'called after render' })
 // const app = new Application('app');
-// const col0 = mapView.getColumn(0)
 
 
 const appBody = document.querySelector('#app-body')

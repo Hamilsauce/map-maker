@@ -120,7 +120,7 @@ export class MapView {
         map(([first, second]) => second),
         map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
         tap(t => this.handleTileLongPress.bind(this)(t)),
-        tap(x => console.warn('AFTER DELAY', x)),
+        // tap(x => console.warn('AFTER DELAY', x)),
         // tap(push),
       )).subscribe()
 
@@ -158,8 +158,6 @@ export class MapView {
     //     ))
     // );
 
-    // this.longpress$.subscribe()
-
     this.self.addEventListener('dragstart', e => {
       dragTargets.start = e.target.closest('.tile') //.dataset.address;
     });
@@ -169,7 +167,7 @@ export class MapView {
     });
 
     this.self.addEventListener('dragend', e => {
-      const t = e.target.closest('.tile');
+      const t = e.target.closest('.tile')
     });
 
 
@@ -313,7 +311,7 @@ export class MapView {
 
   insertTile(row, column, tileType) {
     const tile = this.createTile(row, column, tileType);
-    
+
     return this.tiles.set(tile.address, tile).get(tile.address);
   }
 
@@ -431,9 +429,9 @@ export class MapView {
   setDimensions(dims = {}) {
     const dimNames = ['width', 'height', 'unitSize', 'scale']
     const cleaned = Object.fromEntries(Object.entries(dims).filter(([k, v]) => dimNames.includes(k) && !!(+v)))
-    
+
     Object.assign(this.#dimensions, cleaned);
-    
+
     this.setGridTemplateSize();
   }
 
