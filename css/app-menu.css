@@ -13,7 +13,7 @@
   overflow-x: hidden;
   transition: 0.5s;
   z-index: 500;
-  backdrop-filter:  brightness(90%) blur(4px);
+  backdrop-filter: brightness(90%) blur(4px);
 }
 
 #app-menu * {
@@ -25,16 +25,13 @@
 }
 
 #app-menu-items {
-  /* position: relative; */
-  top: 25%;
-  width: 100%;
-  text-align: center;
-  margin-top: 30px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   gap: 0px;
+  margin-top: 30px;
+  text-align: center;
 }
 
 .app-menu-item {
@@ -44,12 +41,18 @@
   font-weight: 500;
   color: rgba(25, 36, 46, 0.842);
   display: block;
-  transition: 0.3s;
+  transition: 0.2s;
+  width: 100%;
+  opacity: 0.3;
 }
 
 .app-menu-item:hover,
 .app-menu-item:focus {
   color: #a1afbd;
+}
+
+#app-menu[data-show=true] .app-menu-item {
+  opacity: 1;
 }
 
 #app-menu-close {

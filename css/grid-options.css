@@ -1,4 +1,6 @@
 #grid-options {
+  /* position: sticky; */
+  top: 0;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -8,29 +10,26 @@
   height: 0px;
   padding: 0 4px 0 24px;
   /* border: 1px solid #FFFFFF; */
-  overflow: hidden;
-  transition: height  0.2s ;
+  transition: height 0.2s;
   will-change: height;
-  
-}
-.slide {
+
 }
 
-#grid-options > * {
+#grid-options>* {
   display: none;
   padding: 0 2px;
-  transition: padding  0.1s;
+  transition: padding 0.1s;
   will-change: padding;
-  
+
 }
 
 #grid-options[data-show=true] {
   height: 30px;
-  padding: 4px 4px 4px 24px;
+  padding: 2px 4px 2px 24px;
 
 }
 
-#grid-options[data-show=true] > * {
+#grid-options[data-show=true]>* {
   display: flex;
   padding: 2px 2px;
 

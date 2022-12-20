@@ -63,8 +63,9 @@ body {
 }
 
 #app-header button {
+  top: 0;
   padding: 4px;
-  height: fit-content;
+  /* height: fit-content; */
 }
 
 #app-header-top {
@@ -117,7 +118,6 @@ body {
   align-items: center;
   gap: 4px;
   filter: invert(0%);
-
   /* transform: rotate(0); */
   transition: 0.2s ease;
 

@@ -1,16 +1,23 @@
-import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { tileBrushStore } from '../store/tile-brush.store.js';
 import { tileTypeCodes } from '../store/tile-type-codes.js';
 import { Collection } from '../lib/collection.js';
-import { TileTypes } from '../lib/constants.js';
 import { TileView } from '../view/tile.view.js';
 import { push } from './tile-view-updates.stream.js';
-import { getClicks$ } from '../lib/get-click-events.js';
+
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
 const { debounceTime, buffer, bufferCount, flatMap, takeUntil, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 
+import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 const { download, template, date, array, utils, text, event } = ham;
+
+export const TileTypes = {
+  barrier: 'barrier',
+  ground: 'ground',
+  empty: 'empty',
+  exit: 'exit',
+  start: 'start',
+}
 
 export const DEFAULT_MAP_DIMENSIONS = {
   width: 32,
@@ -19,8 +26,12 @@ export const DEFAULT_MAP_DIMENSIONS = {
   scale: 32,
 };
 
+
+
 const appBody = document.querySelector('#app-body')
 const mapBody = document.querySelector('#map-body')
+
+const scale = 32;
 
 const getMapSize = (mapEl) => {
   const scale = 32;
@@ -36,7 +47,28 @@ const getMapSize = (mapEl) => {
   }
 
   return unit;
+
 };
+const getClicks$ = (target) => {
+  const mouse$ = fromEvent(target, 'click')
+
+  const buff$ = mouse$.pipe(debounceTime(200))
+
+  const bufferedClicks$ = mouse$.pipe(
+    buffer(buff$),
+    map(list => list)
+  );
+
+  return {
+    click$: bufferedClicks$.pipe(
+      filter(x => x.length === 1),
+    ),
+    dblClick$: bufferedClicks$.pipe(
+      filter(x => x.length === 2),
+    ),
+  }
+}
+
 
 export class MapView {
   #selector;
@@ -56,7 +88,6 @@ export class MapView {
 
     this.tiles = new Map();
     // dims = { ...dims, ...getMapSize(this.body) }
-    
     this.setDimensions(dims ? dims : DEFAULT_MAP_DIMENSIONS);
 
     const dragTargets = {
@@ -71,11 +102,14 @@ export class MapView {
       target: null
     };
 
+    const clickCount = 2;
+    const clickWindow = 250;
+
     this.clickStreams$ = getClicks$(this.self);
 
     merge(
       this.clickStreams$.click$.pipe(
-        map(([first, second]) => first),
+        map(([event]) => event),
         filter(e => e.target.closest('.tile')),
         map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
         map(this.handleTileClick.bind(this)),
@@ -86,6 +120,8 @@ export class MapView {
         map(([first, second]) => second),
         map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
         tap(t => this.handleTileLongPress.bind(this)(t)),
+        // tap(x => console.warn('AFTER DELAY', x)),
+        // tap(push),
       )).subscribe()
 
     this.scroll$ = fromEvent(appBody, 'scroll').pipe(
@@ -93,11 +129,65 @@ export class MapView {
       tap(x => console.warn('appbody scroll$', x))
     )
 
+    // this.pointerDown$ = fromEvent(appBody, 'pointerdown').pipe(
+    //   takeUntil(this.dblClick$),
+    //   delay(clickWindow),
+    //   map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
+    //   tap(e => this.pointerStart = e),
+    //   map(this.handleTileClick.bind(this)),
+    // );
+
+    // this.pointerMove$ = fromEvent(appBody, 'pointermove').pipe(
+    //   tap(x => console.log('Pointer move on body', x)),
+    //   filter(({ clientX, clientY }) => {
+    //     return (clientX < this.pointerStart.targetBounds.left || clientX > this.pointerStart.targetBounds.right) ||
+    //       (clientY < this.pointerStart.targetBounds.top || clientY > this.pointerStart.targetBounds.bottom)
+    //   }),
+    // );
+
+    // this.pointerUp$ = fromEvent(appBody, 'pointerup').pipe(tap(() => this.pointerStart = null), );
+
+    // this.longpress$ = this.pointerDown$.pipe(
+    //   mergeMap((e) => of (e)
+    //     .pipe(
+    //       delay(450),
+    //       takeUntil(this.scroll$),
+    //       takeUntil(this.pointerMove$),
+    //       takeUntil(this.pointerUp$),
+    //       tap(() => this.handleTileLongPress.bind(this)(this.pointerStart)),
+    //     ))
+    // );
+
+    this.self.addEventListener('dragstart', e => {
+      dragTargets.start = e.target.closest('.tile') //.dataset.address;
+    });
+
+    this.self.addEventListener('drag', e => {
+      dragTargets.over = e.target.closest('.tile');
+    });
+
+    this.self.addEventListener('dragend', e => {
+      const t = e.target.closest('.tile')
+    });
+
+
     this.activeBrush$ = tileBrushStore.select({ key: 'activeBrush' }).pipe(
       tap((activeBrush) => this.activeBrush = activeBrush),
     ).subscribe();
 
     this.tileEventSubject$ = new Subject()
+
+    // this.tileClicks$ = fromEvent(this.self, 'click').pipe(
+    //   takeUntil(this.dblClick$),
+    //   delay(clickWindow),
+
+    //   map(this.handleTileClick.bind(this)),
+    //   tap(this.tileEventSubject$),
+    //   tap(push),
+    // );
+
+    // this.pointerDown$.subscribe()
+    // this.tileClicks$.subscribe()
 
     this.createMap(this.dims, null);
   }
