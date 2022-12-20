@@ -232,7 +232,7 @@ ui.mapList.addEventListener('click', e => {
     const mapData = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) //|| DEFAULT_STATE;
     const map2 = mapData.savedMaps[item.dataset.mapKey];
 
-    console.warn('LOADED', {map2});
+    console.warn('LOADED', { map2 });
 
     ui.setActiveView('map');
     mapView.loadMap(map2);
@@ -288,6 +288,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 
 ui.header.querySelector('#header-center-bottom')
   .addEventListener('click', e => {
+    ui.header.querySelector('svg').dataset.expand = ui.header.querySelector('svg').dataset.expand === 'true' ? 'false' : 'true'
     gridOptions.dataset.show = gridOptions.dataset.show === 'true' ? 'false' : 'true';
   })
 

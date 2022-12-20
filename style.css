@@ -65,7 +65,6 @@ body {
 #app-header button {
   padding: 4px;
   height: fit-content;
-
 }
 
 #app-header-top {
@@ -99,6 +98,43 @@ body {
 #header-center-top {
   font-size: 13px;
   color: #CDCDCD;
+}
+
+#header-center-top {
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* justify-content: space-around; */
+  /* align-items: center; */
+  gap: 0px;
+  font-size: 13px;
+  color: #CDCDCD;
+}
+
+#header-center-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4px;
+  filter: invert(0%);
+
+  /* transform: rotate(0); */
+  transition: 0.2s ease;
+
+}
+
+#header-center-bottom:active {
+  filter: invert(50%);
+}
+
+#header-center-bottom svg {
+  transform: rotate(0deg);
+  transition: 0.15s;
+  /* background: #1FA1E1; */
+}
+
+#header-center-bottom svg[data-expand=true] {
+  transform: rotate(-180deg);
 }
 
 #app-body {
