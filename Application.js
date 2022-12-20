@@ -1,12 +1,12 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { EventEmitter } from 'https://hamilsauce.github.io/hamhelper/event-emitter.js';
-import { AppFooter, AppHeader, ViewFrame } from './view/app-components/index.js';
+import { AppFooter, AppHeader, AppBody } from './view/app-components/index.js';
 
 const { template } = ham;
 
 const AppComponents = new Map([
   ['app-header', AppHeader],
-  ['view-frame', ViewFrame],
+  ['app-body', AppBody],
   ['app-footer', AppFooter],
 ]);
 

@@ -26,8 +26,29 @@ export const DEFAULT_MAP_DIMENSIONS = {
   scale: 32,
 };
 
-const appBody = document.querySelector('#app-body')
 
+
+const appBody = document.querySelector('#app-body')
+const mapBody = document.querySelector('#map-body')
+
+const scale = 32;
+
+const getMapSize = (mapEl) => {
+  const scale = 32;
+
+  const screen = {
+    width: mapEl.getBoundingClientRect().width,
+    height: mapEl.getBoundingClientRect().height,
+  }
+
+  const unit = {
+    width: screen.width / scale,
+    height: screen.height / scale,
+  }
+
+  return unit;
+
+};
 const getClicks$ = (target) => {
   const mouse$ = fromEvent(target, 'click')
 
@@ -54,23 +75,19 @@ export class MapView {
   #dimensions = {
     width: 0,
     height: 0,
-    rows: 0,
-    columns: 0,
     unitSize: 32,
     scale: 32,
   }
 
   constructor(selector, dims) {
     this.#selector = selector;
-    // this.self = document.querySelector('#map');
-    this.self = template('map')
-    console.log('this.self', { mapview: this.self })
+    this.self = template('map');
     this.rangeFillStart = null;
     this.saveMap = this.#saveMap.bind(this);
     this.loadMap = this.#loadMap.bind(this);
 
     this.tiles = new Map();
-
+    // dims = { ...dims, ...getMapSize(this.body) }
     this.setDimensions(dims ? dims : DEFAULT_MAP_DIMENSIONS);
 
     const dragTargets = {
@@ -174,15 +191,6 @@ export class MapView {
     // this.pointerDown$.subscribe()
     // this.tileClicks$.subscribe()
 
-    // const body = document.createElement('div');
-    // body.id = 'map-body'
-
-    // const headerRow = document.createElement('div');
-    // headerRow.id = 'map-header-row'
-
-    // const headerColumn = document.createElement('div');
-    // headerColumn.id = 'map-header-column'
-
     this.createMap(this.dims, null);
   }
 
@@ -262,9 +270,9 @@ export class MapView {
     type = type.toLowerCase();
 
     const h = document.createElement('div');
-    
+
     h.classList.add('header');
-   
+
     const group = this[`${type}HeaderGroup`];
 
     h.dataset.headerType = type;
@@ -277,11 +285,11 @@ export class MapView {
     else if (typeof before === 'number') { group.insertAdjacentElement(before, h); }
 
     else { group.insertBefore(h, before) }
-   
+
     if (type === 'row') {
       group.style.gridTemplateRows = `repeat(${ group.children.length}, ${this.unitSize}px)`;
     }
-    
+
     else if (type === 'column') {
       group.style.gridTemplateColumns = `repeat(${ group.children.length}, ${this.unitSize}px)`;
     }
@@ -305,33 +313,36 @@ export class MapView {
 
   insertTile(row, column, tileType) {
     const tile = this.createTile(row, column, tileType);
+    
     return this.tiles.set(tile.address, tile).get(tile.address);
   }
 
   getColumn(column, callback) {
     const col = new Array(this.dims.height)
       .fill('')
-      .map((v, row) => {
-        const t = this.getTile([row, column].toString())
-        return t;
-      });
+      .map((v, row) => this.getTile([row, column].toString()));
 
-    return col;
+    return {
+      tiles: col,
+      address: column,
+      length: col.length
+    };
   }
 
   getRow(row, callback) {
     const r = new Array(this.dims.width)
       .fill('')
-      .map((v, col) => {
-        const t = this.getTile([row, col].toString())
-        return t;
-      });
+      .map((v, col) => this.getTile([row, col].toString()));
 
-    return r;
+    return {
+      tiles: r,
+      address: row,
+      length: r.length
+    };
   }
 
   addColumn(column) {
-    const col = []
+    const col = [];
 
     for (let row = 0; row < this.dims.height; row++) {
       col.push(this.insertTile(row, column, 'empty'));
@@ -341,7 +352,7 @@ export class MapView {
   }
 
   addRow(row) {
-    const r = []
+    const r = [];
 
     for (let column = 0; column < this.dims.height; column++) {
       r.push(this.insertTile(row, column, 'empty'));
@@ -351,67 +362,68 @@ export class MapView {
   }
 
   removeColumn(column) {
-    const col = this.getColumn(column)
+    const col = this.getColumn(column);
 
-    col.forEach((tile, i) => {
-      if (!tile || !tile.address) return;
-
-      this.removeTile(tile.address);
+    col.tiles.forEach((tile, i) => {
+      if (tile && tile.address) this.removeTile(tile.address);
     });
 
     this.setDimensions({ ...this.dims, width: this.dims.width - 1 });
+
+    return col;
   }
 
   removeRow(row) {
-    const r = this.getRow(row - 1);
+    const r = this.getRow(row);
 
-    r.forEach((tile, i) => {
-      this.removeTile(tile.address);
+    r.tiles.forEach((tile, i) => {
+      if (tile && tile.address) this.removeTile(tile.address);
     });
 
     this.setDimensions({ ...this.dims, height: this.dims.height - 1 });
+
+    return r;
   }
 
   createMap(dims, savedTiles) {
     this.tiles.clear();
 
+    // dims = {
+    //   width: (this.self.parentElement ? this.self.parentElement.getBoundingClientRect().width : window.innerWidth) / 32,
+    //   height: (this.self.parentElement ? this.self.parentElement.getBoundingClientRect().height : window.innerHeight) / 32,
+    // }
+
     this.setDimensions(dims);
-    console.log('dims', dims)
+
     for (let column = 0; column < dims.width; column++) {
       const colLength = this.columnHeaderGroup.children.length;
 
-      if (!(column < colLength)) {
-        this.insertHeader('column', column);
-      }
+      if (!(column < colLength)) this.insertHeader('column', column);
 
-      else if (column > colLength) {
-        this.insertHeader('column', column + colLength);
-      }
+      else if (column > colLength) this.insertHeader('column', column + colLength);
     }
 
     for (let row = 0; row < dims.height; row++) {
       const rowLength = this.rowHeaderGroup.children.length;
 
-      if (!(row < rowLength)) {
-        this.insertHeader('row', row);
-      }
-      else if (row > rowLength) {
-        this.insertHeader('row', row + rowLength);
-      }
+      if (!(row < rowLength)) this.insertHeader('row', row);
+
+      else if (row > rowLength) this.insertHeader('row', row + rowLength);
     }
 
     for (let row = 0; row < dims.height; row++) {
       for (let col = 0; col < dims.width; col++) {
         const st = savedTiles ? savedTiles.find(t => t.address == [row, col].toString()) : null;
 
-        if (st) {
-          this.insertTile(row, col, tileTypeCodes.get(st.type));
-        }
-        else {
-          this.insertTile(row, col, 'empty');
-        }
+        if (st) this.insertTile(row, col, tileTypeCodes.get(st.type));
+
+        else this.insertTile(row, col, 'empty');
       }
     }
+
+    setTimeout(() => {
+      this.getTile('0,0').dom.scrollIntoView(false);
+    }, 0)
   }
 
   getRange(start, end) {}
@@ -419,7 +431,9 @@ export class MapView {
   setDimensions(dims = {}) {
     const dimNames = ['width', 'height', 'unitSize', 'scale']
     const cleaned = Object.fromEntries(Object.entries(dims).filter(([k, v]) => dimNames.includes(k) && !!(+v)))
+    
     Object.assign(this.#dimensions, cleaned);
+    
     this.setGridTemplateSize();
   }
 
@@ -496,6 +510,7 @@ export class MapView {
 
   async append(...tiles) {
     if (!tiles) return;
+
     await this.self.append(...tiles);
 
     return this.self;
@@ -511,7 +526,8 @@ export class MapView {
     );
 
     console.timeEnd('RENDER');
-    return this.self
+
+    return this.self;
   }
 
   getTile(addressOrPosition) {

@@ -10,12 +10,17 @@
   /* border: 1px solid #FFFFFF; */
   overflow: hidden;
   transition: height  0.2s ;
+  will-change: height;
+  
+}
+.slide {
 }
 
 #grid-options > * {
   display: none;
   padding: 0 2px;
-  transition: padding  0.1s ;
+  transition: padding  0.1s;
+  will-change: padding;
   
 }
 

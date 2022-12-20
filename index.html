@@ -23,8 +23,8 @@
           <div id="header-center-top">Current map:</div>
           <div id="header-center-bottom">
             <h3>Mappy Mapper Man</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" style="transform-origin: center center" xmlns:xlink="http://www.w3.org/1999/xlink" class="expand-icon" width="16" height="16" viewBox="-4 -4 32 32">
-              <path d=" M 1.0249,6.3313 12.3386,17.645 M 22.9751,6.355 11.6614,17.6687" style="fill:none;stroke:#FFFFFF;stroke-width:4;stroke-opacity:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dashoffset:0;" />
+            <svg class="expand-icon" width="16" height="16" viewBox="-4 -4 32 32" xmlns="http://www.w3.org/2000/svg" style="transform-origin: center center;border:1px solid #FFFFFF00;" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <path d=" M 1,6 13.25,17.65 M 23,6.36 10.75,17.65" style="stroke:#FFFFFF99;stroke-width:4;" />
             </svg>
           </div>
         </div>
@@ -32,26 +32,11 @@
           <button class="app-button" id="menu-open">Menu</button>
         </div>
       </div>
-      <div id="map-options">
-        <div id="map-width-input" class="property-input">
-          <div id="map-width-input-label" class="property-input-label">WIDTH:</div>
-          <div id="map-width-input-label" class="property-input-input">64</div>
-        </div>
-        <div id="map-height-input" class="property-input">
-          <div id="map-width-input-label" class="property-input-label">HEIGHT:</div>
-          <div id="map-width-input-label" class="property-input-input">64</div>
-        </div>
-
-      </div>
+      <div id="map-options"></div>
     </header>
-    <section id="app-body">
-      <!-- <div id="map" class="initial-map gradient">
-        <div id="map-cols"></div>
-        <div id="map-body"></div>
-        <div id="map-rows"></div>
-        <div id="map-corn"></div>
-      </div> -->
-    </section>
+
+    <section id="app-body"></section>
+
     <footer id="app-footer">
       <div id="controls-label" class="label">Tiles</div>
       <div id="controls" class="container">
@@ -63,39 +48,31 @@
         <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
       </div>
     </footer>
+
     <div id="app-menu">
       <a id="app-menu-close">×</a>
-      <div class="app-menu-items">
-        <a class="app-menu-item" data-action="save" href="https://hamilsauce.github.io">Home</a>
-        <a class="app-menu-item" data-action="load" href="#">Go Here</a>
-        <a class="app-menu-item" data-action="" href="#">Go There</a>
-        <a class="app-menu-item" data-action="" href="#">Do this thing</a>
-      </div>
+      <div class="app-menu-items"></div>
     </div>
   </div>
 
   <script src="./main.js" type="module"></script>
 
-  <template id="cell-template">
-    <div class="cell" data-symbol="#" data-cell-type-id="0" data-cell-type-name="barrier" data-id="ctuv84hulg8skl8vc6au" data-has-character="false" data-row="0" data-column="0">
-      <div class="cell-content"></div>
+  <template id="tile-template">
+    <div class="tile" data-symbol="#" data-tile-type-id="0" data-tile-type-name="barrier" data-id="ctuv84hulg8skl8vc6au" data-has-character="false" data-row="0" data-column="0">
+      <div class="tile-content"></div>
     </div>
   </template>
 
   <template id="app-template">
     <main class="app">
       <div data-component-placeholder="app-header"></div>
-      <section id="app-body">
-        <div data-component-placeholder="view-frame"></div>
-      </section>
+      <div data-component-placeholder="app-body"></div>
+      <!-- <section id="app-body">
+      </section> -->
       <div data-component-placeholder="app-footer"></div>
     </main>
   </template>
 
-  <template id="view-frame-template">
-    <div id="view-frame"></div>
-  </template>
-  
   <template id="app-header-template">
     <header id="app-header">
       <div id="app-header-top">
@@ -103,8 +80,8 @@
           <div id="header-center-top">Current map:</div>
           <div id="header-center-bottom">
             <h3>Mappy Mapper Man</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" style="transform-origin: center center" xmlns:xlink="http://www.w3.org/1999/xlink" class="expand-icon" width="16" height="16" viewBox="-4 -4 32 32">
-              <path d=" M 1.0249,6.3313 12.3386,17.645 M 22.9751,6.355 11.6614,17.6687" style="fill:none;stroke:#FFFFFF;stroke-width:4;stroke-opacity:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dashoffset:0;" />
+            <svg class="expand-icon" width="16" height="16" viewBox="-4 -4 32 32" xmlns="http://www.w3.org/2000/svg" style="transform-origin: center center;border:1px solid #FFFFFF00;" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <path d=" M 1,6 13.25,17.65 M 23,6.36 10.75,17.65" style="stroke:#FFFFFF99;stroke-width:4;" />
             </svg>
           </div>
         </div>
@@ -112,47 +89,12 @@
           <button class="app-button" id="menu-open">Menu</button>
         </div>
       </div>
-      <div id="map-options">
-        <div id="map-width-input" class="property-input">
-          <div id="map-width-input-label" class="property-input-label">WIDTH:</div>
-          <div id="map-width-input-label" class="property-input-input">64</div>
-        </div>
-        <div id="map-height-input" class="property-input">
-          <div id="map-width-input-label" class="property-input-label">HEIGHT:</div>
-          <div id="map-width-input-label" class="property-input-input">64</div>
-        </div>
-      </div>
+      <div id="map-options"></div>
     </header>
-  </template>
-  <template id="app-footer-template">
-    <footer id="app-footer">
-      <div id="controls-label" class="label">Tiles</div>
-      <div id="controls" class="container">
-        <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
-        <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
-        <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
-        <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
-        <button class="app-button tile-selector" data-tile-type="start">Start</button>
-        <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
-      </div>
-    </footer>
   </template>
 
   <template id="grid-options-template">
-    <div id="grid-options">
-    </div>
-  </template>
-
-  <template id="app-menu-template">
-    <div id="app-menu">
-      <div id="app-menu-close">×</div>
-      <div id="app-menu-items">
-        <div class="app-menu-item" data-action="save" href="https://hamilsauce.github.io">Home</div>
-        <div class="app-menu-item" data-action="load" href="#">Go Here</div>
-        <div class="app-menu-item" data-action="" href="#">Go There</div>
-        <div class="app-menu-item" data-action="" href="#">Do this thing</div>
-      </div>
-    </div>
+    <div id="grid-options"></div>
   </template>
 
   <template id="grid-option-template">
@@ -162,12 +104,8 @@
     </div>
   </template>
 
-
-  <template id="property-input-template">
-    <div class="property-input" data-name="">
-      <label for="" class="property-label"></label>
-      <input class="property-input-input" type="text" name="" id="">
-    </div>
+  <template id="app-body-template">
+    <div id="app-body"></div>
   </template>
 
   <template id="map-template">
@@ -179,17 +117,10 @@
     </div>
   </template>
 
-  <template id="load-view-template">
-    <div id="load-view">
-      <div class="saved-map-list"></div>
-      <div class="load-view-bottom">
-        <button class="app-button cancel-button">Cancel</button>
-      </div>
-    </div>
-  </template>
-
-  <template id="map-list-item-template">
-    <div class="map-list-item app-button">
+  <template id="app-menu-template">
+    <div id="app-menu">
+      <div id="app-menu-close">×</div>
+      <div id="app-menu-items"></div>
     </div>
   </template>
 
@@ -206,6 +137,48 @@
         <button class="app-button cancel-button">Cancel</button>
       </section>
     </div>
+  </template>
+
+  <template id="load-view-template">
+    <div id="load-view">
+      <div class="load-view-top">
+        <h2 class="load-view-title">Maps</h2>
+      </div>
+      <div class="saved-map-list"></div>
+      <div class="load-view-bottom">
+        <button class="app-button cancel-button">Cancel</button>
+      </div>
+    </div>
+  </template>
+
+  <template id="map-list-item-template">
+    <div class="map-list-item app-button">
+      <div id="list-item-title">Slut</div>
+      <div id="list-item-actions">
+        <button id="list-item-action">DELETE</button>
+      </div>
+    </div>
+  </template>
+
+  <template id="property-input-template">
+    <div class="property-input" data-name="">
+      <label for="" class="property-label"></label>
+      <input class="property-input-input" type="text" name="" id="">
+    </div>
+  </template>
+
+  <template id="app-footer-template">
+    <footer id="app-footer">
+      <div id="controls-label" class="label">Tiles</div>
+      <div id="controls" class="container">
+        <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
+        <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
+        <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
+        <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
+        <button class="app-button tile-selector" data-tile-type="start">Start</button>
+        <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
+      </div>
+    </footer>
   </template>
 </body>
 

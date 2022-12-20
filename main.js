@@ -14,6 +14,7 @@ const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, 
 const { fromFetch } = rxjs.fetch;
 import { Application } from './Application.js';
 
+
 export class Vector {
   #x;
   #y;
@@ -25,7 +26,6 @@ export class Vector {
 
   get x() { return this.#x };
   get y() { return this.#y };
-  // set prop(v) { this.#prop = v };
 }
 
 const handleFileSelection = (e) => {
@@ -70,13 +70,13 @@ const ui = {
 
   setActiveView(name, options) {
     if (!name) return;
-   
+
     const viewHistoryHead = this.viewHistory[this.viewHistory.length - 1];
 
     ui.buttons.cancelButtons.forEach((b) => {
       b.removeEventListener('click', handleCancel);
     });
-    
+
     if (this.activeView && this.viewHistory.length > 0) {
       this.activeView.remove();
     }
@@ -122,7 +122,7 @@ ui.header.querySelector('#map-options').append(gridOptions)
 ui.app.append(appMenu.dom)
 
 ui.app.addEventListener('option:change', ({ detail }) => {
-  console.warn('option:change', detail)
+
   mapView.setDimensions({
     [detail.name]: detail.value
   })
@@ -136,8 +136,87 @@ appMenu.on('menu:save-map', e => {
   ui.setActiveView('save');
 });
 
+
+const buildLoadView = () => {
+  const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
+
+  ui.mapList.innerHTML = '';
+
+  Object.values(data.savedMaps)
+    .forEach((m, i) => {
+      const item = template('map-list-item');
+
+      item.dataset.mapKey = m.key;
+      item.textContent = m.mapName;
+      ui.mapList.append(item);
+
+      let dragPoints = []
+      let total = 0
+      item.addEventListener('contextmenu', e => {
+        item.dataset.armed = true
+        item.addEventListener('pointermove', e => {
+          const resetDrag = () => {
+            dragPoints = [];
+            total = 0;
+            item.style.transform = `translate(-${total}px,0px)`;
+            item.style.filter = 'hue-rotate(0deg) contrast(100%) brightness(100%)';
+            item.removeEventListener('pointerup', resetDrag);
+          };
+
+          dragPoints.push({
+            x: e.clientX,
+            y: e.clientY,
+          });
+
+          if (dragPoints.length > 1) {
+            const a = dragPoints[dragPoints.length - 2]
+            const b = dragPoints[dragPoints.length - 1]
+            const delta = Math.abs(b.x - a.x);
+
+            if (delta) {
+              total = total + delta
+              item.style.transform = `translate(-${total}px,0px)`
+            }
+            else item.style.transform = `translate(0,0)`
+
+            if (total > 100) {
+              item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)';
+            } else {
+              item.style.filter = 'hue-rotate(0deg) contrast(100%) brightness(100%)';
+            }
+          }
+          if (total > 100) {
+            deleteMap(item.dataset.mapKey)
+          }
+
+          item.addEventListener('pointerup', resetDrag);
+        });
+
+        item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)'
+      });
+    });
+}
+
+const deleteMap = (mapKey) => {
+  const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE;
+  console.log('data.savedMaps', data.savedMaps)
+  const map = data.savedMaps[mapKey];
+  delete data.savedMaps[mapKey];
+  console.log('key', mapKey);
+  console.log('DELETED data.savedMaps', data.savedMaps)
+  localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
+
+
+  buildLoadView()
+};
+
+
+
 appMenu.on('menu:load-map', e => {
   ui.setActiveView('load');
+  buildLoadView();
+  return
+
   ui.mapList.innerHTML = '';
 
   const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
@@ -148,6 +227,49 @@ appMenu.on('menu:load-map', e => {
     item.dataset.mapKey = m.key;
     item.textContent = m.mapName;
     ui.mapList.append(item);
+
+    let dragPoints = []
+    let total = 0
+
+    item.addEventListener('pointermove', e => {
+      const resetDrag = () => {
+        dragPoints = [];
+        total = 0;
+        item.dataset.armed = false
+        item.style.transform = `translate(-${total}px,0px)`;
+        item.style.filter = 'hue-rotate(0deg) contrast(100%) brightness(100%)';
+        item.removeEventListener('pointerup', resetDrag);
+      };
+
+      dragPoints.push({
+        x: e.clientX,
+        y: e.clientY,
+      });
+
+      if (dragPoints.length > 1) {
+        const a = dragPoints[dragPoints.length - 2]
+        const b = dragPoints[dragPoints.length - 1]
+        const delta = Math.abs(b.x - a.x);
+
+        if (delta) {
+          total = total + delta
+          item.style.transform = `translate(-${total}px,0px)`
+        }
+        else item.style.transform = `translate(0,0)`
+
+        if (total > 300 && item.dataset.armed == 'true') {
+          item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)';
+        } else {
+          item.style.filter = 'hue-rotate(0deg) contrast(100%) brightness(100%)';
+        }
+      }
+
+      item.addEventListener('pointerup', resetDrag);
+    });
+
+    item.addEventListener('contextmenu', e => {
+      item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)'
+    });
   });
 });
 
@@ -188,7 +310,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
   }
 
   ui.inputs.file.click();
- 
+
   ui.inputs.file.addEventListener('change', handleFileSelection);
 
   const map = localStorage.getItem('map-maker-save-1');
@@ -214,3 +336,24 @@ closeMenu.addEventListener('click', e => {
 ui.setActiveView('map', { message: 'called after render' })
 // const app = new Application('app');
 // const col0 = mapView.getColumn(0)
+
+
+const appBody = document.querySelector('#app-body')
+const mapBody = document.querySelector('#map-body')
+
+const scale = 32;
+
+const screen = {
+  width: mapBody.getBoundingClientRect().width,
+  height: mapBody.getBoundingClientRect().height,
+  // width: innerWidth,
+  // height: innerHeight,
+}
+
+const unit = {
+  width: screen.width / scale,
+  height: screen.height / scale,
+}
+
+console.warn('screen', screen)
+console.warn('unit', unit)

@@ -1,9 +1,9 @@
 import { View } from '../view.js';
 
-export class ViewFrame extends View {
+export class AppBody extends View {
   
   constructor(options) {
-    super('view-frame');
+    super('app-body');
     
     
   }
