@@ -257,17 +257,14 @@ export class MapView {
   //   // this.setGridTemplateSize()
   // }
 
-  // set unitSize(v) {
-  //   this.#dimensions.unitSize = v
-  //   // this.setGridTemplateSize()
-
-  // }
 
   insertHeader(type = 'column', value, before) {
     type = type.toLowerCase();
 
     const h = document.createElement('div');
-    h.classList.add('header')
+    
+    h.classList.add('header');
+   
     const group = this[`${type}HeaderGroup`];
 
     h.dataset.headerType = type;
@@ -280,15 +277,15 @@ export class MapView {
     else if (typeof before === 'number') { group.insertAdjacentElement(before, h); }
 
     else { group.insertBefore(h, before) }
+   
     if (type === 'row') {
       group.style.gridTemplateRows = `repeat(${ group.children.length}, ${this.unitSize}px)`;
     }
+    
     else if (type === 'column') {
       group.style.gridTemplateColumns = `repeat(${ group.children.length}, ${this.unitSize}px)`;
-
     }
-    // group.style.gridTemplateCos = `repeat(${ group.children.length}, ${this.unitSize}px)`;
-    // console.log('group.style.gridTemplateColumns', group.style.gridTemplateColumns)
+
     return h;
   }
 
@@ -390,7 +387,6 @@ export class MapView {
       else if (column > colLength) {
         this.insertHeader('column', column + colLength);
       }
-
     }
 
     for (let row = 0; row < dims.height; row++) {

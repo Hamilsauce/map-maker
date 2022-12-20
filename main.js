@@ -12,7 +12,7 @@ import { LOCALSTORAGE_KEY } from './lib/constants.js';
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
 const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
-
+import { Application } from './Application.js';
 
 export class Vector {
   #x;
@@ -28,22 +28,20 @@ export class Vector {
   // set prop(v) { this.#prop = v };
 }
 
-
 const handleFileSelection = (e) => {
   console.warn('handleFileSelection', { e });
   ui.inputs.file.addEventListener('change', handleFileSelection)
 };
 
 const handleCancel = () => {
-  // console.log('handl/ e cancel: this', this);
   ui.setActiveView(ui.viewHistory[ui.viewHistory.length - 1])
 }
 
 console.log(JSON.parse(localStorage.getItem('MAP_MAKER')))
+
 const mapModel = new MapModel();
 const mapView = new MapView();
 const appMenu = new AppMenu();
-
 
 const ui = {
   get activeView() { return this.views[this.viewHistory[this.viewHistory.length - 1]] },
@@ -72,13 +70,13 @@ const ui = {
 
   setActiveView(name, options) {
     if (!name) return;
-    console.log('options', options)
-    console.warn('this.activeView', { active: (this.activeView || {}).id })
+   
     const viewHistoryHead = this.viewHistory[this.viewHistory.length - 1];
 
-    // ui.buttons.cancelButtons.forEach((b) => {
-    //   b.removeEventListener('click', handleCancel);
-    // });
+    ui.buttons.cancelButtons.forEach((b) => {
+      b.removeEventListener('click', handleCancel);
+    });
+    
     if (this.activeView && this.viewHistory.length > 0) {
       this.activeView.remove();
     }
@@ -86,25 +84,21 @@ const ui = {
     if (name === viewHistoryHead) {
       this.viewHistory.pop();
     }
+
     else this.viewHistory.push(name);
 
-    console.log('name', name)
     const newViewHistoryHead = this.viewHistory[this.viewHistory.length - 1];
-    console.log('newViewHistoryHead', newViewHistoryHead)
+
     if ([undefined, null].includes(this.activeView)) return;
+
     this.body.append(this.activeView);
-    console.warn('this.activeView id', { active: (this.activeView || {}).id })
-    // console.warn('this.activeView', this.activeView)
 
     this.activeView.querySelectorAll('.cancel-button')
-      // ui.buttons.cancelButtons
       .forEach((b) => {
-        console.log('cancelButtons', b, handleCancel);
         b.addEventListener('click', handleCancel);
       });
 
-
-    if (name === 'save') {
+    if (newViewHistoryHead === 'save') {
       this.activeView.querySelector('#map-name-input').focus();
     }
   },
@@ -114,7 +108,6 @@ window.ui = ui
 
 const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
   .pipe(
-    // tap(e => e.preventDefault()),
     tap(e => e.stopPropagation()),
     map(e => e.target.closest('.tile-selector')),
     filter(b => b),
@@ -123,12 +116,9 @@ const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
 
 tileBrushSelectionEvents$.subscribe(selection => tileBrushStore.update(selection))
 
-// document.querySelector('#app-body').append(ui.activeView);
-
 ui.header.querySelector('#map-options').innerHTML = '';
 ui.header.querySelector('#map-options').append(gridOptions)
-// ui.header.querySelector('#app-header-right').innerHTML = '';
-// ui.header.querySelector('#app-header-right')
+
 ui.app.append(appMenu.dom)
 
 ui.app.addEventListener('option:change', ({ detail }) => {
@@ -138,78 +128,18 @@ ui.app.addEventListener('option:change', ({ detail }) => {
   })
 });
 
-
-
-let saveButtonState = null;
-let loadButtonState = null;
-
-
-
-// ui.buttons.save.addEventListener('click', e => {
-//   appMenu.open()
-//   return
-
-//   const jsonMap = mapView.saveMap();
-
-//   saveButtonState = saveButtonState === 'save' ? 'map' : 'save';
-//   ui.buttons.save.dataset.buttonState = saveButtonState;
-//   ui.buttons.save.textContent = saveButtonState;
-
-//   ui.setActiveView(saveButtonState);
-
-//   download('map-maker-save-1.json', jsonMap)
-// });
-// ui.buttons.load.addEventListener('click', e => {
-//   appMenu.open()
-//   return
-
-//   loadButtonState = loadButtonState === 'load' ? 'map' : 'load';
-//   ui.buttons.load.dataset.buttonState = loadButtonState;
-//   ui.buttons.load.textContent = loadButtonState;
-
-//   ui.setActiveView(loadButtonState);
-
-//   if (loadButtonState === 'load') {
-//     ui.mapList.innerHTML = '';
-//   }
-
-//   const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
-
-//   Object.values(data.savedMaps).forEach((m, i) => {
-//     const item = template('map-list-item');
-
-//     item.dataset.mapKey = m.key;
-//     item.textContent = m.mapName;
-//     ui.mapList.append(item);
-//   });
-// });
 ui.buttons.menuOpen.addEventListener('click', e => {
-  appMenu.open()
-  return
-
-  loadButtonState = loadButtonState === 'load' ? 'map' : 'load';
-  ui.buttons.load.dataset.buttonState = loadButtonState;
-  ui.buttons.load.textContent = loadButtonState;
-
-  ui.setActiveView(loadButtonState);
-
-  if (loadButtonState === 'load') {
-    ui.mapList.innerHTML = '';
-  }
-
-  console.warn('v ui.mapList data', data)
+  appMenu.open();
 });
 
 appMenu.on('menu:save-map', e => {
-  console.warn('HEARD SAVE IN APP');
   ui.setActiveView('save');
-
 });
 
 appMenu.on('menu:load-map', e => {
-  console.warn('HEARD LOAD IN APP');
   ui.setActiveView('load');
   ui.mapList.innerHTML = '';
+
   const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
 
   Object.values(data.savedMaps).forEach((m, i) => {
@@ -221,44 +151,26 @@ appMenu.on('menu:load-map', e => {
   });
 });
 
-
-
 ui.mapList.addEventListener('click', e => {
   const item = e.target.closest('.map-list-item');
-
-  // const map = localStorage.getItem(LOCALSTORAGE_KEY);
 
   if (item && item.dataset.mapKey) {
     const mapData = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) //|| DEFAULT_STATE;
     const map2 = mapData.savedMaps[item.dataset.mapKey];
 
-    console.warn('LOADED', { map2 });
-
     ui.setActiveView('map');
+
     mapView.loadMap(map2);
 
-    // loadButtonState = 'map';
-    console.warn('map', map2.mapName)
     ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
-
-    // ui.buttons.save.dataset.buttonState = loadButtonState;
-    // ui.buttons.save.textContent = loadButtonState;
   }
 });
-
-// ui.buttons.cancelButtons.forEach((b) => {
-//   b.addEventListener('click', e => {
-//     console.log('cancelButtons close')
-
-//   });
-// });
 
 ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
   const input = ui.views.save.querySelector('#map-name-input');
 
-  if (!input.value) {
-    prompt('Enter Name');
-  }
+  if (!input.value) prompt('Enter Name');
+
   else {
     const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
 
@@ -268,21 +180,22 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
       map.mapName = input.value;
       map.key = map.key ? map.key : 'm' + utils.uuid();
       data.savedMaps[map.key] = map;
-      console.warn('map', map)
+
       ui.setActiveView('map');
-    } else {}
+    }
 
     localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
   }
 
   ui.inputs.file.click();
+ 
   ui.inputs.file.addEventListener('change', handleFileSelection);
 
-  const map = localStorage.getItem('map-maker-save-1')
+  const map = localStorage.getItem('map-maker-save-1');
 
   if (map) {
-    const parsed = JSON.parse(map)
-    mapView.loadMap(parsed)
+    const parsed = JSON.parse(map);
+    mapView.loadMap(parsed);
   }
 });
 
@@ -299,7 +212,5 @@ closeMenu.addEventListener('click', e => {
 
 
 ui.setActiveView('map', { message: 'called after render' })
-
+// const app = new Application('app');
 // const col0 = mapView.getColumn(0)
-
-// console.log('col0', col0)
