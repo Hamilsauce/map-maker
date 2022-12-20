@@ -257,7 +257,7 @@ appMenu.on('menu:load-map', e => {
         }
         else item.style.transform = `translate(0,0)`
 
-        if (total > 300 && item.dataset.armed == 'true') {
+        if (total > 300 && item.dataset.armed == '') {
           item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)';
         } else {
           item.style.filter = 'hue-rotate(0deg) contrast(100%) brightness(100%)';
@@ -302,7 +302,8 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
       map.mapName = input.value;
       map.key = map.key ? map.key : 'm' + utils.uuid();
       data.savedMaps[map.key] = map;
-
+console.warn('data.savedMaps', Object.entries(data.savedMaps).length)
+console.log('data.savedMaps[mqy4929bxxw1glnte6f5', data.savedMaps['mqy4929bxxw1glnte6f5'])
       ui.setActiveView('map');
     }
 
