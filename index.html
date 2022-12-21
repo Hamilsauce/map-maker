@@ -13,6 +13,12 @@
   <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="./css/grid-options.css" />
   <link rel="stylesheet" href="./css/app-menu.css" />
+  <link rel="stylesheet" href="./css/map-view.css" />
+  <link rel="stylesheet" href="./css/app-header.css" />
+  <link rel="stylesheet" href="./css/app-footer.css" />
+  <link rel="stylesheet" href="./css/save-view.css" />
+  <link rel="stylesheet" href="./css/load-view.css" />
+  <link rel="stylesheet" href="./css/tile.css" />
 </head>
 
 <body>
@@ -46,14 +52,25 @@
     <section id="app-body"></section>
 
     <footer id="app-footer">
-      <div id="controls-label" class="label">Tiles</div>
-      <div id="controls" class="container">
-        <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
-        <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
-        <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
-        <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
-        <button class="app-button tile-selector" data-tile-type="start">Start</button>
-        <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
+
+      <div id="app-footer-top">
+        <div id="control-labels">
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+        </div>
+      </div>
+      <div id="app-footer-bottom">
+        <div id="controls" data-controls="tile-brushes" class="container">
+          <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
+          <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
+          <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
+          <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
+          <button class="app-button tile-selector" data-tile-type="start">Start</button>
+          <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
+        </div>
       </div>
     </footer>
 
@@ -176,17 +193,30 @@
   </template>
 
   <template id="app-footer-template">
-    <footer id="app-footer">
-      <div id="controls-label" class="label">Tiles</div>
-      <div id="controls" class="container">
-        <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
-        <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
-        <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
-        <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
-        <button class="app-button tile-selector" data-tile-type="start">Start</button>
-        <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
+   <footer id="app-footer">
+
+      <!-- <div id="control-label" class="label">Tiles</div> -->
+      <div id="app-footer-top">
+        <div id="control-labels">
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+          <div class="control-label" id="tile-brush-label">Tiles</div>
+        </div>
+      </div>
+      <div id="app-footer-bottom">
+        <div id="controls" data-controls="tile-brushes" class="container">
+          <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
+          <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
+          <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
+          <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
+          <button class="app-button tile-selector" data-tile-type="start">Start</button>
+          <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
+        </div>
       </div>
     </footer>
+
   </template>
 </body>
 

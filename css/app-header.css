@@ -1,0 +1,76 @@
+#app-header {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  padding: 8px;
+  overflow: hidden;
+  row-gap: 12px;
+}
+
+#app-header button {
+  top: 0;
+  padding: 4px;
+}
+
+#app-header-top {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 280px 1fr;
+  grid-template-columns: 1fr auto;
+  gap: 0px;
+  width: 100%;
+  height: fit-content;
+  padding: 0px 8px;
+  overflow: hidden;
+}
+
+#app-header-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2px;
+  font-size: 14px;
+}
+
+#app-header-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#header-center-top {
+  font-size: 13px;
+  color: var(--color-white0);
+}
+
+#header-center-top {
+  gap: 0px;
+  font-size: 13px;
+  color: var(--color-white0);
+}
+
+#header-center-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4px;
+  filter: invert(0%);
+  transition: 0.2s ease;
+}
+
+#header-center-bottom:active {
+  filter: invert(50%);
+}
+
+#header-center-bottom svg {
+  transform: rotate(0deg);
+  transition: 0.15s;
+}
+
+#header-center-bottom svg[data-expand=true] {
+  transform: rotate(-180deg);
+}

@@ -49,9 +49,8 @@ const appMenu = new AppMenu();
 // const ui = new Application('app');
 const ui = {
 
-  get map() { return mapView },
+  get mapView() { return mapView },
   get appMenu() { return appMenu },
-  // get appMenu() { return appMenu },
   get activeView() { return this.views[this.viewHistory[this.viewHistory.length - 1]] },
   get mapList() { return this.views.load.querySelector('.saved-map-list') },
   viewHistory: [],
@@ -130,7 +129,7 @@ ui.header.querySelector('#map-options').append(gridOptions)
 ui.app.append(ui.appMenu.dom)
 
 ui.app.addEventListener('option:change', ({ detail }) => {
-  mapView.setDimensions({
+  ui.mapView.setDimensions({
     [detail.name]: detail.value
   })
 });
@@ -233,7 +232,7 @@ ui.mapList.addEventListener('click', e => {
 
     ui.setActiveView('map');
 
-    mapView.loadMap(map2);
+    ui.mapView.loadMap(map2);
 
     ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
   }
@@ -248,7 +247,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
     const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
 
     if (data) {
-      const map = mapView.getMapState();
+      const map = ui.mapView.getMapState();
       map['tile'] = map.tiles;
       map.mapName = input.value;
       map.key = map.key ? map.key : 'm' + utils.uiid();
@@ -269,7 +268,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 
   if (map) {
     const parsed = JSON.parse(map);
-    mapView.loadMap(parsed);
+    ui.mapView.loadMap(parsed);
   }
 });
 

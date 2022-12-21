@@ -1,0 +1,90 @@
+#app-footer {
+  /* display: grid; */
+  /* grid-template-rows: 1fr; */
+  /* grid-template-columns: auto 1fr; */
+  gap: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  background: #191A2015;
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  z-index: 100;
+  overflow-x: scroll;
+}
+
+#app-footer-top {
+  /* display: grid; */
+  /* grid-template-rows: auto; */
+  /* grid-auto-columns: 1fr; */
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0px;
+
+  /* grid-auto-flow: dense; */
+  /* background: #191A2015; */
+  width: 100%;
+  height: 100%;
+  /* padding: 6px; */
+  z-index: 100;
+  overflow-x: scroll;
+}
+
+#control-labels {
+  /* display: grid; */
+  /* grid-template-rows: auto; */
+  /* grid-auto-columns: 1fr; */
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  column-gap: 8px;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  overflow-x: scroll;
+}
+
+.control-label {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 0px;
+  width: 100%;
+  height: 100%;
+  /* padding: 4px; */
+  font-size: 14px;
+  color: #EFEFEF90;
+}
+
+#app-footer-bottom {
+  display: flex;
+  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr;
+  gap: 0px;
+  background: #191A2015;
+  width: 100%;
+  height: 100%;
+  /* padding: 6px; */
+  z-index: 100;
+  overflow-x: scroll;
+}
+
+#controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 8px;
+  background: #191A2015;
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  /* padding: 4px; */
+}

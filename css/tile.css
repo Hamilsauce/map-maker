@@ -1,0 +1,45 @@
+
+.tile {
+  background: #FFFFFF;
+  border: 0.25px solid #37373750;
+  /* transition: 0.075s ease; */
+}
+
+.tile[data-selected=true] {
+  background: #FFFFFF;
+  border: 0.5px solid #FFB800;
+}
+
+.tile[data-deleting=true] {
+  background: #C51C1C;
+  border: 0.5px solid #FFB800;
+}
+
+.tile[data-tile-type=ground] {
+  background: #FFFFFF;
+  border: 0.25px solid #37373700;
+}
+
+.tile[data-tile-type=barrier] {
+  background: #5F5F5F;
+}
+
+.tile[data-tile-type=start] {
+  background: #B82C18;
+}
+
+.tile[data-tile-type=exit] {
+  background: #12CA27;
+}
+
+.tile:active {
+  border: 1.5px double #FFB800;
+
+  background: #FFEB0566;
+}
+
+.tile[data-deleting=true]:active {
+  border: 1.5px double #FFB800;
+
+  background: #DD2626;
+}
