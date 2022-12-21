@@ -68,6 +68,7 @@ const ui = {
     save: document.querySelector('#save-map'),
     load: document.querySelector('#load-map'),
     tileBrushes: document.querySelectorAll('#controls'),
+    toolLabels: document.querySelectorAll('.control-label'),
     cancelButtons: document.querySelectorAll('.cancel-button'),
   },
   inputs: {
@@ -277,6 +278,22 @@ ui.header.querySelector('#header-center-bottom')
     ui.header.querySelector('svg').dataset.expand = ui.header.querySelector('svg').dataset.expand === 'true' ? 'false' : 'true'
     gridOptions.dataset.show = gridOptions.dataset.show === 'true' ? 'false' : 'true';
   })
+
+
+ui.buttons.toolLabels.forEach((label, i) => {
+
+  label.addEventListener('click', e => {
+    const t = e.target.closest('.control-label');
+    if (!t) return;
+
+    ui.buttons.toolLabels.forEach((l) => {
+      if (t === l) return;
+      l.dataset.active = false;
+    })
+    t.dataset.active = true;
+  })
+
+});
 
 const closeMenu = document.querySelector('#app-menu-close')
 

@@ -31,6 +31,7 @@ body {
   overflow: hidden;
   background: #2E2F31;
   color: #EFEFEF;
+  padding: 1px;
 }
 
 #file-input {
@@ -64,6 +65,8 @@ body {
   width: 100%;
   overflow: auto;
   align-items: flex-start;
+  border-right: 1px solid #181A1B;
+  border-bottom: 1px solid #181A1B;
 }
 
 

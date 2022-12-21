@@ -54,15 +54,6 @@
     <footer id="app-footer">
 
       <div id="app-footer-top">
-        <div id="control-labels">
-          <div class="control-label" id="tile-brush-label">Tiles</div>
-          <div class="control-label" id="tile-brush-label">Tiles</div>
-          <div class="control-label" id="tile-brush-label">Tiles</div>
-          <div class="control-label" id="tile-brush-label">Tiles</div>
-          <div class="control-label" id="tile-brush-label">Tiles</div>
-        </div>
-      </div>
-      <div id="app-footer-bottom">
         <div id="controls" data-controls="tile-brushes" class="container">
           <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
           <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
@@ -70,6 +61,15 @@
           <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
           <button class="app-button tile-selector" data-tile-type="start">Start</button>
           <button class="app-button tile-selector" data-tile-type="delete">DELETE</button>
+        </div>
+      </div>
+      <div id="app-footer-bottom">
+        <div id="control-labels">
+          <div class="control-label" data-active="true" data-tool-group="tile" id="tile-brush-label">Tiles</div>
+          <div class="control-label" data-active="false" data-tool-group="tile" _id="label">Actors</div>
+          <div class="control-label" data-active="false" data-tool-group="tile" _id="label">Layers</div>
+          <div class="control-label" data-active="false" data-tool-group="tile" _id="label">Colors</div>
+          <div class="control-label" data-active="false" data-tool-group="tile" _id="label">Other</div>
         </div>
       </div>
     </footer>
@@ -193,7 +193,7 @@
   </template>
 
   <template id="app-footer-template">
-   <footer id="app-footer">
+    <footer id="app-footer">
 
       <!-- <div id="control-label" class="label">Tiles</div> -->
       <div id="app-footer-top">
