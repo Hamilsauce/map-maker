@@ -1,5 +1,8 @@
 :root {
   --color-white0: #CDCDCD;
+  --background-main: #2E2F31;
+  --background-main50: #2E2F3150;
+  --background-main25: #2E2F3125;
 }
 
 * {
@@ -29,7 +32,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #2E2F31;
+  background: var(--background-main);
   color: #EFEFEF;
   padding: 1px;
 }
@@ -96,11 +99,29 @@ body {
   border-radius: 3px;
   color: #EFEFEF;
   font-size: 18px;
-  padding: 4px 8px
+  padding: 4px 8px;
+  transition: 0.2s ease;
 }
 
-.app-button:active {
+/* .app-button:active {
   background: #3F415320;
+} */
+
+.app-button[data-active=true] {
+  /* background: #3F415320; */
+  filter: brightness(160%);
+  z-index: 1000;
+}
+
+.scroll-fader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  background-image: linear-gradient(to right, var(--background-main), #FFFFFF00 3.5%, #FFFFFF00 96.5%, var(--background-main) 100%);
 }
 
 .property-input {

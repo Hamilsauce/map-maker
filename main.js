@@ -119,6 +119,16 @@ const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
     tap(e => e.stopPropagation()),
     map(e => e.target.closest('.tile-selector')),
     filter(b => b),
+    tap(b => {
+      document.querySelectorAll('.tile-selector').forEach((el, i) => {
+        if (b !== el) {
+          el.dataset.active = false;
+        }
+
+        else el.dataset.active = true;
+
+      });
+    }),
     map(b => ({ activeBrush: b.dataset.tileType })),
   );
 
@@ -295,11 +305,10 @@ ui.buttons.toolLabels.forEach((label, i) => {
 
 });
 
-const closeMenu = document.querySelector('#app-menu-close')
-
-closeMenu.addEventListener('click', e => {
-  ui.menu.dataset.show = false;
-})
+// const closeMenu = document.querySelector('#app-menu-close')
+// closeMenu.addEventListener('click', e => {
+//   ui.menu.dataset.show = false;
+// })
 
 
 ui.setActiveView('map', { message: 'called after render' })

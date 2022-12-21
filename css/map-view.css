@@ -79,5 +79,5 @@
   left: 0;
   width: 24px;
   height: 24px;
-  background: #2E2F31;
+  background: var(--background-main);
 }

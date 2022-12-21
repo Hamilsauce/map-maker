@@ -54,8 +54,9 @@
     <footer id="app-footer">
 
       <div id="app-footer-top">
+      <div class="scroll-fader"></div>
         <div id="controls" data-controls="tile-brushes" class="container">
-          <button class="app-button tile-selector" data-tile-type="barrier">Barrier</button>
+          <button class="app-button tile-selector" data-active="true" data-tile-type="barrier">Barrier</button>
           <button class="app-button tile-selector" data-tile-type="ground">Ground</button>
           <button class="app-button tile-selector" data-tile-type="empty">Empty</button>
           <button class="app-button tile-selector" data-tile-type="exit">Exit</button>
@@ -64,6 +65,7 @@
         </div>
       </div>
       <div id="app-footer-bottom">
+        
         <div id="control-labels">
           <div class="control-label" data-active="true" data-tool-group="tile" id="tile-brush-label">Tiles</div>
           <div class="control-label" data-active="false" data-tool-group="tile" _id="label">Actors</div>
