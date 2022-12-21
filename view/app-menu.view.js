@@ -46,9 +46,10 @@ export class MenuItem {
   #path = String;
   #action = Action;
   #self;
+  
   constructor({ name, title, path, action }) {
     this.#self = document.createElement('div');
-    this.#self.classList.add('app-menu-item')
+    this.#self.classList.add('app-menu-item', 'app-button')
     this.title = title;
     this.#name = name;
     this.#path = path;

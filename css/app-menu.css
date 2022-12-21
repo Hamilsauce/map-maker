@@ -9,11 +9,12 @@
   grid-template-columns: 1fr;
   gap: 0px;
   color: #404648;
-  background-color: #F5FCFFE6;
+  background: #44474840;
   overflow-x: hidden;
   transition: 0.5s;
   z-index: 500;
-  backdrop-filter: brightness(90%) blur(4px);
+  backdrop-filter: invert(80%) brightness(200%) blur(5px);
+  filter: invert(100%) contrast(120%);
 }
 
 #app-menu * {
@@ -29,21 +30,25 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  gap: 0px;
+  grid-auto-flow: dense;
+  gap: 8px;
   margin-top: 30px;
+  padding: 32px;
   text-align: center;
 }
 
 .app-menu-item {
   padding: 8px;
   text-decoration: none;
-  font-size: 2em;
+  font-size: 18px;
   font-weight: 500;
-  color: rgba(25, 36, 46, 0.842);
+  /* color: rgba(25, 36, 46, 0.842); */
   display: block;
   transition: 0.2s;
   width: 100%;
   opacity: 0.3;
+  width: 100%;
+  height: fit-content;
 }
 
 .app-menu-item:hover,

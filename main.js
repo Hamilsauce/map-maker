@@ -42,11 +42,16 @@ const handleCancel = () => {
 
 console.log(JSON.parse(localStorage.getItem('MAP_MAKER')))
 
-const mapModel = new MapModel();
+// const mapModel = new MapModel();
 const mapView = new MapView();
 const appMenu = new AppMenu();
 
+// const ui = new Application('app');
 const ui = {
+
+  get map() { return mapView },
+  get appMenu() { return appMenu },
+  // get appMenu() { return appMenu },
   get activeView() { return this.views[this.viewHistory[this.viewHistory.length - 1]] },
   get mapList() { return this.views.load.querySelector('.saved-map-list') },
   viewHistory: [],
@@ -122,20 +127,19 @@ tileBrushSelectionEvents$.subscribe(selection => tileBrushStore.update(selection
 ui.header.querySelector('#map-options').innerHTML = '';
 ui.header.querySelector('#map-options').append(gridOptions)
 
-ui.app.append(appMenu.dom)
+ui.app.append(ui.appMenu.dom)
 
 ui.app.addEventListener('option:change', ({ detail }) => {
-
   mapView.setDimensions({
     [detail.name]: detail.value
   })
 });
 
 ui.buttons.menuOpen.addEventListener('click', e => {
-  appMenu.open();
+  ui.appMenu.open();
 });
 
-appMenu.on('menu:save-map', e => {
+ui.appMenu.on('menu:save-map', e => {
   ui.setActiveView('save');
 });
 
@@ -215,65 +219,9 @@ const deleteMap = (mapKey) => {
 
 
 
-appMenu.on('menu:load-map', e => {
+ui.appMenu.on('menu:load-map', e => {
   ui.setActiveView('load');
   buildLoadView();
-  return
-
-  ui.mapList.innerHTML = '';
-
-  const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
-
-  Object.values(data.savedMaps).forEach((m, i) => {
-    const item = template('map-list-item');
-
-    item.dataset.mapKey = m.key;
-    item.textContent = m.mapName;
-    ui.mapList.append(item);
-
-    let dragPoints = []
-    let total = 0
-
-    item.addEventListener('pointermove', e => {
-      const resetDrag = () => {
-        dragPoints = [];
-        total = 0;
-        item.dataset.armed = false
-        item.style.transform = `translate(-${total}px,0px)`;
-        item.style.filter = 'hue-rotate(0deg) contrast(100%) brightness(100%)';
-        item.removeEventListener('pointerup', resetDrag);
-      };
-
-      dragPoints.push({
-        x: e.clientX,
-        y: e.clientY,
-      });
-
-      if (dragPoints.length > 1) {
-        const a = dragPoints[dragPoints.length - 2]
-        const b = dragPoints[dragPoints.length - 1]
-        const delta = Math.abs(b.x - a.x);
-
-        if (delta) {
-          total = total + delta
-          item.style.transform = `translate(-${total}px,0px)`
-        }
-        else item.style.transform = `translate(0,0)`
-
-        if (total > 300 && item.dataset.armed == '') {
-          item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)';
-        } else {
-          item.style.filter = 'hue-rotate(0deg) contrast(100%) brightness(100%)';
-        }
-      }
-
-      item.addEventListener('pointerup', resetDrag);
-    });
-
-    item.addEventListener('contextmenu', e => {
-      item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)'
-    });
-  });
 });
 
 ui.mapList.addEventListener('click', e => {
@@ -303,7 +251,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
       const map = mapView.getMapState();
       map['tile'] = map.tiles;
       map.mapName = input.value;
-      map.key = map.key ? map.key : 'm' + utils.uuid();
+      map.key = map.key ? map.key : 'm' + utils.uiid();
       data.savedMaps[map.key] = map;
       console.warn('data.savedMaps', Object.entries(data.savedMaps).length)
       console.log('data.savedMaps[mqy4929bxxw1glnte6f5', data.savedMaps['mqy4929bxxw1glnte6f5'])
@@ -332,13 +280,13 @@ ui.header.querySelector('#header-center-bottom')
   })
 
 const closeMenu = document.querySelector('#app-menu-close')
+
 closeMenu.addEventListener('click', e => {
   ui.menu.dataset.show = false;
 })
 
 
 ui.setActiveView('map', { message: 'called after render' })
-// const app = new Application('app');
 
 
 const appBody = document.querySelector('#app-body')
@@ -346,17 +294,15 @@ const mapBody = document.querySelector('#map-body')
 
 const scale = 32;
 
-const screen = {
-  width: mapBody.getBoundingClientRect().width,
-  height: mapBody.getBoundingClientRect().height,
-  // width: innerWidth,
-  // height: innerHeight,
-}
-
-const unit = {
-  width: screen.width / scale,
-  height: screen.height / scale,
-}
-
-console.warn('screen', screen)
-console.warn('unit', unit)
+// const screen = {
+//   width: ui.map.body.dom.getBoundingClientRect().width,
+//   height: ui.map.body.dom.getBoundingClientRect().height,
+//   // width: innerWidth,
+//   // height: innerHeight,
+// }
+// const unit = {
+//   width: screen.width / scale,
+//   height: screen.height / scale,
+// }
+// console.warn('screen', screen)
+// console.warn('unit', unit)
