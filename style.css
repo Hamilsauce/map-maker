@@ -1,3 +1,7 @@
+:root {
+  --color-white0: #CDCDCD;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -98,7 +102,7 @@ body {
 
 #header-center-top {
   font-size: 13px;
-  color: #CDCDCD;
+  color: var(--color-white0);
 }
 
 #header-center-top {
@@ -108,7 +112,7 @@ body {
   /* align-items: center; */
   gap: 0px;
   font-size: 13px;
-  color: #CDCDCD;
+  color: var(--color-white0);
 }
 
 #header-center-bottom {
@@ -142,13 +146,13 @@ body {
   grid-template-rows: 1fr;
   grid-template-columns: 1fr;
   gap: 0;
-    grid-auto-flow: dense;
-    justify-content: flex-start;
+  grid-auto-flow: dense;
+  justify-content: flex-start;
   width: 100%;
   height: 100%;
   overflow: auto;
-    align-items: flex-start;
-  
+  align-items: flex-start;
+
 }
 
 
@@ -158,10 +162,10 @@ body {
   grid-template-areas:
     "corn cols"
     "rows body";
-    justify-items: stretch;
-    justify-content: flex-start;
-    align-items: flex-start;
-    grid-auto-flow: dense;
+  justify-items: stretch;
+  justify-content: flex-start;
+  align-items: flex-start;
+  grid-auto-flow: dense;
   /* width: 100%; */
   /* height: 100%; */
   touch-action: manipulation;

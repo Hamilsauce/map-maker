@@ -56,7 +56,7 @@ export class MapView {
 
     this.tiles = new Map();
     // dims = { ...dims, ...getMapSize(this.body) }
-    
+
     this.setDimensions(dims ? dims : DEFAULT_MAP_DIMENSIONS);
 
     const dragTargets = {
@@ -211,18 +211,18 @@ export class MapView {
     return tile;
   }
 
+  insertTile(row, column, tileType) {
+    const tile = this.createTile(row, column, tileType);
+
+    return this.tiles.set(tile.address, tile).get(tile.address);
+  }
+
   removeTile(addressOrPosition, tileType) {
     const tile = this.getTile(addressOrPosition)
 
     if (tile) tile.remove(({ address }) => this.tiles.delete(address))
 
     return tile;
-  }
-
-  insertTile(row, column, tileType) {
-    const tile = this.createTile(row, column, tileType);
-
-    return this.tiles.set(tile.address, tile).get(tile.address);
   }
 
   getColumn(column, callback) {

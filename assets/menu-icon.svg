@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- Created with PainterSVG V3.92 -->
+
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="bars">
+    <path id="top" d=" M 3.4903,17.0672 28.5097,17.0672 28.5097,21.1694 3.4903,21.1694 3.4903,17.0672 Z" transform="matrix(1,0,0,1,0,-3.1182)" />
+    <path id="middle" d=" M 3.4903,13.9489 28.5097,13.9489 28.5097,18.0511 3.4903,18.0511 3.4903,13.9489 Z" transform="matrix(1,0,0,-1,-0,22.6454)" />
+    <g id="bottom" transform="matrix(1,0,0,1,-0,9.3546)">
+      <path d=" M 3.4903,13.9489 28.5097,13.9489 28.5097,18.0511 3.4903,18.0511 3.4903,13.9489 Z" />
+    </g>
+  </g>
+</svg>
