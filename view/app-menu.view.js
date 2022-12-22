@@ -4,6 +4,7 @@ import { View } from './view.js';
 
 const { template } = ham;
 
+
 export class Action {
   #type = String;
   #payload = Object;
@@ -21,6 +22,38 @@ export class Action {
   get payload() { return this.#payload || null };
 }
 
+export class MenuItem {
+  #name = String;
+  #title = String;
+  #path = String;
+  #action = Action;
+  #self;
+
+  constructor({ name, title, path, action }) {
+    this.#self = document.createElement('div');
+    this.#self.classList.add('app-menu-item', 'app-button')
+    this.title = title;
+    this.#name = name;
+    this.#path = path;
+    this.action = action;
+  }
+
+
+  get dom() { return this.#self };
+
+  get name() { return this.#name };
+
+  get title() { return this.#self.textContent };
+
+  set title(v) { this.#self.textContent = v };
+
+  get action() { return this.#action };
+
+  set action(v) {
+    this.#action = v
+    this.#self.dataset.action = v.type;
+  };
+}
 
 
 const DEFAULT_MENU_OPTIONS = {
@@ -40,47 +73,6 @@ const DEFAULT_MENU_OPTIONS = {
   ]
 }
 
-export class MenuItem {
-  #name = String;
-  #title = String;
-  #path = String;
-  #action = Action;
-  #self;
-  
-  constructor({ name, title, path, action }) {
-    this.#self = document.createElement('div');
-    this.#self.classList.add('app-menu-item', 'app-button')
-    this.title = title;
-    this.#name = name;
-    this.#path = path;
-    this.action = action;
-
-    // this.#self.dataset.action = config.item.action.type;
-    // this.#self.textContent = config.item.title;
-  }
-
-
-  get dom() { return this.#self };
-
-  get name() { return this.#name };
-
-  // set name(v) { this.#self.dataset = v };
-
-  get title() { return this.#self.textContent };
-
-  set title(v) { this.#self.textContent = v };
-
-  // get path() { return this.#self };
-
-  // set path(v) { this.#self.dataset = v };
-
-  get action() { return this.#action };
-
-  set action(v) {
-    this.#action = v
-    this.#self.dataset.action = v.type;
-  };
-}
 
 export class AppMenu extends View {
   #items = new Map();
@@ -146,6 +138,4 @@ export class AppMenu extends View {
   toggle() {
     this.self.dataset.show = this.self.dataset.show === 'true' ? false : true;
   }
-
-
 };

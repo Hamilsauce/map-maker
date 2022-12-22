@@ -11,7 +11,7 @@
   color: #404648;
   background: #44474830;
   overflow-x: hidden;
-  transition: 0.5s;
+  transition: 0.3s;
   z-index: 500;
   backdrop-filter: invert(90%) brightness(200%) blur(2.5px);
   filter: invert(100%) contrast(120%);

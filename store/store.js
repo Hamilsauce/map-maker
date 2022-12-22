@@ -1,5 +1,5 @@
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
-const { distinctUntilChanged, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
+const { shareReplay, distinctUntilChanged, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 
 export const assign = () => {
@@ -26,6 +26,7 @@ export class Store {
       .pipe(
         filter(_ => _),
         this.#assign(),
+        shareReplay(1)
       );
   }
 
@@ -39,6 +40,8 @@ export class Store {
         map(x => key ? x[key] : x),
         distinctUntilChanged(),
         tap(x => console.log(`[ STORE<${this.#name}> ]: selection$`, x)),
+        shareReplay({ refCount: true, bufferSize: 1 }),
+    
       );
 
     return !!this.#pipeline ? this.#pipeline(selection$) : selection$
@@ -50,6 +53,7 @@ export class Store {
     return this.#state$.pipe(
       map(x => key ? x[key] : x),
       distinctUntilChanged(),
+      shareReplay({ refCount: true, bufferSize: 1 })
     );
   }
 

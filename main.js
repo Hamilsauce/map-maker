@@ -1,4 +1,5 @@
 import { tileBrushStore } from './store/tile-brush.store.js';
+import { toolGroupStore } from './store/tool-group.store.js';
 import { MapView } from './view/map.view.js';
 import { MapModel } from './store/map.model.js';
 import { getStream } from './view/tile-view-updates.stream.js';
@@ -9,11 +10,16 @@ import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { DEFAULT_STATE } from './store/StateModel.js';
 const { download, template, utils } = ham;
 import { LOCALSTORAGE_KEY } from './lib/constants.js';
+
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
-const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
+const { distinctUntilChanged, shareReplay,flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 import { Application } from './Application.js';
 
+import { AppFooter, AppHeader, AppBody } from './view/app-components/index.js';
+
+// const afoot = new AppFooter()
+// console.log('afoot', afoot)
 
 export class Vector {
   #x;
@@ -68,7 +74,7 @@ const ui = {
     save: document.querySelector('#save-map'),
     load: document.querySelector('#load-map'),
     tileBrushes: document.querySelectorAll('#controls'),
-    toolLabels: document.querySelectorAll('.control-label'),
+    toolLabels: document.querySelectorAll('.tool-label'),
     cancelButtons: document.querySelectorAll('.cancel-button'),
   },
   inputs: {
@@ -130,9 +136,43 @@ const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
       });
     }),
     map(b => ({ activeBrush: b.dataset.tileType })),
+        distinctUntilChanged(),
+    
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+  
+  
+
+const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click')
+  .pipe(
+    tap(e => e.stopPropagation()),
+    map(e => e.target.closest('.tool-label')),
+    // filter(b => b),
+    tap(x => console.log('toolGroupSelectionEvents$', x.dataset.toolGroup)),
+    tap(b => {
+      document.querySelectorAll('.tool-label').forEach((el, i) => {
+        if (b !== el) {
+          el.dataset.active = false;
+        }
+
+        else el.dataset.active = true;
+
+      });
+    }),
+    map(b => ({ activeToolGroup: b.dataset.toolGroup })),
   );
 
+toolGroupSelectionEvents$.subscribe(selection => toolGroupStore.update(selection))
 tileBrushSelectionEvents$.subscribe(selection => tileBrushStore.update(selection))
+
+
+const activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' }).pipe(
+  // tap((activeToolGroup) => this.activeToolGroup = activeToolGroup),
+  tap(x => console.warn('[ACTIVE TOOL GROUP IN APP]', x)),
+  shareReplay({ refCount: true, bufferSize: 1 })
+)
+activeToolGroup$.subscribe();
+
 
 ui.header.querySelector('#map-options').innerHTML = '';
 ui.header.querySelector('#map-options').append(gridOptions)
@@ -290,35 +330,27 @@ ui.header.querySelector('#header-center-bottom')
   })
 
 
-ui.buttons.toolLabels.forEach((label, i) => {
+// ui.buttons.toolLabels.forEach((label, i) => {
+//   label.addEventListener('click', e => {
+//     const t = e.target.closest('.tool-label');
+//     if (!t) return;
 
-  label.addEventListener('click', e => {
-    const t = e.target.closest('.control-label');
-    if (!t) return;
+//     ui.buttons.toolLabels.forEach((l) => {
+//       if (t === l) return;
+//       l.dataset.active = false;
+//     })
+//     t.dataset.active = true;
+//   })
 
-    ui.buttons.toolLabels.forEach((l) => {
-      if (t === l) return;
-      l.dataset.active = false;
-    })
-    t.dataset.active = true;
-  })
-
-});
-
-// const closeMenu = document.querySelector('#app-menu-close')
-// closeMenu.addEventListener('click', e => {
-//   ui.menu.dataset.show = false;
-// })
-
+// });
 
 ui.setActiveView('map', { message: 'called after render' })
 
 
-const appBody = document.querySelector('#app-body')
-const mapBody = document.querySelector('#map-body')
+// const appBody = document.querySelector('#app-body')
+// const mapBody = document.querySelector('#map-body')
 
-const scale = 32;
-
+// const scale = 32;
 // const screen = {
 //   width: ui.map.body.dom.getBoundingClientRect().width,
 //   height: ui.map.body.dom.getBoundingClientRect().height,

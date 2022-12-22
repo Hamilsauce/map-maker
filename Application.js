@@ -1,4 +1,4 @@
-import { tileBrushStore } from './store/tile-brush.store.js';
+import { toolGroupStore } from './store/tool-group.store.js';
 import { MapView } from './view/map.view.js';
 import { MapModel } from './store/map.model.js';
 import { getStream } from './view/tile-view-updates.stream.js';
@@ -61,6 +61,13 @@ export class Application extends EventEmitter {
 
       el.parentElement.insertBefore(comp.dom, el.remove());
     });
+
+
+    this.activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' }).pipe(
+      tap((activeToolGroup) => this.activeToolGroup = activeToolGroup),
+      tap(x => console.log('[ACTIVE TOOL GROUP IN APP]', x)),
+    ).subscribe();
+
   }
 
   get self() { return this.#self }

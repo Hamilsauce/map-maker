@@ -1,4 +1,6 @@
 export const StateModel = {
+  activeMapKey: 'DEFAULT_MAP',
+  get map() { return this.savedMaps[this.activeMapKey] },
   savedMaps: {
     DEFAULT_MAP: {
       key: 'map-maker-save-1',
