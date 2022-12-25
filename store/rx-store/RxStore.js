@@ -18,11 +18,10 @@ export function deepFreeze(inObj) {
       !Object.isFrozen(inObj[prop])) {
       deepFreeze(inObj[prop]);
     }
-    
+
   });
   return inObj;
 }
-
 
 const todos$ = this.select(state => state.todos)
   .pipe(

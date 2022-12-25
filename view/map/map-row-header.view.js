@@ -1,21 +1,15 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-import { View } from '../view.js';
-
+// import { View } from '../view.js';
+import { MapSection, MapSectionNames } from './map-section.js';
 // const { template } = ham;
 
-export const MapSectionNames = {
-  body: 'map-body',
-  rowHeader: 'map-rows',
-  columnHeader: 'map-cols',
-  corner: 'map-corn',
-}
 
-export class MapSection extends View {
+export class MapSection extends MapSection {
   #tiles = new Map();
   #sectionName = null;
 
-  constructor(sectionName, options) {
-    super('map-section');
+  constructor(options) {
+    super(MapSectionNames.rowHeader);
 
     this.#sectionName = sectionName;
 

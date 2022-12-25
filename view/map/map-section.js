@@ -1,21 +1,47 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-// import { EventEmitter } from 'https://hamilsauce.github.io/event-emitter.js';
 import { View } from '../view.js';
 
-// const { template } = ham;
+const { template } = ham;
 
+export const MapSectionNames = {
+  body: 'map-body',
+  rowHeader: 'map-rows',
+  columnHeader: 'map-cols',
+  corner: 'map-corn',
+}
+
+
+
+/*
+  Map Section
+  
+  A collection of tiles with a grid width and height
+  
+  @PARAM SectionType/SectionName
+  
+  @PARAM ...
+
+  @INPUT mapDimensions$: Observable<Dimensions>
+  
+  @OUTPUT tileClick$: Observable<Event<HeaderClick>>
+  
+*/
+
+const MapSectionOptions = {
+  input: null,
+}
 
 export class MapSection extends View {
-  #items = new Map();
+  #tiles = new Map();
   #sectionName = null;
 
-  constructor(sectionName, options) {
+  constructor(sectionName, options = MapSectionOptions) {
     super('map-section');
     
     this.#sectionName = sectionName;
-    
-    if (options && options.items) {
-      this.init(options.items);
+
+    if (options && options.tiles) {
+      this.init(options.tiles);
     }
 
     this.closeButton.addEventListener('click', e => {
@@ -29,25 +55,25 @@ export class MapSection extends View {
 
   get closeButton() { return this.selectDOM('#app-menu-close') };
 
-  get items() { return this.selectDOM('#app-menu-items') };
+  get tiles() { return this.selectDOM('#app-menu-tiles') };
 
-  init(items) {
-    this.items.innerHTML = ''
+  init(tiles) {
+    this.tiles.innerHTML = ''
     this.close()
-    this.items.append(...items.map(this.createItem.bind(this)))
+    this.tiles.append(...tiles.map(this.createItem.bind(this)))
 
     this.self.addEventListener('click', this.handleItemClick.bind(this));
   }
 
   createItem(config) {
     const itm = new MenuItem(config);
-    this.#items.set(itm.dom, itm);
+    this.#tiles.set(itm.dom, itm);
     return itm.dom;
   }
 
   handleItemClick(e) {
     const targ = e.target.closest('.app-menu-item');
-    const item = this.#items.get(targ);
+    const item = this.#tiles.get(targ);
 
     if (item) {
       this.emit('menu:' + item.action.type, item.action)
@@ -56,7 +82,7 @@ export class MapSection extends View {
 
   }
 
-  #handleCloseClick(items) {
+  #handleCloseClick(tiles) {
     this.close()
   }
 

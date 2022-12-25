@@ -12,7 +12,7 @@ const { download, template, utils } = ham;
 import { LOCALSTORAGE_KEY } from './lib/constants.js';
 
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
-const { distinctUntilChanged, shareReplay,flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
+const { distinctUntilChanged, shareReplay, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 import { Application } from './Application.js';
 
@@ -37,16 +37,15 @@ export class Vector {
 
 const handleFileSelection = (e) => {
   console.warn('handleFileSelection', { e });
-  ui.inputs.file.addEventListener('change', handleFileSelection)
+  ui.inputs.file.addEventListener('change', handleFileSelection);
 };
 
 
-
 const handleCancel = () => {
-  ui.setActiveView(ui.viewHistory[ui.viewHistory.length - 1])
+  ui.setActiveView(ui.viewHistory[ui.viewHistory.length - 1]);
 }
 
-console.log(JSON.parse(localStorage.getItem('MAP_MAKER')))
+console.log(JSON.parse(localStorage.getItem('MAP_MAKER')));
 
 // const mapModel = new MapModel();
 const mapView = new MapView();
@@ -54,7 +53,6 @@ const appMenu = new AppMenu();
 
 // const ui = new Application('app');
 const ui = {
-
   get mapView() { return mapView },
   get appMenu() { return appMenu },
   get activeView() { return this.views[this.viewHistory[this.viewHistory.length - 1]] },
@@ -81,7 +79,6 @@ const ui = {
     file: document.querySelector('#file-input'),
   },
   handleCancel: handleCancel.bind(this),
-
   setActiveView(name, options) {
     if (!name) return;
 
@@ -127,27 +124,21 @@ const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
     filter(b => b),
     tap(b => {
       document.querySelectorAll('.tile-selector').forEach((el, i) => {
-        if (b !== el) {
-          el.dataset.active = false;
-        }
-
+        if (b !== el) el.dataset.active = false;
         else el.dataset.active = true;
-
       });
     }),
     map(b => ({ activeBrush: b.dataset.tileType })),
-        distinctUntilChanged(),
-    
-    shareReplay({ refCount: true, bufferSize: 1 })
+    distinctUntilChanged(),
+    shareReplay({ refCount: true, bufferSize: 1 }),
   );
-  
-  
+
 
 const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click')
   .pipe(
     tap(e => e.stopPropagation()),
     map(e => e.target.closest('.tool-label')),
-    // filter(b => b),
+    filter(b => b),
     tap(x => console.log('toolGroupSelectionEvents$', x.dataset.toolGroup)),
     tap(b => {
       document.querySelectorAll('.tool-label').forEach((el, i) => {
@@ -163,26 +154,28 @@ const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click')
   );
 
 toolGroupSelectionEvents$.subscribe(selection => toolGroupStore.update(selection))
+
 tileBrushSelectionEvents$.subscribe(selection => tileBrushStore.update(selection))
 
+const activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' })
+  .pipe(
+    // tap((activeToolGroup) => this.activeToolGroup = activeToolGroup),
+    tap(x => console.warn('[ACTIVE TOOL GROUP IN APP]', x)),
+    shareReplay({ refCount: true, bufferSize: 1 }),
+  );
 
-const activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' }).pipe(
-  // tap((activeToolGroup) => this.activeToolGroup = activeToolGroup),
-  tap(x => console.warn('[ACTIVE TOOL GROUP IN APP]', x)),
-  shareReplay({ refCount: true, bufferSize: 1 })
-)
 activeToolGroup$.subscribe();
 
 
 ui.header.querySelector('#map-options').innerHTML = '';
-ui.header.querySelector('#map-options').append(gridOptions)
+ui.header.querySelector('#map-options').append(gridOptions);
 
-ui.app.append(ui.appMenu.dom)
+ui.app.append(ui.appMenu.dom);
 
 ui.app.addEventListener('option:change', ({ detail }) => {
   ui.mapView.setDimensions({
     [detail.name]: detail.value
-  })
+  });
 });
 
 ui.buttons.menuOpen.addEventListener('click', e => {
@@ -195,7 +188,7 @@ ui.appMenu.on('menu:save-map', e => {
 
 
 const buildLoadView = () => {
-  const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
+  const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE;
 
   ui.mapList.innerHTML = '';
 
@@ -204,13 +197,18 @@ const buildLoadView = () => {
       const item = template('map-list-item');
 
       item.dataset.mapKey = m.key;
+
       item.textContent = m.mapName;
+
       ui.mapList.append(item);
 
-      let dragPoints = []
-      let total = 0
+      let dragPoints = [];
+
+      let total = 0;
+
       item.addEventListener('contextmenu', e => {
-        item.dataset.armed = true
+        item.dataset.armed = true;
+
         item.addEventListener('pointermove', e => {
           const resetDrag = () => {
             dragPoints = [];
@@ -226,15 +224,15 @@ const buildLoadView = () => {
           });
 
           if (dragPoints.length > 1) {
-            const a = dragPoints[dragPoints.length - 2]
-            const b = dragPoints[dragPoints.length - 1]
+            const a = dragPoints[dragPoints.length - 2];
+            const b = dragPoints[dragPoints.length - 1];
             const delta = Math.abs(b.x - a.x);
 
             if (delta) {
-              total = total + delta
-              item.style.transform = `translate(-${total}px,0px)`
+              total = total + delta;
+              item.style.transform = `translate(-${total}px,0px)`;
             }
-            else item.style.transform = `translate(0,0)`
+            else item.style.transform = `translate(0,0)`;
 
             if (total > 100) {
               item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)';
@@ -243,36 +241,33 @@ const buildLoadView = () => {
             }
           }
           if (total > 100) {
-            deleteMap(item.dataset.mapKey)
+            deleteMap(item.dataset.mapKey);
           }
 
           item.addEventListener('pointerup', resetDrag);
         });
 
-        item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)'
+        item.style.filter = 'hue-rotate(120deg) contrast(150%) brightness(200%)';
       });
     });
 }
 
+
 const deleteMap = (mapKey) => {
   const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE;
-  console.log('data.savedMaps', data.savedMaps)
   const map = data.savedMaps[mapKey];
   delete data.savedMaps[mapKey];
-  console.log('key', mapKey);
-  console.log('DELETED data.savedMaps', data.savedMaps)
   localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
 
-
-  buildLoadView()
+  buildLoadView();
 };
-
 
 
 ui.appMenu.on('menu:load-map', e => {
   ui.setActiveView('load');
   buildLoadView();
 });
+
 
 ui.mapList.addEventListener('click', e => {
   const item = e.target.closest('.map-list-item');
@@ -299,12 +294,12 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 
     if (data) {
       const map = ui.mapView.getMapState();
+
       map['tile'] = map.tiles;
       map.mapName = input.value;
       map.key = map.key ? map.key : 'm' + utils.uiid();
       data.savedMaps[map.key] = map;
-      console.warn('data.savedMaps', Object.entries(data.savedMaps).length)
-      console.log('data.savedMaps[mqy4929bxxw1glnte6f5', data.savedMaps['mqy4929bxxw1glnte6f5'])
+
       ui.setActiveView('map');
     }
 
@@ -325,9 +320,11 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 
 ui.header.querySelector('#header-center-bottom')
   .addEventListener('click', e => {
-    ui.header.querySelector('svg').dataset.expand = ui.header.querySelector('svg').dataset.expand === 'true' ? 'false' : 'true'
+    ui.header.querySelector('svg').dataset.expand = ui.header.querySelector('svg').dataset.expand === 'true' ? 'false' : 'true';
     gridOptions.dataset.show = gridOptions.dataset.show === 'true' ? 'false' : 'true';
   })
+
+ui.setActiveView('map', { message: 'called after render' })
 
 
 // ui.buttons.toolLabels.forEach((label, i) => {
@@ -343,9 +340,6 @@ ui.header.querySelector('#header-center-bottom')
 //   })
 
 // });
-
-ui.setActiveView('map', { message: 'called after render' })
-
 
 // const appBody = document.querySelector('#app-body')
 // const mapBody = document.querySelector('#map-body')
