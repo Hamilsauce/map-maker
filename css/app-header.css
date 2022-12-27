@@ -67,10 +67,14 @@
 }
 
 #header-center-bottom svg {
-  transform: rotate(0deg);
+  transform: rotate(-180deg);
   transition: 0.15s;
+  border-top: 1px solid transparent;
+  border: 1px solid #E3E3E3;
 }
 
 #header-center-bottom svg[data-expand=true] {
-  transform: rotate(-180deg);
+  transform: rotate(0deg);
+  border-top: 1px solid #E3E3E391;
+  border: 1px solid #E3E3E3;
 }

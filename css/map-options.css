@@ -1,53 +1,29 @@
-/* #map-options {
-  position: sticky;
-  top: 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 4px;
-  width: 100%;
-  height: 0px;
-  padding: 0 4px 0 16px;
-  border: 1px solid #FFFFFF;
-  transition: height 0.2s;
-  will-change: height;
-
-} */
-
 #map-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 1fr;
-  gap: 8px;
+  gap: 4px;
   width: 100%;
   height: 0px;
-  padding: 0 4px 0 16px;
-  transition: height 0.2s;
-  will-change: height;
-}
-
-#map-options[data-show=false] >* {
-  display: none;
-  padding: 0 2px;
-  transition: padding 0.1s;
-  will-change: padding;
+  padding: 0 0px 0 16px;
+  justify-content: flex-start;
+  transition: 0.2s;
+  will-change: height, padding;
+  border-top: 1px solid transparent;
 }
 
 #map-options[data-show=true] {
   height: 30px;
-  padding: 2px 4px 2px 16px;
-
+  padding: 6px 0px 2px 16px;
+  border-top: 1px solid #E3E3E3A3;
 }
 
-#map-options[data-show=true]>* {
-  display: flex;
-  padding: 2px 2px;
-
+#map-options[data-show=false] {
+  transition-delay: 0.2s;
 }
 
 #map-options * {
-  user-select: text;
+  user-select: all;
 }
 
 .map-option {
@@ -55,23 +31,24 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  align-self: center;
   gap: 8px;
-  width: fit-content;
-  background: #47494B;
+  width: max-content;
   padding: 2px 2px;
-  transition: 0.2s;
+  height: 24px;
+  background: #47494B;
+  transition: height 0.15s, padding 0.2s;
+  overflow: hidden;
+  will-change: height, padding;
 }
 
-.map-option {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  background: #47494B;
-  padding: 2px 2px;
-  transition: 0.2s;
+#map-options[data-show=true] .map-option {
+  transition-delay: 0.15s;
+}
+
+#map-options[data-show=false] .map-option {
+  height: 0px;
+  padding: 0 2px;
 }
 
 .map-option:hover {
