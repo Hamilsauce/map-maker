@@ -12,14 +12,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.3.0/rxjs.umd.min.js" integrity="sha512-y3JTS47nnpKORJX8Jn1Rlm+QgRIIZHtu3hWxal0e81avPrqUH48yk+aCi+gprT0RMAcpYa0WCkapxe+bpBHD6g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link rel="stylesheet" href="./style.css" />
   <!-- <link rel="stylesheet" href="./css/grid-options.css" /> -->
-  <link rel="stylesheet" href="./css/map-options.css" />
-  <link rel="stylesheet" href="./css/app-menu.css" />
-  <link rel="stylesheet" href="./css/map-view.css" />
-  <link rel="stylesheet" href="./css/app-header.css" />
-  <link rel="stylesheet" href="./css/app-footer.css" />
-  <link rel="stylesheet" href="./css/save-view.css" />
-  <link rel="stylesheet" href="./css/load-view.css" />
-  <link rel="stylesheet" href="./css/tile.css" />
+  <!-- <link rel="stylesheet" href="./css/app-menu.css" /> -->
+  <!-- <link rel="stylesheet" href="./css/map-view.css" /> -->
+  <!-- <link rel="stylesheet" href="./css/app-header.css" /> -->
+  <!-- <link rel="stylesheet" href="./css/app-footer.css" /> -->
+  <!-- <link rel="stylesheet" href="./css/save-view.css" /> -->
+  <!-- <link rel="stylesheet" href="./css/load-view.css" /> -->
+  <!-- <link rel="stylesheet" href="./css/tile.css" /> -->
 </head>
 
 <body>
@@ -47,7 +46,7 @@
           <!-- <button class="app-button" id="menu-open">Menu</button> -->
         </div>
       </div>
-      <div id="map-options-container"></div>
+      <div id="map-options"></div>
     </header>
 
     <section id="app-body"></section>
@@ -117,20 +116,8 @@
           <button class="app-button" id="menu-open">Menu</button>
         </div>
       </div>
-      <div id="map-options-container"></div>
+      <div id="map-options"></div>
     </header>
-  </template>
-
-
-  <template id="map-options-template">
-    <div id="map-options" data-show="true"></div>
-  </template>
-
-  <template id="map-option-template">
-    <div id="" class="control-group map-option">
-      <label for="height-input">height</label>
-      <input type="number" name="height-input" id="height-input" value="50" />
-    </div>
   </template>
 
   <template id="grid-options-template">
@@ -149,22 +136,13 @@
   </template>
 
   <template id="map-template">
-    <div id="map" class="map template-map gradient"></div>
-  </template>
-
-  <template id="map-section-template">
-    <div id="" class="map-section" data-map-section="" data-map-section-type=""></div>
-  </template>
-
-
-  <!-- <template id="map-template">
     <div id="map" class="map template-map gradient">
       <div id="map-cols"></div>
       <div id="map-body"></div>
       <div id="map-rows"></div>
       <div id="map-corn"></div>
     </div>
-  </template> -->
+  </template>
 
   <template id="app-menu-template">
     <div id="app-menu">

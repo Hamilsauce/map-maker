@@ -1,4 +1,4 @@
-import { Model } from '../lib/model.js';
+import { Model } from '../../lib/model.js';
 
 export const TileInterface = {
   tileType: String,

@@ -1,6 +1,6 @@
-import { Model } from '../lib/model.js';
+import { Model } from '../../lib/model.js';
 import { TileModel } from './tile.model.js';
-import { tileTypeCodes } from './tile-type-codes.js';
+import { tileTypeCodes } from '../tile-type-codes.js';
 
 /*
   REQUIREMENTS

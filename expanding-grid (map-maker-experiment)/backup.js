@@ -1,26 +1,22 @@
 import { tileBrushStore } from './store/tile-brush.store.js';
 import { toolGroupStore } from './store/tool-group.store.js';
-import { MapView } from './view/rx-map.view.js';
-import { MapModel } from './store/models/map.model.js';
-// import { getStream } from './view/tile-view-updates.stream.js';
-// import { gridOptions } from './view/grid-options.view.js';
-import { initMapOptions } from './view/map-options.view.js';
+import { MapView } from './view/map.view.js';
+import { MapModel } from './store/map.model.js';
+import { getStream } from './view/tile-view-updates.stream.js';
+// import { MapLoader } from '../lib/map-loader.js';
+import { gridOptions } from './view/grid-options.view.js';
 import { AppMenu } from './view/app-menu.view.js';
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-import { DEFAULT_STATE } from './store/models/StateModel.js';
+import { DEFAULT_STATE } from './store/StateModel.js';
 const { download, template, utils } = ham;
 import { LOCALSTORAGE_KEY } from './lib/constants.js';
-import { MapConverter } from './lib/map-converter.js';
 
-
-
-const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
+const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
 const { distinctUntilChanged, shareReplay, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
+import { Application } from './Application.js';
 
-// import { Application } from './Application.js';
-
-// import { AppFooter, AppHeader, AppBody } from './view/app-components/index.js';
+import { AppFooter, AppHeader, AppBody } from './view/app-components/index.js';
 
 // const afoot = new AppFooter()
 // console.log('afoot', afoot)
@@ -54,7 +50,6 @@ console.log(JSON.parse(localStorage.getItem('MAP_MAKER')));
 // const mapModel = new MapModel();
 const mapView = new MapView();
 const appMenu = new AppMenu();
-const mapConverter = new MapConverter();
 
 // const ui = new Application('app');
 const ui = {
@@ -67,11 +62,10 @@ const ui = {
   body: document.querySelector('#app-body'),
   header: document.querySelector('#app-header'),
   menu: document.querySelector('#app-menu'),
-  get mapOptions(){ return this.header.querySelector('#map-options')},
   views: {
     save: template('save-view'),
     load: template('load-view'),
-    map: mapView.init(),
+    map: mapView.render(),
   },
   buttons: {
     menuOpen: document.querySelector('#menu-open'),
@@ -173,11 +167,8 @@ const activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' })
 activeToolGroup$.subscribe();
 
 
-ui.header.querySelector('#map-options-container').innerHTML = '';
-// mapOptionsValues$
-
-// ui.header.querySelector('#map-options').append(gridOptions);
-const unsubscribeMapOptions = initMapOptions(ui.header.querySelector('#map-options-container'))
+ui.header.querySelector('#map-options').innerHTML = '';
+ui.header.querySelector('#map-options').append(gridOptions);
 
 ui.app.append(ui.appMenu.dom);
 
@@ -288,8 +279,7 @@ ui.mapList.addEventListener('click', e => {
     ui.setActiveView('map');
 
     ui.mapView.loadMap(map2);
-    const convertedMap = mapConverter.mapToStringRows(map2)
-    console.warn('convertedMap', convertedMap)
+
     ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
   }
 });
@@ -331,7 +321,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 ui.header.querySelector('#header-center-bottom')
   .addEventListener('click', e => {
     ui.header.querySelector('svg').dataset.expand = ui.header.querySelector('svg').dataset.expand === 'true' ? 'false' : 'true';
-    ui.mapOptions.dataset.show = ui.mapOptions.dataset.show === 'true' ? 'false' : 'true';
+    gridOptions.dataset.show = gridOptions.dataset.show === 'true' ? 'false' : 'true';
   })
 
 ui.setActiveView('map', { message: 'called after render' })

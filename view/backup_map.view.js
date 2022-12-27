@@ -1,3 +1,4 @@
+
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { tileBrushStore } from '../store/tile-brush.store.js';
 import { tileTypeCodes } from '../store/tile-type-codes.js';
@@ -6,9 +7,6 @@ import { TileTypes } from '../lib/constants.js';
 import { TileView } from '../view/tile.view.js';
 import { push } from './tile-view-updates.stream.js';
 import { getClicks$ } from '../lib/get-click-events.js';
-import { View } from './view2.js';
-
-
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
 const { debounceTime, buffer, bufferCount, flatMap, takeUntil, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
@@ -41,62 +39,7 @@ const getMapSize = (mapEl) => {
   return unit;
 };
 
-
-
-const MapViewOptions = {
-  templateName: 'map',
-  elementProperties: {
-    id: 'map',
-    classList: ['gradient'],
-  },
-  children: []
-}
-
-const MapSectionOptions = [
-  {
-    templateName: 'map-section',
-    elementProperties: {
-      id: 'map-body',
-      dataset: {
-        mapSection: 'body',
-        mapSectionType: 'body',
-      },
-    },
-  },
-  {
-    templateName: 'map-section',
-    elementProperties: {
-      id: 'map-rows',
-      dataset: {
-        mapSection: 'rows',
-        mapSectionType: 'header',
-      },
-    },
-  },
-  {
-    templateName: 'map-section',
-    elementProperties: {
-      id: 'map-cols',
-      dataset: {
-        mapSection: 'columns',
-        mapSectionType: 'header',
-      },
-    },
-  },
-  {
-    templateName: 'map-section',
-    elementProperties: {
-      id: 'map-corn',
-      dataset: {
-        mapSection: 'corner',
-        mapSectionType: 'corner',
-      },
-    }
-  }
-];
-
-
-export class MapView extends View {
+export class MapView {
   #selector;
   #dimensions = {
     width: 0,
@@ -104,14 +47,10 @@ export class MapView extends View {
     unitSize: 32,
     scale: 32,
   }
-  
-  #dimensions$;
-  #sections = new Map();
 
   constructor(selector, dims) {
-    super('map', MapViewOptions);
-    
     this.#selector = selector;
+    this.self = template('map');
     this.rangeFillStart = null;
     this.saveMap = this.#saveMap.bind(this);
     this.loadMap = this.#loadMap.bind(this);
@@ -162,8 +101,6 @@ export class MapView extends View {
     this.tileEventSubject$ = new Subject()
 
     this.createMap(this.dims, null);
-    
-    this.init(MapSectionOptions);
   }
 
   get body() { return this.self.querySelector('#map-body') }
@@ -237,16 +174,6 @@ export class MapView extends View {
   //   // this.setGridTemplateSize()
   // }
 
-  init(sectionOptions = []) {
-    sectionOptions.forEach((opts, i) => {
-      this.#sections.set(
-        opts.elementProperties.dataset.mapSection,
-        new MapSection(opts.elementProperties.dataset.mapSection, this.#dimensions$, opts)
-      );
-    });
-
-    this.self.append(...[...this.#sections.values()].map(_ => _.self))
-  }
 
 
   insertHeader(type = 'column', value, before) {

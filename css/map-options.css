@@ -1,0 +1,109 @@
+/* #map-options {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 0px;
+  padding: 0 4px 0 16px;
+  border: 1px solid #FFFFFF;
+  transition: height 0.2s;
+  will-change: height;
+
+} */
+
+#map-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr;
+  gap: 8px;
+  width: 100%;
+  height: 0px;
+  padding: 0 4px 0 16px;
+  transition: height 0.2s;
+  will-change: height;
+}
+
+#map-options[data-show=false] >* {
+  display: none;
+  padding: 0 2px;
+  transition: padding 0.1s;
+  will-change: padding;
+}
+
+#map-options[data-show=true] {
+  height: 30px;
+  padding: 2px 4px 2px 16px;
+
+}
+
+#map-options[data-show=true]>* {
+  display: flex;
+  padding: 2px 2px;
+
+}
+
+#map-options * {
+  user-select: text;
+}
+
+.map-option {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  background: #47494B;
+  padding: 2px 2px;
+  transition: 0.2s;
+}
+
+.map-option {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  background: #47494B;
+  padding: 2px 2px;
+  transition: 0.2s;
+}
+
+.map-option:hover {
+  outline: 1px solid orange;
+}
+
+.map-option label {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0px;
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0 2px;
+}
+
+.map-option input {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0px;
+  width: 32px;
+
+  font-size: 13px;
+  font-weight: 600;
+  padding: 1px 4px;
+  background: none;
+  border: none;
+  color: #DFDFDF;
+  text-align: right;
+  outline: none;
+}
