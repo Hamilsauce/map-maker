@@ -49,6 +49,7 @@ class BhsStore extends BehaviorSubject {
   next = (newValue) => {
     if (typeof newValue != 'object') return;
     super.next(newValue)
+    // this.update(newValue)
   }
   
   update = (newValue) => {

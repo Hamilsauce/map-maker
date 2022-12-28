@@ -1,5 +1,4 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-import { EventEmitter } from 'https://hamilsauce.github.io/hamhelper/event-emitter.js';
 import { View } from '../view2.js';
 import { TileView } from '../tile.view.js';
 const { template } = ham;
@@ -30,10 +29,11 @@ export class MapSection extends View {
   width = 0;
   scale = 30;
   #sectionName = null;
-
+  #sectionType = 'null';
   constructor(sectionName, dimensions$, options) {
     super('map-section', options);
 
+    this.#sectionType = options.elementProperties.dataset.mapSectionType;
     this.#sectionName = sectionName;
     this.dimensions$ = dimensions$;
 
@@ -47,9 +47,12 @@ export class MapSection extends View {
     this.#clickHandler = this.#handleClick.bind(this);
 
     this.self.addEventListener('click', this.#clickHandler);
+    console.warn('MAP SECTION THIS', this)
   }
 
   get sectionName() { return this.#sectionName }
+  
+  get sectionType() { return this.#sectionType }
 
   get tiles() { return [...this.querySelectorAll('.tile')] }
 
@@ -68,15 +71,16 @@ export class MapSection extends View {
   set height(v) { return this.#sectionName }
 
   createTile(id, type = 'empty') {
+    type = this.sectionType === 'header' ? 'header' : type;
     const t = document.createElement('div');
     const t2 = TileView.create({ address: id, tileType: type })
 
-    t.classList.add('tile');
-    t.dataset.id = id;
-    t.id = id;
-    t.textContent = this.#sectionName.includes('body') ? '' : id;
+    // t.classList.add('tile');
+    // t.dataset.id = id;
+    // t.id = id;
+    // t.textContent = this.#sectionName.includes('body') ? '' : id;
 
-    return t;
+    return t2;
   }
 
   updateDimensions({ height, width, scale }) {
@@ -86,7 +90,7 @@ export class MapSection extends View {
       this.self.innerHTML = '';
       const diff = height - this.height;
 
-      const tiles = new Array(height).fill(null).map((_, i) => this.createTile(i));
+      const tiles = new Array(height).fill(null).map((_, i) => this.createTile(i).dom);
       this.self.append(...tiles);
 
       this.height = height;
@@ -98,7 +102,7 @@ export class MapSection extends View {
       this.self.innerHTML = '';
       const diff = width - this.width;
 
-      const tiles = new Array(width).fill(null).map((_, i) => this.createTile(i));
+      const tiles = new Array(width).fill(null).map((_, i) => this.createTile(i).dom);
       this.self.append(...tiles);
       this.width = width;
 
@@ -113,7 +117,7 @@ export class MapSection extends View {
       for (let row = 0; row < height; row++) {
         for (let col = 0; col < width; col++) {
           // tiles.push(this.createTile(`${row}_${col}`))
-          tiles.push(this.createTile([row, col].toString()))
+          tiles.push(this.createTile([row, col].toString()).dom)
         }
       }
 

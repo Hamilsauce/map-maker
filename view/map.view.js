@@ -15,6 +15,7 @@ const { fromFetch } = rxjs.fetch;
 
 const { download, template, date, array, utils, text, event } = ham;
 
+
 export const DEFAULT_MAP_DIMENSIONS = {
   width: 32,
   height: 32,
