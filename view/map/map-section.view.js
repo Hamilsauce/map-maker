@@ -1,9 +1,9 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { EventEmitter } from 'https://hamilsauce.github.io/hamhelper/event-emitter.js';
 import { View } from '../view2.js';
-
+import { TileView } from '../tile.view.js';
 const { template } = ham;
-const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of , fromEvent, merge, empty, delay, from } = rxjs;
+const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
 const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 
@@ -67,8 +67,9 @@ export class MapSection extends View {
 
   set height(v) { return this.#sectionName }
 
-  createTile(id) {
+  createTile(id, type = 'empty') {
     const t = document.createElement('div');
+    const t2 = TileView.create({ address: id, tileType: type })
 
     t.classList.add('tile');
     t.dataset.id = id;
@@ -111,7 +112,8 @@ export class MapSection extends View {
 
       for (let row = 0; row < height; row++) {
         for (let col = 0; col < width; col++) {
-          tiles.push(this.createTile(`${row}_${col}`))
+          // tiles.push(this.createTile(`${row}_${col}`))
+          tiles.push(this.createTile([row, col].toString()))
         }
       }
 

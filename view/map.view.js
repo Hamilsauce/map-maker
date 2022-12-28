@@ -485,7 +485,7 @@ export class MapView extends View {
     return null;
   }
 
-  parseTileAddress(tile) {
+  parseAddress(tile) {
     if (!(!!tile)) return;
 
     return tile.dataset.address.split(',').map(_ => +_);
