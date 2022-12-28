@@ -22,6 +22,7 @@ Init
 
 export class MapSection extends View {
   #self;
+  #tiles = new Map();
   #clickHandler;
   dimensions$;
   #scale;
@@ -30,9 +31,9 @@ export class MapSection extends View {
   scale = 30;
   #sectionName = null;
   #sectionType = 'null';
+
   constructor(sectionName, dimensions$, options) {
     super('map-section', options);
-
     this.#sectionType = options.elementProperties.dataset.mapSectionType;
     this.#sectionName = sectionName;
     this.dimensions$ = dimensions$;
@@ -47,11 +48,11 @@ export class MapSection extends View {
     this.#clickHandler = this.#handleClick.bind(this);
 
     this.self.addEventListener('click', this.#clickHandler);
-    console.warn('MAP SECTION THIS', this)
+    // console.warn('MAP SECTION THIS', this)
   }
 
   get sectionName() { return this.#sectionName }
-  
+
   get sectionType() { return this.#sectionType }
 
   get tiles() { return [...this.querySelectorAll('.tile')] }
@@ -72,15 +73,25 @@ export class MapSection extends View {
 
   createTile(id, type = 'empty') {
     type = this.sectionType === 'header' ? 'header' : type;
-    const t = document.createElement('div');
     const t2 = TileView.create({ address: id, tileType: type })
 
-    // t.classList.add('tile');
-    // t.dataset.id = id;
-    // t.id = id;
-    // t.textContent = this.#sectionName.includes('body') ? '' : id;
-
     return t2;
+  }
+
+  loadTiles(tiles = []) {
+    for (let row = 0; row < dims.height; row++) {
+      for (let col = 0; col < dims.width; col++) {
+        const st = savedTiles ? savedTiles.find(t => t.address == [row, col].toString()) : null;
+
+        if (st) this.insertTile(row, col, tileTypeCodes.get(st.type));
+
+        else this.insertTile(row, col, 'empty');
+      }
+    }
+
+    setTimeout(() => {
+      this.getTile('0,0').dom.scrollIntoView(false);
+    }, 0)
   }
 
   updateDimensions({ height, width, scale }) {

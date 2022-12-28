@@ -21,11 +21,9 @@ export const toolGroupStore = new Store('toolgroup', {
   pipeline: (state$) => {
     return state$.pipe(
       startWith(DEFAULT_TOOL_GROUP),
-      tap(x => console.log('toolgroup [/store/tool-group.store.js]: ', x)),
       filter(_ => _),
       distinctUntilChanged(),
       filter(([a, b]) => (a && b) && a !== b),
-      tap(x => console.warn('AFTER FILTER toolgroup [/store/tool-group.store.js]: ', x)),
     )
   }
 });

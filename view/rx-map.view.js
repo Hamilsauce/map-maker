@@ -1,5 +1,7 @@
 import { View } from './view2.js';
 import { MapSection } from './map/map-section.view.js';
+import { MapBody } from './map/map-body.view.js';
+import { MapHeader } from './map/map-header.view.js';
 import { getStore } from '../store/rx-store.js';
 import { tileBrushStore } from '../store/tile-brush.store.js';
 import { getClicks$ } from '../lib/get-click-events.js';
@@ -100,7 +102,6 @@ export class MapView extends View {
         this.clickStreams$.click$.pipe(
           map(([first, second]) => first),
           filter(e => e.target.closest('.tile')),
-        tap(x => console.warn('clickStreams$ CLICK4$', x)),
           map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
           // map(this.handleTileClick.bind(this)),
           tap(push),
@@ -112,7 +113,6 @@ export class MapView extends View {
           // tap(t => this.handleTileLongPress.bind(this)(t)),
         ))
       .pipe(
-        // map(x => x),
         tap(x => console.warn('clickStreams$ IN RX MAP', x))
       )
       .subscribe()
@@ -121,9 +121,6 @@ export class MapView extends View {
     this.activeBrush$ = tileBrushStore.select({ key: 'activeBrush' }).pipe(
       tap((activeBrush) => this.activeBrush = activeBrush),
     ).subscribe();
-
-    // console.log('this.self', { self: this.sel })
-
   }
 
   get body() { return this.#sections.get('body') }

@@ -25,7 +25,7 @@ export const tileBrushStore = new Store('tilebrush', {
       filter(([a, b]) => (a && b) && a !== b),
       // map(([a, b]) => b),
 
-      tap(x => console.warn('AFTER FILTER tileBrushStore [/store/tile-brush.store.js]: ', x)),
+      // tap(x => console.warn('AFTER FILTER tileBrushStore [/store/tile-brush.store.js]: ', x)),
       shareReplay({ refCount: true, bufferSize: 1 })
     )
   }

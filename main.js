@@ -49,7 +49,7 @@ const handleCancel = () => {
   ui.setActiveView(ui.viewHistory[ui.viewHistory.length - 1]);
 }
 
-console.log(JSON.parse(localStorage.getItem('MAP_MAKER')));
+// console.log(JSON.parse(localStorage.getItem('MAP_MAKER')));
 
 // const mapModel = new MapModel();
 const mapView = new MapView();
@@ -67,7 +67,7 @@ const ui = {
   body: document.querySelector('#app-body'),
   header: document.querySelector('#app-header'),
   menu: document.querySelector('#app-menu'),
-  get mapOptions(){ return this.header.querySelector('#map-options')},
+  get mapOptions() { return this.header.querySelector('#map-options') },
   views: {
     save: template('save-view'),
     load: template('load-view'),
@@ -145,7 +145,7 @@ const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click')
     tap(e => e.stopPropagation()),
     map(e => e.target.closest('.tool-label')),
     filter(b => b),
-    tap(x => console.log('toolGroupSelectionEvents$', x.dataset.toolGroup)),
+    // tap(x => console.log('toolGroupSelectionEvents$', x.dataset.toolGroup)),
     tap(b => {
       document.querySelectorAll('.tool-label').forEach((el, i) => {
         if (b !== el) {
@@ -166,7 +166,7 @@ tileBrushSelectionEvents$.subscribe(selection => tileBrushStore.update(selection
 const activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' })
   .pipe(
     // tap((activeToolGroup) => this.activeToolGroup = activeToolGroup),
-    tap(x => console.warn('[ACTIVE TOOL GROUP IN APP]', x)),
+    // tap(x => console.warn('[ACTIVE TOOL GROUP IN APP]', x)),
     shareReplay({ refCount: true, bufferSize: 1 }),
   );
 
@@ -289,7 +289,7 @@ ui.mapList.addEventListener('click', e => {
 
     ui.mapView.loadMap(map2);
     const convertedMap = mapConverter.mapToStringRows(map2)
-    console.warn('convertedMap', convertedMap)
+    // console.warn('convertedMap', convertedMap)
     ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
   }
 });
