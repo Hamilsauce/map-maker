@@ -51,7 +51,7 @@ const handleCancel = () => {
 
 // console.log(JSON.parse(localStorage.getItem('MAP_MAKER')));
 
-// const mapModel = new MapModel();
+const mapModel = new MapModel();
 const mapView = new MapView();
 const appMenu = new AppMenu();
 const mapConverter = new MapConverter();
