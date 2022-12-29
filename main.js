@@ -267,7 +267,7 @@ const deleteMap = (mapKey) => {
   const map = data.savedMaps[mapKey];
   delete data.savedMaps[mapKey];
   localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
-
+qq
   buildLoadView();
 };
 
@@ -301,11 +301,11 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 
   else {
     const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
-
+    
     if (data) {
       const map = ui.mapView.getMapState();
 
-      map['tile'] = map.tiles;
+      map['tiles'] = map.tiles;
       map.mapName = input.value;
       map.key = map.key ? map.key : 'm' + utils.uiid();
       data.savedMaps[map.key] = map;

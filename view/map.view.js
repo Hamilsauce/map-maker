@@ -105,13 +105,13 @@ export class MapView extends View {
     unitSize: 32,
     scale: 32,
   }
-  
+
   #dimensions$;
   #sections = new Map();
 
   constructor(selector, dims) {
     super('map', MapViewOptions);
-    
+
     this.#selector = selector;
     this.rangeFillStart = null;
     this.saveMap = this.#saveMap.bind(this);
@@ -163,7 +163,7 @@ export class MapView extends View {
     this.tileEventSubject$ = new Subject()
 
     this.createMap(this.dims, null);
-    
+
     this.init(MapSectionOptions);
   }
 
@@ -444,12 +444,14 @@ export class MapView extends View {
     const tiles = [...this.self.querySelectorAll('.tile')]
 
     return {
+      key: this.key ? this.key : 'untitled',
       dims: this.dims,
       tiles: tiles
         .filter((t, i) => t.dataset.tileType != 'empty')
-        .map((t, i) => {
-          return { address: t.dataset.address, type: tileTypeCodes.get(t.dataset.tileType) }
-        }),
+        .map((t, i) => ({
+          address: t.dataset.address,
+          type: tileTypeCodes.get(t.dataset.tileType)
+        })),
     }
   }
 
