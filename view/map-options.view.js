@@ -1,14 +1,14 @@
 // import { MapView } from './js/rx-map.view.js';
-import { getStore } from '../store/rx-store.js';
+import { getMapStore } from '../store/map.store.js';
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 
 const { template, utils, DOM, event } = ham;
 
 const { combineLatest, forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
-const {shareReplay, distinctUntilChanged, startWith, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
+const { shareReplay, distinctUntilChanged, startWith, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 
-const store = getStore();
+const store = getMapStore();
 
 
 const MAP_OPTIONS_CONFIG = [
@@ -16,19 +16,19 @@ const MAP_OPTIONS_CONFIG = [
     name: 'width-input',
     label: 'Width',
     type: 'text',
-    value: store.peek().dimensions.width,
+    value: store.snapshot(({ dimensions }) => dimensions.width),
   },
   {
     name: 'height-input',
     label: 'Height',
     type: 'text',
-    value: store.peek().dimensions.height,
+    value: store.snapshot(({ dimensions }) => dimensions.height),
   },
   {
     name: 'scale-input',
     label: 'Scale',
     type: 'text',
-    value: store.peek().dimensions.scale,
+    value: store.snapshot(({ dimensions }) => dimensions.scale),
   },
 ]
 
@@ -70,11 +70,11 @@ const mapOptionInputs = {
 
 const mapOptionsValues2$ = combineLatest(
   fromEvent(mapOptionInputs.width, 'change').pipe(
-    startWith({ target: { value: 50 } }),
+    startWith({ target: { value: 5 } }),
     map(_ => +_.target.value)
   ),
   fromEvent(mapOptionInputs.height, 'change').pipe(
-    startWith({ target: { value: 50 } }),
+    startWith({ target: { value: 5 } }),
     map(_ => +_.target.value)
   ),
   fromEvent(mapOptionInputs.scale, 'change').pipe(
@@ -91,6 +91,6 @@ const mapOptionsValues2$ = combineLatest(
 export const initMapOptions = (parent) => {
   parent.append(mapOptions)
 
-const subscription =   mapOptionsValues2$.subscribe()
-   return subscription
+  const subscription = mapOptionsValues2$.subscribe()
+  return subscription
 };

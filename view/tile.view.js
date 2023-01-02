@@ -13,15 +13,20 @@ export class TileView extends View {
   }
 
   static create({ address, tileType }) {
+    address = address.toString();
+    address = address.includes(',') ? address.replace(',', '_') : address;
+   
     const classList = tileType === 'header' ? ['tile', 'header'] : ['tile'];
-
+   
+   
     const options = {
       templateName: 'tile',
       elementProperties: {
         id: address,
         classList: [...classList],
         dataset: {
-          address,
+          address: address,//.includes(',') ? address.replace(',', '_') : v, //address.replace(',', '_'),
+          address: address.includes(',') ? address.replace(',', '_') : address,
           selected: false,
           tileType
         },
@@ -43,12 +48,25 @@ export class TileView extends View {
     return this;
   }
 
+  setType(type = '') {
+    console.log('this.dataset.tileType', this.dataset.tileType)
+    if (!type) return;
+    this.dataset.tileType = type
+
+    // this.setData('tileType', type)
+
+    return this;
+  }
+
   setData(k, v) {
     if (!k) return;
-
-    Object.assign(this.dataset, {
+    console.log('[k]: v', {
       [k]: v
     });
+    Object.assign(
+      this.dataset, {
+      [k]: v.includes(',') ? v.replace(',', '_') : v,
+      });
 
     return this;
   }

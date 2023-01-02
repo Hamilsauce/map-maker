@@ -197,7 +197,7 @@ ui.appMenu.on('menu:save-map', e => {
 
 
 const buildLoadView = () => {
-  const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE;
+  const data =  JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE;
 
   ui.mapList.innerHTML = '';
 

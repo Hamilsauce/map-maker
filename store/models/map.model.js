@@ -5,26 +5,69 @@ import { tileTypeCodes } from '../tile-type-codes.js';
 /*
   REQUIREMENTS
   
-  - Accepts 2D array/matrix of numbers representing tile type
-    - Parse if serialized
-    -
+    - Accepts 2D array/matrix of numbers representing tile type
+      - Parse if serialized
+      -
+      
+    - Create new Tile instance for each element in matrix
+      - Generate address string from r,c indexes
+  
+  TILES: 
+    Only Stores non-empty/non-default tiles 
+    Stored in map/object 
     
-  - Create new Tile instance for each element in matrix
-    - Generate address string from r,c indexes
-    - 
+    <Key: address, Value: Tile>
+   
+    View will use dims to create full grid
+    then set tiles found in model
+    
+  Loading a Map
+    Create
+    
+  
 */
 
+export const MapInterface = {
+  key: '',
+  name: '',
+  dimensions: {},
+  tiles: new Map(),
+}
+
 export class MapModel extends Model {
+  #id = '';
+  #name = '';
+  #tiles = new Map();
+  #dimensions = {
+    width: 0,
+    height: 0,
+    scale: 0,
+  }
+
   constructor() {
     super('map');
   }
 
-  createTile(data) {
-    return TileModel.create(data);
+  toPoint(address) {
+    if (!(typeof address === 'string') || !address.includes(',')) return;
+
+    return address.split(',')
+      .reduce((point, curr, i) => ({
+        ...point,
+        [i === 0 ? 'row' : 'column']: +curr
+      }), { row: null, column: null });
   }
 
-  insertTile(data) {
-    const tile = TileModel.create(data);
+  toAddress(r, c) {
+    if (+r && +c) return [r, c].toString();
+  }
+
+  createTile(address, tileOptions) {
+    return TileModel.create(tileOptions);
+  }
+
+  insertTile(r, c, data) {
+    const tile = this.createTile(data)
   }
 
   findNeighbors(tile) {

@@ -1,64 +1,71 @@
 const { BehaviorSubject, Subject } = rxjs
 const { shareReplay, distinctUntilChanged, tap, map, scan } = rxjs.operators;
 
-const INITIAL_STATE = {
-  user: {
-    username: 'hamilsauce'
-  },
-  metadata: {
-    mapName: 'fuck map 1',
-  },
-  dimensions: {
-    width: 50,
-    height: 50,
-    scale: 32
+const AUTH_KEY = '123';
+
+class StoreRegistery extends Map {
+  constructor() {
+    super();
   }
-  // dimensions: {
-  //   width: +mapOptions.width.value,
-  //   height: +mapOptions.width.value,
-  //   scale: +mapOptions.width.value
-  // }
+
+  set(name, initialState) {
+    if (!(name && initialState)) throw new Error('Invalid name or state passed to store');
+
+    super.set(name, new BhsStore(name, initialState));
+  }
 }
+
+const storeRegistery = new StoreRegistery()
 
 
 class BhsStore extends BehaviorSubject {
   #updateSubject$ = new Subject();
   #reducePipe$ = null;
   #stateSubscription = null;
+  #name = null;
 
-  constructor(initialState) {
-    super(initialState);
+  constructor(name, storeOptions) {
+    if (!(name && storeOptions.state)) return;
+
+    super(storeOptions.state);
+
+    this.#name = name;
 
     this.#reducePipe$ = this.#updateSubject$.pipe(
-      map(newValue => ({ ...this.peek(), ...newValue })),
-      tap(this),
+      map(newValue => ({ ...this.snapshot(), ...newValue })),
+      tap(newValue => this.next(newValue, AUTH_KEY)),
     )
 
     this.#stateSubscription = this.#reducePipe$.subscribe()
   }
 
-  peek() {
-    return this.getValue();
+  get name() { return this.#name }
+
+  snapshot(selectorFn) {
+    return selectorFn ? selectorFn(this.getValue()) : this.getValue();
   }
 
-  dispatch(fn = (state) => {}) {
-    this.#updateSubject$
-    this.next(fn(this.getValue()));
+  next(newValue, authKey) {
+    if (authKey != AUTH_KEY || typeof newValue != 'object') throw new Error('ILLEGAL CALL TO STORE.NEXT OR INVALID VALUE PASSED TO STORE.UPDATE');
+
+    super.next(newValue);
   }
-  
-  next = (newValue) => {
-    if (typeof newValue != 'object') return;
-    super.next(newValue)
-    // this.update(newValue)
-  }
-  
+
   update = (newValue) => {
     if (typeof newValue != 'object') return;
 
     this.#updateSubject$.next(newValue);
   }
 
-  select = (selectorFn = (state) => {}) => {
+  select = (selectorFn = (state) => state) => {
+    return this.asObservable().pipe(
+      map(selectorFn),
+      distinctUntilChanged(),
+      shareReplay(1),
+    );
+  }
+
+  selectConnect = (selectorFn = (state) => state) => {
     return this.asObservable().pipe(
       map(selectorFn),
       distinctUntilChanged(),
@@ -77,34 +84,28 @@ class BhsStore extends BehaviorSubject {
   }
 }
 
-const storeInstance = new BhsStore(INITIAL_STATE)
+export class StoreOptionsDef {
+  name = '';
+  state = {};
+  state = {};
 
-export const getStore = () => storeInstance ? storeInstance : new BhsStore(INITIAL_STATE)
-window.store = storeInstance
+  constructor() {
+    this.root;
+  }
+}
+
+export const StoreOptions = {
+  name: '',
+  state: {},
+}
 
 
-// export interface State {
-//   currentUser: User | null;
-// }
+export const defineStore = (name, storeOptions = StoreOptions) => {
+  let store;
 
-// class UserStore extends BhsStore {
-//   constructor() {
-//     super({
-//       currentUser: null
-//     });
-//   }
+  if (!storeRegistery.has(name)) {
+    storeRegistery.set(name, storeOptions)
+  }
 
-//   get currentUser$() {
-//     return this.select(state => state.currentUser);
-//   }
-//   get currentUser() {
-//     return this.selectSync(state => state.currentUser);
-//   }
-
-//   setCurrentUser(user) {
-//     this.dispatch(state => ({
-//       ...state,
-//       currentUser: user
-//     }));
-//   }
-// }
+  return () => storeRegistery.get(name)
+}

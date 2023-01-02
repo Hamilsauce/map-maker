@@ -1,9 +1,13 @@
-
 .tile {
   background: #FFFFFF;
   border: 0.25px solid #37373750;
   /* transition: 0.075s ease; */
 }
+
+.header {
+  overflow: hidden;
+}
+
 
 .tile[data-selected=true] {
   background: #FFFFFF;

@@ -1,6 +1,7 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { View } from '../view2.js';
 import { TileView } from '../tile.view.js';
+
 const { template } = ham;
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
 const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
@@ -55,7 +56,7 @@ export class MapSection extends View {
 
   get sectionType() { return this.#sectionType }
 
-  get tiles() { return [...this.querySelectorAll('.tile')] }
+  get tiles() { return this.#tiles } /// [...this.querySelectorAll('.tile')] }
 
   get gridTemplateRows() { return this.self.style.gridTemplateRows }
 
@@ -74,7 +75,7 @@ export class MapSection extends View {
   createTile(id, type = 'empty') {
     type = this.sectionType === 'header' ? 'header' : type;
     const t2 = TileView.create({ address: id, tileType: type })
-
+    this.tiles.set(t2.address, t2)
     return t2;
   }
 
@@ -101,7 +102,7 @@ export class MapSection extends View {
       this.self.innerHTML = '';
       const diff = height - this.height;
 
-      const tiles = new Array(height).fill(null).map((_, i) => this.createTile(i).dom);
+      const tiles = new Array(height).fill(null).map((_, i) => this.createTile(i.toString()).dom);
       this.self.append(...tiles);
 
       this.height = height;
@@ -131,7 +132,8 @@ export class MapSection extends View {
           tiles.push(this.createTile([row, col].toString()).dom)
         }
       }
-
+      console.log('tiles', tiles)
+      console.log('this', this)
       this.self.append(...tiles);
       this.self.style.gridTemplateRows = `repeat(${height}, ${scale}px)`;
       this.self.style.gridTemplateColumns = `repeat(${width}, ${scale}px)`;

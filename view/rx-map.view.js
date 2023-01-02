@@ -2,7 +2,7 @@ import { View } from './view2.js';
 import { MapSection } from './map/map-section.view.js';
 import { MapBody } from './map/map-body.view.js';
 import { MapHeader } from './map/map-header.view.js';
-import { getStore } from '../store/rx-store.js';
+import { getMapStore } from '../store/map.store.js';
 import { tileBrushStore } from '../store/tile-brush.store.js';
 import { getClicks$ } from '../lib/get-click-events.js';
 import { push } from './tile-view-updates.stream.js';
@@ -80,6 +80,7 @@ const MapSectionOptions = [
 export class MapView extends View {
   #self;
   #dimensions$;
+  #tiles$;
   #sections = new Map([
     ['corner', null],
     ['rows', null],
@@ -87,12 +88,15 @@ export class MapView extends View {
     ['body', null],
   ]);
 
-  store = getStore();
+  store = getMapStore();
 
-  constructor(dimensions$) {
+  constructor() {
     super('map', MapViewOptions);
 
-    this.#dimensions$ = this.store.select(state => state.dimensions)
+    this.#dimensions$ = this.store.select(state => state.dimensions);
+
+    this.#tiles$ = this.store.select(state => state.tiles);
+
 
     this.init(MapSectionOptions);
 
@@ -133,17 +137,34 @@ export class MapView extends View {
 
   init(sectionOptions = []) {
     sectionOptions.forEach((opts, i) => {
-      const mapSectionName = opts.mapSection
+      if (!this.#sections.has(opts.mapSection)) throw new Error('Invalid map section in Map Init. Value: ' + opts.mapSection);
 
-      if (!this.#sections.has(mapSectionName)) throw new Error('Invalid map section in Map Init. Value: ' + mapSectionName);
+      if (opts.mapSection === 'body') {
+        this.#sections.set(
+          opts.mapSection,
+          new MapBody(this.#dimensions$, opts)
+        );
 
-      this.#sections.set(
-        mapSectionName,
-        new MapSection(mapSectionName, this.#dimensions$, opts)
-      );
+      } else if (opts.mapSection !== 'body') {
+
+        this.#sections.set(
+          opts.mapSection,
+          new MapSection(opts.mapSection, this.#dimensions$, opts)
+        );
+      }
     });
 
     this.self.append(...[...this.#sections.values()].map(_ => _.dom));
+
+    this.#tiles$.pipe(
+      tap(x => console.log('#tiles$ pipe in rx map', x)),
+      // filter(_ => _),
+      map(x => Object.values(x)),
+
+      // tap(tiles => this.body.setTiles(tiles)),
+      tap(),
+    ).subscribe()
+
 
     return this.self
   }

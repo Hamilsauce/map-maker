@@ -5,7 +5,6 @@ export const TileInterface = {
   address: String,
   column: Number,
   row: Number,
-  hasCharacter: Boolean,
 }
 
 
@@ -14,7 +13,6 @@ export class TileModel extends Model {
   #address;
   #column;
   #row;
-  #hasCharacter;
 
   constructor(data) {
     super('tile');
@@ -23,6 +21,10 @@ export class TileModel extends Model {
 
   static create(data) {
     return new TileModel(data || {});
+  }
+
+  update(data) {
+    return new TileModel({ ...this, ...data });
   }
 
 
@@ -41,12 +43,4 @@ export class TileModel extends Model {
   get row() { return this.#row }
 
   set row(v) { this.#row = v }
-
-  get hasCharacter() { return this.#hasCharacter }
-
-  set hasCharacter(v) { this.#hasCharacter = v }
-
-
-  get prop() { return this._prop };
-  set prop(newValue) { this._prop = newValue };
 }
