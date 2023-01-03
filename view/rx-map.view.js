@@ -10,7 +10,7 @@ import { push } from './tile-view-updates.stream.js';
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 
 
-const {combineLatest, forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
+const { combineLatest, forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
 const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 
@@ -103,41 +103,40 @@ export class MapView extends View {
     this.clickStreams$ = getClicks$(this.self);
 
     const map$ = combineLatest(
-      this.#dimensions$,
-      this.#tiles$.pipe(
-        tap(x => console.warn('#tiles$ pipe in rx map', x)),
-        // filter(_ => _),
-        map(x => Object.values(x)),
+        this.#dimensions$,
+        this.#tiles$.pipe(
+          tap(x => console.warn('#tiles$ pipe in rx map', x)),
+          // filter(_ => _),
+          map(x => Object.values(x)),
 
-        // tap(tiles => {
+          // tap(tiles => {
 
-        //   setTimeout(() => {
-        //     this.body.setTiles(tiles)
-        //     console.log(' ', );
-        //   }, 1000);
-        // }),
-      ))
-    .subscribe()
+          //   setTimeout(() => {
+          //     this.body.setTiles(tiles)
+          //     console.log(' ', );
+          //   }, 1000);
+          // }),
+        ))
+      .subscribe()
 
 
     merge(
-        this.clickStreams$.click$.pipe(
-          map(([first, second]) => first),
-          filter(e => e.target.closest('.tile')),
-          map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
-          // map(this.handleTileClick.bind(this)),
-          tap(push),
-        ),
-        this.clickStreams$.dblClick$.pipe(
-          filter(([first, second]) => first.target === second.target),
-          map(([first, second]) => second),
-          map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
-          // tap(t => this.handleTileLongPress.bind(this)(t)),
-        ))
-      .pipe(
-        tap(x => console.warn('clickStreams$ IN RX MAP', x))
+      this.clickStreams$.click$.pipe(
+        map(([first, second]) => first),
+        filter(e => e.target.closest('.tile')),
+        map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
+        // map(this.handleTileClick.bind(this)),
+        tap(push),
+      ),
+      this.clickStreams$.dblClick$.pipe(
+        filter(([first, second]) => first.target === second.target),
+        map(([first, second]) => second),
+        map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
+        // tap(t => this.handleTileLongPress.bind(this)(t)),
       )
-      .subscribe()
+    ).pipe(
+      tap(x => console.warn('clickStreams$ IN RX MAP', x))
+    ).subscribe()
 
 
     this.activeBrush$ = tileBrushStore.select({ key: 'activeBrush' }).pipe(
@@ -164,7 +163,6 @@ export class MapView extends View {
         );
 
       } else if (opts.mapSection !== 'body') {
-
         this.#sections.set(
           opts.mapSection,
           new MapHeader(opts.mapSection, this.#dimensions$, opts)
