@@ -9,7 +9,8 @@
   align-items: flex-start;
   grid-auto-flow: dense;
   touch-action: manipulation;
-  /* border: 1px solid #181A1B; */
+  width: fit-content;
+  border: 1px solid #191A2030;
 }
 
 #map-body {
@@ -21,7 +22,6 @@
   z-index: 101;
   border-left: 1px solid #181A1B;
   border-top: 1px solid #181A1B;
-  
 }
 
 #map-cols {
@@ -45,7 +45,6 @@
   grid-template-columns: 24px;
   grid-template-rows: repeat(32, 32px);
   gap: 0px;
-  /* border-bottom: 1px solid #D1D1D1; */
   border-right: 1px solid #181A1B;
   z-index: 102;
 }

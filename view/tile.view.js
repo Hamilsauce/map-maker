@@ -49,9 +49,9 @@ export class TileView extends View {
   }
 
   setType(type = '') {
-    console.log('this.dataset.tileType', this.dataset.tileType)
     if (!type) return;
     this.dataset.tileType = type
+    console.log('this.dataset.tileType', this.dataset.tileType)
 
     // this.setData('tileType', type)
 

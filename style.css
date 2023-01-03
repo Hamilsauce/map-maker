@@ -69,7 +69,9 @@ body {
   overflow: auto;
   align-items: flex-start;
   border-right: 1px solid #181A1B;
+  /* border-top: 1px solid #181A1B; */
   border-bottom: 1px solid #181A1B;
+  background: #191A2030;
 }
 
 

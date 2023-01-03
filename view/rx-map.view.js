@@ -25,7 +25,7 @@ const MapViewOptions = {
   templateName: 'map',
   elementProperties: {
     id: 'map',
-    classList: ['gradient'],
+    classList: [''],
   },
   children: []
 }

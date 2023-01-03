@@ -56,33 +56,30 @@ export class MapBody extends MapSection {
     );
 
 
-    // this.clicks$.subscribe();
-    // this.activeBrush$.subscribe();
-    // this.updates$.subscribe();
-
     merge(
       this.clicks$,
       this.activeBrush$,
       this.updates$,
     ).subscribe();
   }
-  
+
   get selectedTiles() { return [...this.self.querySelectorAll('.tile[data-selected=true]')] }
-  
+
 
   #setTiles(tiles = []) {
     tiles.forEach((t, i) => {
       const addr = normalizeAddress(t.address);
       const tile = this.tiles.get(addr);
-  
+
       tile.setType(t.tileType);
     });
   }
 
   handleTileClick({ x, y, targetBounds, target }) {
     const t = this.tiles.get(target.dataset.address);
-    
+
     const changedTiles = [];
+    const changedTiles2 = {};
 
     if (t && this.rangeFillStart && t !== this.rangeFillStart) {
       const [row1, col1] = this.rangeFillStart.address.split(',').map(_ => +_);
@@ -92,15 +89,25 @@ export class MapBody extends MapSection {
         const [r, c] = tile.address.split('_').map(_ => +_);
 
         if ((r >= row1 && r <= row2) && (c >= col1 && c <= col2)) {
+          changedTiles2[tile.address] = {
+            address: tile.address,
+            tileType: tile.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
+          }
+
           changedTiles.push({
             address: tile.address,
-            type:  t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
+            tileType: tile.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
           });
         }
       });
     }
 
     else if (t) {
+      changedTiles2[t.address] = {
+        address: t.address,
+        tileType: t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
+      }
+
       changedTiles.push({
         address: t.address,
         tileType: t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
