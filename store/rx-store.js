@@ -32,7 +32,18 @@ class BhsStore extends BehaviorSubject {
     this.#name = name;
 
     this.#reducePipe$ = this.#updateSubject$.pipe(
-      map(newValue => ({ ...this.snapshot(), ...newValue })),
+      map(newValue => {
+        const k = Object.keys(newValue)
+        return { ...this.snapshot(), [k]: { ...this.snapshot()[k], ...newValue[k] } }
+      }),
+      map(state => {
+        const cleanedTiles = Object.fromEntries(
+          Object.entries(state.tiles).filter(([k, v]) => v.tileType !== 'empty')
+        );
+
+        return { ...state, tiles: cleanedTiles }
+      }),
+      tap(x => console.warn('[UPDATED STATE]', x)),
       tap(newValue => this.next(newValue, AUTH_KEY)),
     )
 

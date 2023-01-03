@@ -127,8 +127,8 @@ export class MapSection extends View {
           tiles.push(this.createTile([row, col].toString()).dom)
         }
       }
-      console.log('tiles', tiles)
-      console.log('this', this)
+      // console.log('tiles', tiles)
+      // console.log('this', this)
       this.self.append(...tiles);
       this.self.style.gridTemplateRows = `repeat(${height}, ${scale}px)`;
       this.self.style.gridTemplateColumns = `repeat(${width}, ${scale}px)`;

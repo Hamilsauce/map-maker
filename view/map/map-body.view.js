@@ -11,6 +11,7 @@ const { startWith, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan,
 export class MapBody extends MapSection {
   store = getMapStore();
   #tiles$;
+
   constructor(dimensions$, options) {
     super('body', dimensions$, options);
 
@@ -18,29 +19,25 @@ export class MapBody extends MapSection {
 
     this.#tiles$ = this.store.select(state => state.tiles);
 
-   this.activeBrush$ = tileBrushStore.select({ key: 'activeBrush' }).pipe(
+    this.activeBrush$ = tileBrushStore.select({ key: 'activeBrush' }).pipe(
       tap((activeBrush) => this.activeBrush = activeBrush),
-    ).subscribe();
-
+    );
 
     this.clickStreams$ = getClicks$(this.self);
 
     this.updates$ = combineLatest(
-        this.dimensions$,
-        this.#tiles$,
-        (dimensions, tiles) => ({ dimensions, tiles })
-      )
-      .pipe(
-        startWith({ dimensions: { width: 0, height: 0, scale: 0 }, tiles: [] }),
-        tap(({ dimensions }) => this.updateDimensions(dimensions)),
-        filter(({ tiles }) => tiles),
-        map(({ tiles }) => Object.values(tiles)),
-        tap((tiles) => this.setTiles(tiles)),
-      )
-      .subscribe();
+      this.dimensions$,
+      this.#tiles$,
+      (dimensions, tiles) => ({ dimensions, tiles })
+    ).pipe(
+      startWith({ dimensions: { width: 0, height: 0, scale: 0 }, tiles: [] }),
+      tap(({ dimensions }) => this.updateDimensions(dimensions)),
+      filter(({ tiles }) => tiles),
+      map(({ tiles }) => Object.values(tiles)),
+      tap((tiles) => this.setTiles(tiles)),
+    );
 
-
-    merge(
+    this.clicks$ = merge(
       this.clickStreams$.click$.pipe(
         map(([first, second]) => first),
         filter(e => e.target.closest('.tile')),
@@ -56,63 +53,63 @@ export class MapBody extends MapSection {
       )
     ).pipe(
       tap(x => console.warn('clickStreams$ IN RX MAP', x))
-    ).subscribe()
+    );
 
 
-  };
+    // this.clicks$.subscribe();
+    // this.activeBrush$.subscribe();
+    // this.updates$.subscribe();
+
+    merge(
+      this.clicks$,
+      this.activeBrush$,
+      this.updates$,
+    ).subscribe();
+  }
+  
+  get selectedTiles() { return [...this.self.querySelectorAll('.tile[data-selected=true]')] }
+  
 
   #setTiles(tiles = []) {
-    console.log('tiles', tiles)
     tiles.forEach((t, i) => {
-      t.address = normalizeAddress(t.address);
-
-      const tile = this.tiles.get(t.address);
-
+      const addr = normalizeAddress(t.address);
+      const tile = this.tiles.get(addr);
+  
       tile.setType(t.tileType);
     });
   }
 
-
   handleTileClick({ x, y, targetBounds, target }) {
     const t = this.tiles.get(target.dataset.address);
+    
+    const changedTiles = [];
 
     if (t && this.rangeFillStart && t !== this.rangeFillStart) {
       const [row1, col1] = this.rangeFillStart.address.split(',').map(_ => +_);
-      const [row2, col2] = t.address.split(',').map(_ => +_);
+      const [row2, col2] = t.address.split('_').map(_ => +_);
 
       this.tiles.forEach((tile, i) => {
-        const [r, c] = tile.address.split(',').map(_ => +_);
+        const [r, c] = tile.address.split('_').map(_ => +_);
 
         if ((r >= row1 && r <= row2) && (c >= col1 && c <= col2)) {
-          if (this.activeBrush === 'delete') this.removeTile(tile.address);
-
-          else {
-            tile.dataset.tileType = t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
-            tile.dataset.selected = true;
-          }
+          changedTiles.push({
+            address: tile.address,
+            type:  t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
+          });
         }
       });
-
-      if (this.activeBrush !== 'delete') {
-        setTimeout(() => {
-          this.selectedTiles.forEach((tile, address, i) => {
-            tile.dataset.selected = false;
-          });
-        }, 0);
-
-        this.rangeFillStart.dataset.selected = false;
-
-        this.rangeFillStart = null;
-      }
     }
 
     else if (t) {
-      if (this.activeBrush === 'delete') this.removeTile(t.address);
-
-      else {
-        t.dataset.tileType = t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
-      }
+      changedTiles.push({
+        address: t.address,
+        tileType: t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
+      })
     }
+
+    this.store.update({
+      tiles: changedTiles.reduce((acc, curr, i) => ({ ...acc, [curr.address]: curr }), {})
+    })
 
     return t;
   }
@@ -126,7 +123,7 @@ export class MapBody extends MapSection {
       });
 
       this.rangeFillStart = t;
-      t.tileType = this.activeBrush || 'empty';
+      // t.tileTzype = this.activeBrush || 'empty';
       t.selected = true;
     }
 

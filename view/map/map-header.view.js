@@ -8,7 +8,6 @@ export class MapHeader extends MapSection {
     super(headerType, dimensions$, options);
 
     this.dimensions$.pipe(
-      tap(x => console.warn('MapHeader Dims', x)),
       tap(this.updateDimensions.bind(this))
     ).subscribe();
   };

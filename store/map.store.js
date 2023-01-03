@@ -1,5 +1,6 @@
 import { defineStore } from './rx-store.js';
 
+
 const INITIAL_MAP_STATE = {
   id: null,
   name: 'untitled map',
@@ -26,4 +27,7 @@ const INITIAL_MAP_STATE = {
 
 export const getMapStore = defineStore('map', {
   state: INITIAL_MAP_STATE,
+  // update: (updates) => {
+    
+  // },
 })
