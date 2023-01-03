@@ -38,12 +38,7 @@ export class MapSection extends View {
     this.#sectionType = options.elementProperties.dataset.mapSectionType;
     this.#sectionName = sectionName;
     this.dimensions$ = dimensions$;
-
-    this.dimensions$
-      .pipe(
-        tap(this.updateDimensions.bind(this)),
-      )
-      .subscribe();
+    this.updateDimensions = this.#updateDimensions.bind(this)
 
 
     this.#clickHandler = this.#handleClick.bind(this);
@@ -95,7 +90,7 @@ export class MapSection extends View {
     }, 0)
   }
 
-  updateDimensions({ height, width, scale }) {
+  #updateDimensions({ height, width, scale }) {
     this.scale = scale;
 
     if (this.#sectionName.includes('row')) {

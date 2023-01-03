@@ -10,7 +10,7 @@ import { push } from './tile-view-updates.stream.js';
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 
 
-const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
+const {combineLatest, forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
 const { flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
 const { fromFetch } = rxjs.fetch;
 
@@ -102,6 +102,24 @@ export class MapView extends View {
 
     this.clickStreams$ = getClicks$(this.self);
 
+    const map$ = combineLatest(
+      this.#dimensions$,
+      this.#tiles$.pipe(
+        tap(x => console.warn('#tiles$ pipe in rx map', x)),
+        // filter(_ => _),
+        map(x => Object.values(x)),
+
+        // tap(tiles => {
+
+        //   setTimeout(() => {
+        //     this.body.setTiles(tiles)
+        //     console.log(' ', );
+        //   }, 1000);
+        // }),
+      ))
+    .subscribe()
+
+
     merge(
         this.clickStreams$.click$.pipe(
           map(([first, second]) => first),
@@ -149,21 +167,12 @@ export class MapView extends View {
 
         this.#sections.set(
           opts.mapSection,
-          new MapSection(opts.mapSection, this.#dimensions$, opts)
+          new MapHeader(opts.mapSection, this.#dimensions$, opts)
         );
       }
     });
 
     this.self.append(...[...this.#sections.values()].map(_ => _.dom));
-
-    this.#tiles$.pipe(
-      tap(x => console.log('#tiles$ pipe in rx map', x)),
-      // filter(_ => _),
-      map(x => Object.values(x)),
-
-      // tap(tiles => this.body.setTiles(tiles)),
-      tap(),
-    ).subscribe()
 
 
     return this.self
@@ -177,11 +186,6 @@ export class MapView extends View {
 
   createMap(dims, savedTiles) {
     this.tiles.clear();
-
-    // dims = {
-    //   width: (this.self.parentElement ? this.self.parentElement.getBoundingClientRect().width : window.innerWidth) / 32,
-    //   height: (this.self.parentElement ? this.self.parentElement.getBoundingClientRect().height : window.innerHeight) / 32,
-    // }
 
     this.setDimensions(dims);
 
