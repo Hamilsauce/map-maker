@@ -1,5 +1,5 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-import { View } from '../view2.js';
+import { View } from '../view.js';
 import { TileView } from '../tile.view.js';
 
 const { template } = ham;

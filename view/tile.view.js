@@ -1,4 +1,5 @@
-import { View } from './view2.js';
+import { View } from './view.js';
+
 export class TileView extends View {
   #address;
   #row;
@@ -15,17 +16,16 @@ export class TileView extends View {
   static create({ address, tileType }) {
     address = address.toString();
     address = address.includes(',') ? address.replace(',', '_') : address;
-   
+
     const classList = tileType === 'header' ? ['tile', 'header'] : ['tile'];
-   
-   
+
     const options = {
       templateName: 'tile',
       elementProperties: {
         id: address,
         classList: [...classList],
         dataset: {
-          address: address,//.includes(',') ? address.replace(',', '_') : v, //address.replace(',', '_'),
+          address: address, //.includes(',') ? address.replace(',', '_') : v, //address.replace(',', '_'),
           address: address.includes(',') ? address.replace(',', '_') : address,
           selected: false,
           tileType
@@ -60,13 +60,10 @@ export class TileView extends View {
 
   setData(k, v) {
     if (!k) return;
-    console.log('[k]: v', {
-      [k]: v
-    });
-    Object.assign(
-      this.dataset, {
+
+    Object.assign(this.dataset, {
       [k]: v.includes(',') ? v.replace(',', '_') : v,
-      });
+    });
 
     return this;
   }
@@ -89,9 +86,9 @@ export class TileView extends View {
 
   get dom() { return this.self };
 
-  get row() { return +this.address.split(',')[0] };
+  get row() { return +this.address.split('_')[0] };
 
-  get column() { return +this.address.split(',')[1] };
+  get column() { return +this.address.split('_')[1] };
 
   get tileType() { return this.dataset.tileType };
 

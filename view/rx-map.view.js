@@ -1,4 +1,4 @@
-import { View } from './view2.js';
+import { View } from './view.js';
 import { MapSection } from './map/map-section.view.js';
 import { MapBody } from './map/map-body.view.js';
 import { MapHeader } from './map/map-header.view.js';
@@ -97,28 +97,9 @@ export class MapView extends View {
 
     this.#tiles$ = this.store.select(state => state.tiles);
 
-
     this.init(MapSectionOptions);
 
     this.clickStreams$ = getClicks$(this.self);
-
-    const map$ = combineLatest(
-        this.#dimensions$,
-        this.#tiles$.pipe(
-          tap(x => console.warn('#tiles$ pipe in rx map', x)),
-          // filter(_ => _),
-          map(x => Object.values(x)),
-
-          // tap(tiles => {
-
-          //   setTimeout(() => {
-          //     this.body.setTiles(tiles)
-          //     console.log(' ', );
-          //   }, 1000);
-          // }),
-        ))
-      .subscribe()
-
 
     merge(
       this.clickStreams$.click$.pipe(

@@ -55,7 +55,6 @@ export class MapBody extends MapSection {
       tap(x => console.warn('clickStreams$ IN RX MAP', x))
     );
 
-
     merge(
       this.clicks$,
       this.activeBrush$,
@@ -64,7 +63,6 @@ export class MapBody extends MapSection {
   }
 
   get selectedTiles() { return [...this.self.querySelectorAll('.tile[data-selected=true]')] }
-
 
   #setTiles(tiles = []) {
     tiles.forEach((t, i) => {
@@ -78,45 +76,30 @@ export class MapBody extends MapSection {
   handleTileClick({ x, y, targetBounds, target }) {
     const t = this.tiles.get(target.dataset.address);
 
-    const changedTiles = [];
-    const changedTiles2 = {};
+    const changedTiles = {};
 
     if (t && this.rangeFillStart && t !== this.rangeFillStart) {
       const [row1, col1] = this.rangeFillStart.address.split(',').map(_ => +_);
       const [row2, col2] = t.address.split('_').map(_ => +_);
 
       this.tiles.forEach((tile, i) => {
-        const [r, c] = tile.address.split('_').map(_ => +_);
-
-        if ((r >= row1 && r <= row2) && (c >= col1 && c <= col2)) {
-          changedTiles2[tile.address] = {
+        if ((tile.row >= row1 && tile.row <= row2) && (tile.column >= col1 && tile.column <= col2)) {
+          changedTiles[tile.address] = {
             address: tile.address,
             tileType: tile.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
           }
-
-          changedTiles.push({
-            address: tile.address,
-            tileType: tile.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
-          });
         }
       });
     }
 
     else if (t) {
-      changedTiles2[t.address] = {
+      changedTiles[t.address] = {
         address: t.address,
         tileType: t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
       }
-
-      changedTiles.push({
-        address: t.address,
-        tileType: t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush,
-      })
     }
 
-    this.store.update({
-      tiles: changedTiles.reduce((acc, curr, i) => ({ ...acc, [curr.address]: curr }), {})
-    })
+    this.store.update({ tiles: changedTiles });
 
     return t;
   }
@@ -130,7 +113,7 @@ export class MapBody extends MapSection {
       });
 
       this.rangeFillStart = t;
-      // t.tileTzype = this.activeBrush || 'empty';
+
       t.selected = true;
     }
 

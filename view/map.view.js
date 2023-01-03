@@ -6,7 +6,7 @@ import { TileTypes } from '../lib/constants.js';
 import { TileView } from '../view/tile.view.js';
 import { push } from './tile-view-updates.stream.js';
 import { getClicks$ } from '../lib/get-click-events.js';
-import { View } from './view2.js';
+import { View } from './view.js';
 
 
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
