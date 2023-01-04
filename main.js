@@ -174,9 +174,7 @@ activeToolGroup$.subscribe();
 
 
 ui.header.querySelector('#map-options-container').innerHTML = '';
-// mapOptionsValues$
 
-// ui.header.querySelector('#map-options').append(gridOptions);
 const unsubscribeMapOptions = initMapOptions(ui.header.querySelector('#map-options-container'))
 
 ui.app.append(ui.appMenu.dom);

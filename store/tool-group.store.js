@@ -3,6 +3,7 @@ const { scan, startWith, map, filter, distinctUntilChanged, tap } = rxjs.operato
 
 const ToolGroupKeys = {
   tile: 'tile',
+  select: 'select',
   actor: 'actor',
   layer: 'layer',
   color: 'color',

@@ -10,24 +10,26 @@ const { fromFetch } = rxjs.fetch;
 
 const store = getMapStore();
 
+const initialDims = store.snapshot(({ dimensions }) => dimensions);
+
 const MAP_OPTIONS_CONFIG = [
   {
     name: 'width-input',
     label: 'Width',
     type: 'text',
-    value: store.snapshot(({ dimensions }) => dimensions).width,
+    value: initialDims.width
   },
   {
     name: 'height-input',
     label: 'Height',
     type: 'text',
-    value: store.snapshot(({ dimensions }) => dimensions).height,
+    value: initialDims.height
   },
   {
     name: 'scale-input',
     label: 'Scale',
     type: 'text',
-    value: store.snapshot(({ dimensions }) => dimensions).scale,
+    value: initialDims.scale
   },
 ]
 
@@ -36,10 +38,7 @@ const mapOptions = DOM.createElement({
     elementProperties: {
       onclick: (e) => {
         const opt = e.target.closest('.map-option')
-
-        if (!opt) return;
-
-        opt.querySelector('input').focus();
+        if (opt) opt.querySelector('input').select();
       },
     }
   },
@@ -50,7 +49,7 @@ const mapOptions = DOM.createElement({
 
     o.dataset.optionName = opt.name;
     l.textContent = opt.label;
-    l.for = opt.name;
+    l.setAttribute('for', opt.name);
     i.type = opt.type;
     i.value = opt.value;
     i.name = opt.name;
@@ -67,18 +66,17 @@ const mapOptionInputs = {
 }
 
 
-const mapOptionsValues2$ = combineLatest(
+const mapOptionsValues$ = combineLatest(
   fromEvent(mapOptionInputs.width, 'change').pipe(
-    startWith({ target: { value: 5 } }),
-    tap(x => console.warn('mapOptionsValues2$', x)),
+    startWith({ target: { value: initialDims.width } }),
     map(_ => +_.target.value)
   ),
   fromEvent(mapOptionInputs.height, 'change').pipe(
-    startWith({ target: { value: 5 } }),
+    startWith({ target: { value: initialDims.height } }),
     map(_ => +_.target.value)
   ),
   fromEvent(mapOptionInputs.scale, 'change').pipe(
-    startWith({ target: { value: 32 } }),
+    startWith({ target: { value: initialDims.scale } }),
     map(_ => +_.target.value)
   ),
   (width, height, scale) => ({ dimensions: { width, height, scale } })).pipe(
@@ -92,6 +90,6 @@ const mapOptionsValues2$ = combineLatest(
 export const initMapOptions = (parent) => {
   parent.append(mapOptions)
 
-  const subscription = mapOptionsValues2$.subscribe()
-  return subscription
+  const subscription = mapOptionsValues$.subscribe()
+  return subscription;
 };
