@@ -18,18 +18,43 @@ class StoreRegistery extends Map {
 const storeRegistery = new StoreRegistery()
 
 
+const StoreOptionsDef = {
+  state: Object,
+  reducer: Function,
+  isDef: true,
+}
+
+
 class BhsStore extends BehaviorSubject {
   #updateSubject$ = new Subject();
   #reducePipe$ = null;
+  #reducePipe2$ = null;
+  #reducer = null;
   #stateSubscription = null;
   #name = null;
 
-  constructor(name, storeOptions) {
-    if (!(name && storeOptions.state)) return;
+  constructor(name, storeOptions = StoreOptionsDef) {
+    if (!(name && storeOptions.state) || storeOptions.isDef) return;
 
     super(storeOptions.state);
 
     this.#name = name;
+    this.#reducer = storeOptions.reducer;
+
+    this.#reducePipe2$ = this.#updateSubject$.pipe(
+      map(action => {
+        return this.#reducer(this.snapshot(), action)
+      }),
+      map(state => {
+        const cleanedTiles = Object.fromEntries(
+          Object.entries(state.tiles).filter(([k, v]) => v.tileType !== 'empty')
+        );
+
+        return { ...state, tiles: cleanedTiles }
+      }),
+      tap(x => console.warn('[UPDATED STATE]', x)),
+      tap(newValue => this.next(newValue, AUTH_KEY)),
+    )
 
     this.#reducePipe$ = this.#updateSubject$.pipe(
       map(newValue => {
@@ -52,8 +77,16 @@ class BhsStore extends BehaviorSubject {
 
   get name() { return this.#name }
 
+  dispatch(action) {
+    if (!action.type) return;
+
+    this.#updateSubject$.next(newValue);
+
+    // this.#reducer(...this.snapshot, action)
+  }
+
   snapshot(selectorFn) {
-    return selectorFn ? selectorFn(this.getValue()) : this.getValue();
+    return { ...(selectorFn ? selectorFn(this.getValue()) : this.getValue()) };
   }
 
   next(newValue, authKey) {
@@ -95,23 +128,8 @@ class BhsStore extends BehaviorSubject {
   }
 }
 
-export class StoreOptionsDef {
-  name = '';
-  state = {};
-  state = {};
 
-  constructor() {
-    this.root;
-  }
-}
-
-export const StoreOptions = {
-  name: '',
-  state: {},
-}
-
-
-export const defineStore = (name, storeOptions = StoreOptions) => {
+export const defineStore = (name, storeOptions = StoreOptionsDef) => {
   let store;
 
   if (!storeRegistery.has(name)) {
