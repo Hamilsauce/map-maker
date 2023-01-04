@@ -41,32 +41,9 @@ class BhsStore extends BehaviorSubject {
     this.#name = name;
     this.#reducer = storeOptions.reducer;
 
-    this.#reducePipe2$ = this.#updateSubject$.pipe(
+    this.#reducePipe$ = this.#updateSubject$.pipe(
       map(action => {
         return this.#reducer(this.snapshot(), action)
-      }),
-      map(state => {
-        const cleanedTiles = Object.fromEntries(
-          Object.entries(state.tiles).filter(([k, v]) => v.tileType !== 'empty')
-        );
-
-        return { ...state, tiles: cleanedTiles }
-      }),
-      tap(x => console.warn('[UPDATED STATE]', x)),
-      tap(newValue => this.next(newValue, AUTH_KEY)),
-    )
-
-    this.#reducePipe$ = this.#updateSubject$.pipe(
-      map(newValue => {
-        const k = Object.keys(newValue)
-        return { ...this.snapshot(), [k]: { ...this.snapshot()[k], ...newValue[k] } }
-      }),
-      map(state => {
-        const cleanedTiles = Object.fromEntries(
-          Object.entries(state.tiles).filter(([k, v]) => v.tileType !== 'empty')
-        );
-
-        return { ...state, tiles: cleanedTiles }
       }),
       tap(x => console.warn('[UPDATED STATE]', x)),
       tap(newValue => this.next(newValue, AUTH_KEY)),
@@ -80,9 +57,7 @@ class BhsStore extends BehaviorSubject {
   dispatch(action) {
     if (!action.type) return;
 
-    this.#updateSubject$.next(newValue);
-
-    // this.#reducer(...this.snapshot, action)
+    this.#updateSubject$.next(action);
   }
 
   snapshot(selectorFn) {

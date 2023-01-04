@@ -1,5 +1,5 @@
-// import { MapView } from './js/rx-map.view.js';
-import { getMapStore } from '../store/map.store.js';
+import { getMapStore } from '../store/map/map.store.js';
+import { changeMapDimensions } from '../store/map/map.actions.js';
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 
 const { template, utils, DOM, event } = ham;
@@ -10,25 +10,24 @@ const { fromFetch } = rxjs.fetch;
 
 const store = getMapStore();
 
-
 const MAP_OPTIONS_CONFIG = [
   {
     name: 'width-input',
     label: 'Width',
     type: 'text',
-    value: store.snapshot(({ dimensions }) => dimensions.width),
+    value: store.snapshot(({ dimensions }) => dimensions).width,
   },
   {
     name: 'height-input',
     label: 'Height',
     type: 'text',
-    value: store.snapshot(({ dimensions }) => dimensions.height),
+    value: store.snapshot(({ dimensions }) => dimensions).height,
   },
   {
     name: 'scale-input',
     label: 'Scale',
     type: 'text',
-    value: store.snapshot(({ dimensions }) => dimensions.scale),
+    value: store.snapshot(({ dimensions }) => dimensions).scale,
   },
 ]
 
@@ -71,6 +70,7 @@ const mapOptionInputs = {
 const mapOptionsValues2$ = combineLatest(
   fromEvent(mapOptionInputs.width, 'change').pipe(
     startWith({ target: { value: 5 } }),
+    tap(x => console.warn('mapOptionsValues2$', x)),
     map(_ => +_.target.value)
   ),
   fromEvent(mapOptionInputs.height, 'change').pipe(
@@ -82,10 +82,11 @@ const mapOptionsValues2$ = combineLatest(
     map(_ => +_.target.value)
   ),
   (width, height, scale) => ({ dimensions: { width, height, scale } })).pipe(
-  tap(store.update),
-  tap(x => console.warn('MAP OPTIONS PIPE', x)),
+  tap((dimensions) => store.dispatch(changeMapDimensions(dimensions))),
   shareReplay(1)
 );
+
+
 
 
 export const initMapOptions = (parent) => {

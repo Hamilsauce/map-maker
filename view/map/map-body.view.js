@@ -1,9 +1,11 @@
 import { MapSection } from './map-section.view.js';
 import { normalizeAddress } from '../../lib/tile-address.js';
-import { getMapStore } from '../../store/map.store.js';
+import { getMapStore } from '../../store/map/map.store.js';
+// import { getMapStore } from '../../store/map.store.js';
 import { getClicks$ } from '../../lib/get-click-events.js';
 import { push } from '../tile-view-updates.stream.js';
 import { tileBrushStore } from '../../store/tile-brush.store.js';
+import { updateMapTiles } from '../../store/map/map.actions.js';
 
 const { combineLatest, forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
 const { startWith, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
@@ -99,7 +101,8 @@ export class MapBody extends MapSection {
       }
     }
 
-    this.store.update({ tiles: changedTiles });
+    this.store.dispatch(updateMapTiles({ tiles: changedTiles }));
+    // this.store.update({ tiles: changedTiles });
 
     return t;
   }

@@ -1,5 +1,4 @@
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
-// import { EventEmitter } from 'https://hamilsauce.github.io/event-emitter.js';
 import { View } from './view.js';
 
 const { template } = ham;
