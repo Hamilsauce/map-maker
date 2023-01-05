@@ -5,7 +5,7 @@ export class TileView extends View {
   #row;
   #column;
   #tileType;
-  #selected
+  #selected;
 
   constructor(address, tileType, options) {
     super('tile', options);
@@ -25,7 +25,7 @@ export class TileView extends View {
         id: address,
         classList: [...classList],
         dataset: {
-          address: address, //.includes(',') ? address.replace(',', '_') : v, //address.replace(',', '_'),
+          address: address,
           address: address.includes(',') ? address.replace(',', '_') : address,
           selected: false,
           tileType
@@ -41,7 +41,7 @@ export class TileView extends View {
 
     newAddress = newAddress === 'string' || newAddress === 0 ? newAddress : newAddress.toString();
 
-    this.setData('address', newAddress)
+    this.setData('address', newAddress);
 
     this.textContent = this.isHeaderTile ? newAddress : '';
 
@@ -50,10 +50,7 @@ export class TileView extends View {
 
   setType(type = '') {
     if (!type) return;
-    this.dataset.tileType = type
-    console.log('this.dataset.tileType', this.dataset.tileType)
-
-    // this.setData('tileType', type)
+    this.dataset.tileType = type;
 
     return this;
   }

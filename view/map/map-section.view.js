@@ -35,10 +35,11 @@ export class MapSection extends View {
 
   constructor(sectionName, dimensions$, options) {
     super('map-section', options);
+    
     this.#sectionType = options.elementProperties.dataset.mapSectionType;
     this.#sectionName = sectionName;
     this.dimensions$ = dimensions$;
-    this.updateDimensions = this.#updateDimensions.bind(this)
+    this.updateDimensions = this.#updateDimensions.bind(this);
 
 
     this.#clickHandler = this.#handleClick.bind(this);
@@ -69,8 +70,11 @@ export class MapSection extends View {
 
   createTile(id, type = 'empty') {
     type = this.sectionType === 'header' ? 'header' : type;
-    const t2 = TileView.create({ address: id, tileType: type })
-    this.tiles.set(t2.address, t2)
+    
+    const t2 = TileView.create({ address: id, tileType: type });
+    
+    this.tiles.set(t2.address, t2);
+    
     return t2;
   }
 
@@ -98,6 +102,7 @@ export class MapSection extends View {
       const diff = height - this.height;
 
       const tiles = new Array(height).fill(null).map((_, i) => this.createTile(i.toString()).dom);
+    
       this.self.append(...tiles);
 
       this.height = height;
@@ -107,10 +112,13 @@ export class MapSection extends View {
 
     else if (this.#sectionName.includes('column')) {
       this.self.innerHTML = '';
+     
       const diff = width - this.width;
 
       const tiles = new Array(width).fill(null).map((_, i) => this.createTile(i).dom);
+    
       this.self.append(...tiles);
+    
       this.width = width;
 
       this.self.style.gridTemplateColumns = `repeat(${width}, ${scale}px)`;
@@ -123,12 +131,9 @@ export class MapSection extends View {
 
       for (let row = 0; row < height; row++) {
         for (let col = 0; col < width; col++) {
-          // tiles.push(this.createTile(`${row}_${col}`))
-          tiles.push(this.createTile([row, col].toString()).dom)
+          tiles.push(this.createTile([row, col].toString()).dom);
         }
       }
-      // console.log('tiles', tiles)
-      // console.log('this', this)
       this.self.append(...tiles);
       this.self.style.gridTemplateRows = `repeat(${height}, ${scale}px)`;
       this.self.style.gridTemplateColumns = `repeat(${width}, ${scale}px)`;
@@ -136,6 +141,6 @@ export class MapSection extends View {
   }
 
   #handleClick(e) {
-    console.log('handle click in ' + this.sectionName);
+    // console.log('handle click in ' + this.sectionName);
   }
 };

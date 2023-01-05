@@ -45,6 +45,23 @@ const mapReducer = (state, action) => {
       return { ...state, tiles: cleanedTiles }
     }
 
+    case "RESET_TILES": {
+      const { tiles } = action;
+
+      // const stateTiles = Object.entries(state.tiles)
+      const stateTiles = Object.fromEntries(
+        Object.entries({ ...state.tiles }).map(([k, v]) => ([k, { ...v, tileType: 'empty' }]))
+      );
+
+      // if (!tiles) return { ...state };
+
+      const cleanedTiles = Object.fromEntries(
+        Object.entries({ ...state.tiles, ...{...stateTiles, ...tiles} }).filter(([k, v]) => v.tileType !== 'empty')
+      );
+
+      return { ...state, tiles: {...cleanedTiles} }
+    }
+
     default:
       return state;
   }

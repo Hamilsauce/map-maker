@@ -28,7 +28,6 @@ const StoreOptionsDef = {
 class BhsStore extends BehaviorSubject {
   #updateSubject$ = new Subject();
   #reducePipe$ = null;
-  #reducePipe2$ = null;
   #reducer = null;
   #stateSubscription = null;
   #name = null;
@@ -39,17 +38,16 @@ class BhsStore extends BehaviorSubject {
     super(storeOptions.state);
 
     this.#name = name;
+
     this.#reducer = storeOptions.reducer;
 
-    this.#reducePipe$ = this.#updateSubject$.pipe(
-      map(action => {
-        return this.#reducer(this.snapshot(), action)
-      }),
-      tap(x => console.warn('[UPDATED STATE]', x)),
-      tap(newValue => this.next(newValue, AUTH_KEY)),
-    )
+    this.#reducePipe$ = this.#updateSubject$
+      .pipe(
+        map(action => this.#reducer(this.snapshot(), action)),
+        tap(newValue => this.next(newValue, AUTH_KEY)),
+      );
 
-    this.#stateSubscription = this.#reducePipe$.subscribe()
+    this.#stateSubscription = this.#reducePipe$.subscribe();
   }
 
   get name() { return this.#name }
@@ -70,30 +68,13 @@ class BhsStore extends BehaviorSubject {
     super.next(newValue);
   }
 
-  update = (newValue) => {
-    if (typeof newValue != 'object') return;
-
-    this.#updateSubject$.next(newValue);
-  }
-
-  select = (selectorFn = (state) => state) => {
-    return this.asObservable().pipe(
-      map(selectorFn),
-      distinctUntilChanged(),
-      shareReplay(1),
-    );
-  }
-
-  selectConnect = (selectorFn = (state) => state) => {
-    return this.asObservable().pipe(
-      map(selectorFn),
-      distinctUntilChanged(),
-      shareReplay(1),
-    );
-  }
-
-  selectSync(fn = (state) => {}) {
-    return fn(this.getValue());
+  select(selectorFn = (state) => state)  {
+    return this.asObservable()
+      .pipe(
+        map(selectorFn),
+        distinctUntilChanged(),
+        shareReplay(1),
+      );
   }
 
   #assign(newValue) {
@@ -108,8 +89,8 @@ export const defineStore = (name, storeOptions = StoreOptionsDef) => {
   let store;
 
   if (!storeRegistery.has(name)) {
-    storeRegistery.set(name, storeOptions)
+    storeRegistery.set(name, storeOptions);
   }
 
-  return () => storeRegistery.get(name)
+  return () => storeRegistery.get(name);
 }

@@ -11,3 +11,9 @@ export const changeMapDimensions = createAction(
     dimensions:  Object
   }
 )
+
+export const resetMapTiles = createAction(
+  'RESET_TILES', {
+    tiles:  Object
+  }
+)

@@ -17,7 +17,7 @@ export class MapBody extends MapSection {
   constructor(dimensions$, options) {
     super('body', dimensions$, options);
 
-    this.setTiles = this.#setTiles.bind(this)
+    this.setTiles = this.#setTiles.bind(this);
 
     this.#tiles$ = this.store.select(state => state.tiles);
 
@@ -53,8 +53,6 @@ export class MapBody extends MapSection {
         map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
         tap(t => this.handleTileLongPress.bind(this)(t)),
       )
-    ).pipe(
-      tap(x => console.warn('clickStreams$ IN RX MAP', x))
     );
 
     merge(
@@ -102,7 +100,6 @@ export class MapBody extends MapSection {
     }
 
     this.store.dispatch(updateMapTiles({ tiles: changedTiles }));
-    // this.store.update({ tiles: changedTiles });
 
     return t;
   }
@@ -111,9 +108,7 @@ export class MapBody extends MapSection {
     const t = this.tiles.get(target.dataset.address);
 
     if (t) {
-      this.selectedTiles.forEach((t, i) => {
-        t.selected = false;
-      });
+      this.selectedTiles.forEach((t, i) => { t.selected = false; });
 
       this.rangeFillStart = t;
 
