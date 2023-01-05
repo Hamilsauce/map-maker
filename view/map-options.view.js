@@ -12,6 +12,9 @@ const store = getMapStore();
 
 const initialDims = store.snapshot(({ dimensions }) => dimensions);
 
+const dims$ = store.select(({ dimensions }) => dimensions)
+
+
 const MAP_OPTIONS_CONFIG = [
   {
     name: 'width-input',
@@ -85,6 +88,15 @@ const mapOptionsValues$ = combineLatest(
 );
 
 
+dims$.pipe(
+  map(x => x),
+  tap(({ width, height, scale }) => {
+    mapOptionInputs.width.value = width;
+    mapOptionInputs.height.value = height;
+    mapOptionInputs.scale.value = scale;
+  }),
+  tap(x => console.warn('dims$', x))
+).subscribe()
 
 
 export const initMapOptions = (parent) => {
