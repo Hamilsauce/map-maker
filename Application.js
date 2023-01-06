@@ -1,8 +1,8 @@
 import { toolGroupStore } from './store/tool-group.store.js';
-import { MapView } from './view/map.view.js';
+import { MapView } from './view/rx-map.view.js';
 import { MapModel } from './store/map.model.js';
 import { getStream } from './view/tile-view-updates.stream.js';
-import { gridOptions } from './view/grid-options.view.js';
+import { mapOptions } from './view/map-options.view.js';
 import { AppMenu } from './view/app-menu.view.js';
 
 
@@ -33,6 +33,8 @@ const appMenu = new AppMenu();
 
 export class Application extends EventEmitter {
   #self;
+  #mapView;
+  #map;
 
   #components = new Map();
 
@@ -51,6 +53,8 @@ export class Application extends EventEmitter {
     const placeholders = [...this.self.querySelectorAll('[data-component-placeholder]')];
 
     this.appMenu = new AppMenu();
+    this.#mapView = new MapView();
+    this.#map = this.mapView.init();
 
     placeholders.forEach((el, i) => {
       const name = el.dataset.componentPlaceholder;

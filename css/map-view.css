@@ -1,6 +1,5 @@
 #map {
   display: grid;
-  gap: 0px;
   grid-template-areas:
     "corn cols"
     "rows body";
@@ -10,7 +9,8 @@
   grid-auto-flow: dense;
   touch-action: manipulation;
   width: fit-content;
-  border: 1px solid #191A2030;
+  border-bottom: 1px solid #181A1B;
+  border-right: 1px solid #181A1B;
 }
 
 #map-body {
@@ -18,41 +18,43 @@
   position: sticky;
   display: grid;
   gap: 0px;
-  background: #AFAFAF;
+  /* background: #AFAFAF; */
   z-index: 101;
-  border-left: 1px solid #181A1B;
-  border-top: 1px solid #181A1B;
+  /* border-left: 1px solid #181A1B; */
+  /* border-top: 1px solid #181A1B; */
 }
 
 #map-cols {
   position: sticky;
   top: 0;
+  left: 0;
   grid-area: cols;
   display: grid;
   grid-template-columns: repeat(32, 32px);
   grid-template-rows: 24px;
   gap: 0px;
   width: 100%;
-  border-bottom: 1px solid #181A1B;
+  /* border-bottom: 1px solid #181A1B; */
   z-index: 103;
 }
 
 #map-rows {
   grid-area: rows;
   position: sticky;
+  top: 0;
   left: 0;
   display: grid;
   grid-template-columns: 24px;
   grid-template-rows: repeat(32, 32px);
   gap: 0px;
-  border-right: 1px solid #181A1B;
+  /* border-right: 1px solid #181A1B; */
   z-index: 102;
 }
 
 #map-rows,
 #map-cols {
   gap: 0px;
-  backdrop-filter: invert(0.3) brightness(90%);
+  /* backdrop-filter: invert(0.3) brightness(90%); */
   color: #C1C1C1A3;
 }
 
@@ -65,8 +67,8 @@
   font-size: 13px;
   color: #C1C1C1;
   gap: 0px;
-  border-bottom: 1px solid #46484A;
-  border-right: 1px solid #46484A;
+  /* border-bottom: 1px solid #46484A; */
+  /* border-right: 1px solid #46484A; */
   background: #2E2F31
 }
 
@@ -79,4 +81,7 @@
   width: 24px;
   height: 24px;
   background: var(--background-main);
+  border-bottom: 1px solid transparent;
+  border-right: 1px solid transparent;
+  
 }

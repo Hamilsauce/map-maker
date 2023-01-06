@@ -2,54 +2,31 @@ import { tileBrushStore } from './store/tile-brush.store.js';
 import { toolGroupStore } from './store/tool-group.store.js';
 import { MapView } from './view/rx-map.view.js';
 import { MapModel } from './store/models/map.model.js';
-// import { getStream } from './view/tile-view-updates.stream.js';
-// import { gridOptions } from './view/grid-options.view.js';
 import { initMapOptions } from './view/map-options.view.js';
 import { AppMenu } from './view/app-menu.view.js';
-import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { DEFAULT_STATE } from './store/models/StateModel.js';
-const { download, template, utils } = ham;
 import { LOCALSTORAGE_KEY } from './lib/constants.js';
 import { MapConverter } from './lib/map-converter.js';
-
-
-
-const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
-const { distinctUntilChanged, shareReplay, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
-const { fromFetch } = rxjs.fetch;
-
+import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 // import { Application } from './Application.js';
-
 // import { AppFooter, AppHeader, AppBody } from './view/app-components/index.js';
 
-// const afoot = new AppFooter()
-// console.log('afoot', afoot)
+const { download, template, utils } = ham;
 
-export class Vector {
-  #x;
-  #y;
-
-  constructor(x, y) {
-    this.#x = x;
-    this.#y = y;
-  }
-
-  get x() { return this.#x };
-  get y() { return this.#y };
-}
-
+const { forkJoin, Observable, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
+const { distinctUntilChanged, shareReplay, flatMap, reduce, groupBy, toArray, mergeMap, switchMap, scan, map, tap, filter } = rxjs.operators;
+const { fromFetch } = rxjs.fetch;
 
 const handleFileSelection = (e) => {
   console.warn('handleFileSelection', { e });
   ui.inputs.file.addEventListener('change', handleFileSelection);
 };
 
-
+// const app = new Application('app');
+// console.log('app', app)
 const handleCancel = () => {
   ui.setActiveView(ui.viewHistory[ui.viewHistory.length - 1]);
 }
-
-// console.log(JSON.parse(localStorage.getItem('MAP_MAKER')));
 
 const mapModel = new MapModel();
 const mapView = new MapView();
@@ -58,6 +35,8 @@ const mapConverter = new MapConverter();
 
 // const ui = new Application('app');
 const ui = {
+  // mapView: new MapView(),
+  // mapView: new MapView(),
   get mapView() { return mapView },
   get appMenu() { return appMenu },
   get activeView() { return this.views[this.viewHistory[this.viewHistory.length - 1]] },
@@ -123,8 +102,7 @@ const ui = {
 
 window.ui = ui
 
-const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
-  .pipe(
+const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click').pipe(
     tap(e => e.stopPropagation()),
     map(e => e.target.closest('.tile-selector')),
     filter(b => b),
@@ -138,10 +116,7 @@ const tileBrushSelectionEvents$ = fromEvent(ui.buttons.tileBrushes, 'click')
     distinctUntilChanged(),
     shareReplay({ refCount: true, bufferSize: 1 }),
   );
-
-
-const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click')
-  .pipe(
+const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click').pipe(
     tap(e => e.stopPropagation()),
     map(e => e.target.closest('.tool-label')),
     filter(b => b),
@@ -160,16 +135,12 @@ const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click')
   );
 
 toolGroupSelectionEvents$.subscribe(selection => toolGroupStore.update(selection))
-
 tileBrushSelectionEvents$.subscribe(selection => tileBrushStore.update(selection))
 
-const activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' })
-  .pipe(
-    // tap((activeToolGroup) => this.activeToolGroup = activeToolGroup),
+const activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' }).pipe(
     // tap(x => console.warn('[ACTIVE TOOL GROUP IN APP]', x)),
     shareReplay({ refCount: true, bufferSize: 1 }),
   );
-
 activeToolGroup$.subscribe();
 
 
@@ -195,7 +166,7 @@ ui.appMenu.on('menu:save-map', e => {
 
 
 const buildLoadView = () => {
-  const data =  JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE;
+  const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE;
 
   ui.mapList.innerHTML = '';
 
@@ -265,7 +236,7 @@ const deleteMap = (mapKey) => {
   const map = data.savedMaps[mapKey];
   delete data.savedMaps[mapKey];
   localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
-qq
+  qq
   buildLoadView();
 };
 
@@ -299,7 +270,7 @@ ui.views.save.querySelector('#map-name-submit').addEventListener('click', e => {
 
   else {
     const data = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || DEFAULT_STATE
-    
+
     if (data) {
       const map = ui.mapView.getMapState();
 
