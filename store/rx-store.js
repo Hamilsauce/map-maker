@@ -3,6 +3,13 @@ const { shareReplay, distinctUntilChanged, tap, map, scan } = rxjs.operators;
 
 const AUTH_KEY = '123';
 
+const StoreOptionsDef = {
+  state: Object,
+  reducer: Function,
+  isDef: true,
+}
+
+
 class StoreRegistery extends Map {
   constructor() {
     super();
@@ -15,14 +22,8 @@ class StoreRegistery extends Map {
   }
 }
 
-const storeRegistery = new StoreRegistery()
 
-
-const StoreOptionsDef = {
-  state: Object,
-  reducer: Function,
-  isDef: true,
-}
+const storeRegistery = new StoreRegistery();
 
 
 class BhsStore extends BehaviorSubject {
@@ -33,7 +34,7 @@ class BhsStore extends BehaviorSubject {
   #name = null;
 
   constructor(name, storeOptions = StoreOptionsDef) {
-    if (!(name && storeOptions.state) || storeOptions.isDef) return;
+    if (!(name && storeOptions.state && storeOptions.state) || storeOptions.isDef) return;
 
     super(storeOptions.state);
 
@@ -68,7 +69,7 @@ class BhsStore extends BehaviorSubject {
     super.next(newValue);
   }
 
-  select(selectorFn = (state) => state)  {
+  select(selectorFn = (state) => state) {
     return this.asObservable()
       .pipe(
         map(selectorFn),

@@ -3,7 +3,7 @@ import { normalizeAddress } from '../../lib/tile-address.js';
 import { getMapStore } from '../../store/map/map.store.js';
 // import { getMapStore } from '../../store/map.store.js';
 import { getClicks$ } from '../../lib/get-click-events.js';
-import { push } from '../tile-view-updates.stream.js';
+import { tileViewUpdates } from '../tile-view-updates.stream.js';
 import { tileBrushStore } from '../../store/tile-brush.store.js';
 import { updateMapTiles } from '../../store/map/map.actions.js';
 
@@ -25,7 +25,6 @@ export class MapBody extends MapSection {
       tap((activeBrush) => this.activeBrush = activeBrush),
     );
 
-    this.clickStreams$ = getClicks$(this.self);
 
     this.updates$ = combineLatest(
       this.dimensions$,
@@ -39,13 +38,15 @@ export class MapBody extends MapSection {
       tap((tiles) => this.setTiles(tiles)),
     );
 
+    this.clickStreams$ = getClicks$(this.self);
+
     this.clicks$ = merge(
       this.clickStreams$.click$.pipe(
         map(([first, second]) => first),
         filter(e => e.target.closest('.tile')),
         map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
         map(this.handleTileClick.bind(this)),
-        tap(push),
+        tap(tileViewUpdates.push),
       ),
       this.clickStreams$.dblClick$.pipe(
         filter(([first, second]) => first.target === second.target),
@@ -70,8 +71,25 @@ export class MapBody extends MapSection {
       const tile = this.tiles.get(addr);
 
       tile.setType(t.tileType);
+
     });
   }
+
+  select(address) {
+    return this.self.querySelector(`.tile[data-address="${address}"`)
+  }
+
+  filter(predicate) {
+    // this.body.clear()
+    const tiles = [...this.self.querySelectorAll('.tile')]
+    // console.log('tiles', tiles)
+    return [...this.self.querySelectorAll('.tile')]
+    
+  
+    .filter(_=>_)
+    .filter(predicate)
+  }
+
 
   handleTileClick({ x, y, targetBounds, target }) {
     const t = this.tiles.get(target.dataset.address);

@@ -85,3 +85,8 @@
   border-right: 1px solid transparent;
   
 }
+
+.header:hover {
+filter: contrast(1.2);
+border: 1px solid #E1A122E3;
+}

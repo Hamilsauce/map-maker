@@ -9,8 +9,10 @@ export const tileBrushStore = new Store('tilebrush', {
   },
   getters: {},
 
+ 
   pipeline: (state$) => {
     return state$.pipe(
+      tap(x => console.warn('[TILE BRUSH STORE PIPELINE]', x)),
       startWith(DEFAULT_BRUSH),
       filter(_ => _),
       distinctUntilChanged(),

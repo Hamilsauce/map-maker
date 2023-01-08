@@ -2,10 +2,15 @@ const { Subject } = rxjs;
 
 const tileUpdates$ = new Subject();
 
-export const push = (updates) => {
+ const push = (updates) => {
   tileUpdates$.next(updates);
 };
 
-export const getStream = () => {
+ const getStream = () => {
   return tileUpdates$.asObservable();
 };
+
+export const tileViewUpdates = {
+  push, 
+  getStream
+}
