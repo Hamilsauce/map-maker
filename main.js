@@ -23,7 +23,8 @@ const handleFileSelection = (e) => {
 };
 
 // const app = new Application('app');
-// console.log('app', app)
+// console.log('app', app);
+
 const handleCancel = () => {
   ui.setActiveView(ui.viewHistory[ui.viewHistory.length - 1]);
 }
@@ -35,8 +36,6 @@ const mapConverter = new MapConverter();
 
 // const ui = new Application('app');
 const ui = {
-  // mapView: new MapView(),
-  // mapView: new MapView(),
   get mapView() { return mapView },
   get appMenu() { return appMenu },
   get activeView() { return this.views[this.viewHistory[this.viewHistory.length - 1]] },
@@ -236,7 +235,7 @@ const deleteMap = (mapKey) => {
   const map = data.savedMaps[mapKey];
   delete data.savedMaps[mapKey];
   localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
-  qq
+  
   buildLoadView();
 };
 
@@ -258,7 +257,7 @@ ui.mapList.addEventListener('click', e => {
 
     ui.mapView.loadMap(map2);
     const convertedMap = mapConverter.mapToStringRows(map2)
-    // console.warn('convertedMap', convertedMap)
+
     ui.header.querySelector('#header-center-bottom').firstElementChild.textContent = map2.mapName
   }
 });
@@ -303,36 +302,4 @@ ui.header.querySelector('#header-center-bottom')
     ui.mapOptions.dataset.show = ui.mapOptions.dataset.show === 'true' ? 'false' : 'true';
   })
 
-ui.setActiveView('map', { message: 'called after render' })
-
-
-// ui.buttons.toolLabels.forEach((label, i) => {
-//   label.addEventListener('click', e => {
-//     const t = e.target.closest('.tool-label');
-//     if (!t) return;
-
-//     ui.buttons.toolLabels.forEach((l) => {
-//       if (t === l) return;
-//       l.dataset.active = false;
-//     })
-//     t.dataset.active = true;
-//   })
-
-// });
-
-// const appBody = document.querySelector('#app-body')
-// const mapBody = document.querySelector('#map-body')
-
-// const scale = 32;
-// const screen = {
-//   width: ui.map.body.dom.getBoundingClientRect().width,
-//   height: ui.map.body.dom.getBoundingClientRect().height,
-//   // width: innerWidth,
-//   // height: innerHeight,
-// }
-// const unit = {
-//   width: screen.width / scale,
-//   height: screen.height / scale,
-// }
-// console.warn('screen', screen)
-// console.warn('unit', unit)
+ui.setActiveView('map', { message: 'called after render' });

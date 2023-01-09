@@ -1,9 +1,8 @@
 import { MapSection } from './map-section.view.js';
 import { normalizeAddress } from '../../lib/tile-address.js';
 import { getMapStore } from '../../store/map/map.store.js';
-// import { getMapStore } from '../../store/map.store.js';
 import { getClicks$ } from '../../lib/get-click-events.js';
-import { tileViewUpdates } from '../tile-view-updates.stream.js';
+import { tileViewEvents } from '../tile-view-updates.stream.js';
 import { tileBrushStore } from '../../store/tile-brush.store.js';
 import { updateMapTiles } from '../../store/map/map.actions.js';
 
@@ -21,10 +20,10 @@ export class MapBody extends MapSection {
 
     this.#tiles$ = this.store.select(state => state.tiles);
 
-    this.activeBrush$ = tileBrushStore.select({ key: 'activeBrush' }).pipe(
+    this.activeBrush$ = tileBrushStore.select({ key: 'activeBrush' })
+    .pipe(
       tap((activeBrush) => this.activeBrush = activeBrush),
     );
-
 
     this.updates$ = combineLatest(
       this.dimensions$,
@@ -46,7 +45,7 @@ export class MapBody extends MapSection {
         filter(e => e.target.closest('.tile')),
         map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
         map(this.handleTileClick.bind(this)),
-        tap(tileViewUpdates.push),
+        tap(tileViewEvents.push),
       ),
       this.clickStreams$.dblClick$.pipe(
         filter(([first, second]) => first.target === second.target),
@@ -75,19 +74,20 @@ export class MapBody extends MapSection {
     });
   }
 
-  select(address) {
-    return this.self.querySelector(`.tile[data-address="${address}"`)
+  select(rangeAddress) {
+    if (!rangeAddress) {
+      return this.self.querySelectorAll(`.tile[data-address="${rangeAddress}"`);
+    }
+
+    return this.self.querySelector(`.tile[data-address="${rangeAddress}"`);
   }
 
   filter(predicate) {
-    // this.body.clear()
     const tiles = [...this.self.querySelectorAll('.tile')]
-    // console.log('tiles', tiles)
+
     return [...this.self.querySelectorAll('.tile')]
-    
-  
-    .filter(_=>_)
-    .filter(predicate)
+      .filter(_ => _)
+      .filter(predicate)
   }
 
 

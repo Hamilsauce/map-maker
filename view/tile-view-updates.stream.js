@@ -10,7 +10,7 @@ const tileUpdates$ = new Subject();
   return tileUpdates$.asObservable();
 };
 
-export const tileViewUpdates = {
+export const tileViewEvents = {
   push, 
   getStream
 }

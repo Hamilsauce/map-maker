@@ -23,7 +23,6 @@ const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click').pipe
   tap(e => e.stopPropagation()),
   map(e => e.target.closest('.tool-label')),
   filter(b => b),
-  // tap(x => console.log('toolGroupSelectionEvents$', x.dataset.toolGroup)),
   tap(b => {
     document.querySelectorAll('.tool-label').forEach((el, i) => {
       if (b !== el) {
@@ -37,7 +36,6 @@ const toolGroupSelectionEvents$ = fromEvent(ui.buttons.toolLabels, 'click').pipe
 );
 
 const activeToolGroup$ = toolGroupStore.select({ key: 'activeToolGroup' }).pipe(
-  // tap(x => console.warn('[ACTIVE TOOL GROUP IN APP]', x)),
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
 
@@ -106,8 +104,6 @@ export class ToolbarView extends View {
   static create() {
     address = address.toString();
     address = address.includes(',') ? address.replace(',', '_') : address;
-
-    // const classList = tileType === 'header' ? ['tile', 'header'] : ['tile'];
 
     const options = {
       templateName: 'toolbar',

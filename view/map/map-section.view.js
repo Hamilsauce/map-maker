@@ -2,7 +2,7 @@ import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
 import { View } from '../view.js';
 import { TileView } from '../tile.view.js';
 import { getClicks$ } from '../../lib/get-click-events.js';
-import { tileViewUpdates } from '../tile-view-updates.stream.js';
+import { tileViewEvents } from '../tile-view-updates.stream.js';
 
 const { template } = ham;
 const { forkJoin, Observable, iif, BehaviorSubject, AsyncSubject, Subject, interval, of, fromEvent, merge, empty, delay, from } = rxjs;
@@ -48,28 +48,28 @@ export class MapSection extends View {
 
     this.clickStreams$ = getClicks$(this.self);
     this.self.addEventListener('click', this.#clickHandler);
-    // console.warn('MAP SECTION THIS', this)
-  this.clicks$ = merge(
-    this.clickStreams$.click$.pipe(
-      map(([first, second]) => first),
-      map(e => e.target.closest('.header') ? e.target.closest('.header') :  e.target.closest('#map-corn')),
-      filter(_ => _),
-      map((target) => ({ sectionName: this.sectionName, address: target.dataset.address })),
-      tap(tileViewUpdates.push),
-    ),
-    this.clickStreams$.dblClick$.pipe(
-      filter(([first, second]) => first.target === second.target),
-      map(([first, second]) => second),
-      map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
-    )
-  ).subscribe()
+
+    this.clicks$ = merge(
+      this.clickStreams$.click$.pipe(
+        map(([first, second]) => first),
+        map(e => e.target.closest('.header') ? e.target.closest('.header') : e.target.closest('#map-corn')),
+        filter(_ => _),
+        map((target) => ({ sectionName: this.sectionName, address: target.dataset.address })),
+        tap(tileViewEvents.push),
+      ),
+      this.clickStreams$.dblClick$.pipe(
+        filter(([first, second]) => first.target === second.target),
+        map(([first, second]) => second),
+        map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
+      )
+    ).subscribe()
   }
 
   get sectionName() { return this.#sectionName }
 
   get sectionType() { return this.#sectionType }
 
-  get tiles() { return this.#tiles } /// [...this.querySelectorAll('.tile')] }
+  get tiles() { return this.#tiles }
 
   get gridTemplateRows() { return this.self.style.gridTemplateRows }
 

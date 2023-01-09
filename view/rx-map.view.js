@@ -7,7 +7,7 @@ import { getMapStore } from '../store/map/map.store.js';
 import { updateMapTiles, changeMapDimensions, resetMapTiles } from '../store/map/map.actions.js';
 import { tileBrushStore } from '../store/tile-brush.store.js';
 import { getClicks$ } from '../lib/get-click-events.js';
-import { tileViewUpdates } from './tile-view-updates.stream.js';
+import { tileViewEvents } from './tile-view-updates.stream.js';
 import { normalizeAddress } from '../lib/tile-address.js';
 import { tileTypeCodes } from '../store/tile-type-codes.js';
 import ham from 'https://hamilsauce.github.io/hamhelper/hamhelper1.0.0.js';
@@ -98,55 +98,31 @@ export class MapView extends View {
 
     this.#dimensions$ = this.store.select(state => state.dimensions);
 
-    // this.#tiles$ = this.store.select(state => state.tiles);
-
     this.init(MapSectionOptions);
 
     this.clickStreams$ = getClicks$(this.self);
 
-    // merge(
-    //     this.clickStreams$.click$.pipe(
-    //       map(([first, second]) => first),
-    //       filter(e => e.target.closest('.tile')),
-    //       map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
-    //       tap(tileViewUpdates.push),
-    //     ),
-    //     this.clickStreams$.dblClick$.pipe(
-    //       filter(([first, second]) => first.target === second.target),
-    //       map(([first, second]) => second),
-    //       map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
-    //     )
-    // ).pipe(
-    //   map(({ target }) => target.closest('.header')),
-    //   filter(_ => _),
-    //   // map(e => ({ x: e.clientX, y: e.clientY, targetBounds: e.target.closest('.tile').getBoundingClientRect(), target: e.target.closest('.tile') })),
-    //   tap(x => console.log('HEADER CLICKS IN RX MAP', x))
-    // ).subscribe();
-
-    this.mapClicks$ = tileViewUpdates.getStream()
+    this.mapClicks$ = tileViewEvents.getStream()
       .pipe(
         map(x => x),
+        filter(({ sectionName }) => ['rows', 'columns', 'corner'].includes(sectionName)),
         map(({ sectionName, address }) => {
-          if (sectionName === 'rows') {
-            return this.row(address)
-          }
-          if (sectionName === 'columns') {
-            return this.column(address)
-          }
+          if (sectionName === 'rows') return this.row(address)
+
+          if (sectionName === 'columns') return this.column(address)
 
           if (sectionName === 'corner') {
-            return this.clear()
+            return this.clear();
           }
+          
         }),
-        tap(tiles =>  this.store.dispatch(updateMapTiles({ tiles: tiles }))),
-        tap(x => console.warn('mapClicks$', x)),
+        tap(x => console.log('mapClicks$', x)),
+        tap(tiles => this.store.dispatch(updateMapTiles({ tiles: tiles }))),
       ).subscribe();
-
 
     this.activeBrush$ = tileBrushStore.select({ key: 'activeBrush' }).pipe(
       tap((activeBrush) => this.activeBrush = activeBrush),
     ).subscribe();
-    console.log('rx map', this);
   }
 
   get body() { return this.#sections.get('body') }
@@ -181,10 +157,79 @@ export class MapView extends View {
     return this.self;
   }
 
+
+  clear() {
+    const nonEmpty = this.body.filter(t => t.dataset.tileType != 'empty')
+      .map((target) => ({ address: target.dataset.address, tileType: target.dataset.tileType }))
+      .reduce((acc, curr, i) => ({ ...acc, [curr.address]: { address: `${curr.address}`, tileType: 'empty' } }), {})
+
+    return nonEmpty;
+  }
+
+  selectTiles(range) {
+    const nonEmpty = this.body.filter(t => t.dataset.tileType != 'empty')
+      .map((target) => ({ address: target.dataset.address, tileType: target.dataset.tileType }))
+      .reduce((acc, curr, i) => ({ ...acc, [curr.address]: { address: `${curr.address}`, tileType: 'empty' } }), {})
+
+    return nonEmpty;
+  }
+
+  getTileType(tile) {
+    return tile.dataset.tileType;
+  }
+
+  row(address) {
+    const row = new Array(this.columnHeader.width)
+      .fill(null)
+      .reduce((acc, curr, i) => ({
+        ...acc,
+        [`${address}_${i}`]: {
+          address: `${address}_${i}`,
+          tileType: this.activeBrush,
+        }
+      }), {});
+
+    return row;
+  }
+
+  column(address) {
+    const column = new Array(this.rowHeader.height)
+      .fill(null)
+      .reduce((acc, curr, i) => ({
+        ...acc,
+        [`${i}_${address}`]: {
+          address: `${i}_${address}`,
+          tileType: this.activeBrush,
+        }
+      }), {});
+
+    return column;
+  }
+
+  tile(address) {
+    return this.body.select(address);
+  }
+
+  range({ x, y, targetBounds, target }) {
+    const t = this.tiles.get(target.dataset.address);
+
+    if (t) {
+      this.selectedTiles.forEach((t, i) => {
+        t.selected = false;
+      });
+
+      this.rangeFillStart = t;
+      t.tileType = this.activeBrush || 'empty';
+      t.selected = true;
+    }
+
+    return t;
+  }
+
   loadMap(savedMap) {
     const { dims, tiles } = savedMap;
 
-    this.store.dispatch(changeMapDimensions({ dimensions: { ...dims } }))
+    this.store.dispatch(changeMapDimensions({ dimensions: { ...dims } }));
 
     this.store.dispatch(resetMapTiles({
       tiles: tiles.reduce((acc, curr) => ({
@@ -196,10 +241,6 @@ export class MapView extends View {
         }
       }), {})
     }));
-
-    setTimeout(() => {
-      console.log('this.store', this.store.snapshot());
-    }, 1000)
   }
 
   handleTileClick({ x, y, targetBounds, target }) {
@@ -241,55 +282,6 @@ export class MapView extends View {
       else {
         t.dataset.tileType = t.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
       }
-    }
-
-    return t;
-  }
-
-  clear() {
-    const nonEmpty = this.body.filter(t => t.dataset.tileType != 'empty')
-      .map((target) => ({ address: target.dataset.address, tileType: target.dataset.tileType }))
-      .reduce((acc, curr, i) => ({ ...acc, [curr.address]: { address: `${curr.address}`, tileType: 'empty' } }), {})
-    // console.warn('nonEmpty', nonEmpty)
-   
-    return nonEmpty;
-  }
-
-  getTileType(tile) {
-    return tile.dataset.tileType = tile.dataset.tileType === this.activeBrush ? 'empty' : this.activeBrush;
-  }
-
-  row(address) {
-    const row = new Array(this.columnHeader.width)
-      .fill(null)
-      .reduce((acc, curr, i) => ({ ...acc, [`${address}_${i}`]: { address: `${address}_${i}`, tileType: this.getTileType(this.tile(`${address}_${i}`)) } }), {})
-
-    return row;
-  }
-
-  column(address) {
-    const column = new Array(this.rowHeader.height)
-      .fill(null)
-      .reduce((acc, curr, i) => ({ ...acc, [`${i}_${address}`]: { address: `${i}_${address}`, tileType: this.getTileType(this.tile(`${i}_${address}`)) } }), {})
-
-    return column;
-  }
-
-  tile(address) {
-    return this.body.select(address);
-  }
-
-  range({ x, y, targetBounds, target }) {
-    const t = this.tiles.get(target.dataset.address);
-
-    if (t) {
-      this.selectedTiles.forEach((t, i) => {
-        t.selected = false;
-      });
-
-      this.rangeFillStart = t;
-      t.tileType = this.activeBrush || 'empty';
-      t.selected = true;
     }
 
     return t;

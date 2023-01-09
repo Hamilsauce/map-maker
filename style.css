@@ -41,7 +41,6 @@ body {
   display: none;
 }
 
-
 .gradient {
   background-image: linear-gradient(0deg, #2C3032, #2F3135),
     linear-gradient(to right, #1E4B73, #352F34),
@@ -56,7 +55,6 @@ body {
     left,
     right;
 }
-
 
 #app-body {
   display: grid;
@@ -74,22 +72,6 @@ body {
   background: #191A2030;
 }
 
-
-/* #overlay {
-  position: absolute;
-  posx: relative;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  gap: 1px;
-  background: #14FF0030;
-  z-index: 50;
-  border: 1px solid #3B3B3B;
-  overflow: scroll;
-} */
-
 .selection {
   display: contents;
 }
@@ -105,12 +87,7 @@ body {
   transition: 0.2s ease;
 }
 
-/* .app-button:active {
-  background: #3F415320;
-} */
-
 .app-button[data-active=true] {
-  /* background: #3F415320; */
   filter: brightness(160%);
   z-index: 1000;
 }

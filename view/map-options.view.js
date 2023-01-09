@@ -87,7 +87,6 @@ const mapOptionsValues$ = combineLatest(
   shareReplay(1)
 );
 
-
 dims$.pipe(
   map(x => x),
   tap(({ width, height, scale }) => {

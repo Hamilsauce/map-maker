@@ -1,15 +1,20 @@
+#menu-open {
+  height: 32px;
+  width: 40px;
+}
+
 #app-menu {
   position: fixed;
-  height: 100%;
-  width: 0;
   top: 0;
   right: 0;
   display: grid;
   grid-template-rows: auto 1fr;
   grid-template-columns: 1fr;
   gap: 0px;
-  color: #404648;
+  height: 100%;
+  width: 0;
   background: #44474830;
+  color: #404648;
   overflow-x: hidden;
   transition: 0.3s;
   z-index: 500;
@@ -23,7 +28,6 @@
 
 #app-menu[data-show=true] {
   width: 412px;
-  
 }
 
 #app-menu-items {
@@ -41,16 +45,15 @@
 }
 
 .app-menu-item {
+  display: block;
+  width: 100%;
+  height: fit-content;
   padding: 8px;
   text-decoration: none;
   font-size: 18px;
   font-weight: 500;
-  display: block;
   transition: 0.2s;
-  width: 100%;
-  width: 100%;
-  height: fit-content;
-  filter: invert(0.8)  hue-rotate(0) contrast(160%);
+  filter: invert(0.8) hue-rotate(0) contrast(160%);
 }
 
 .app-menu-item:hover,
