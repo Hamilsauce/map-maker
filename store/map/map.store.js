@@ -25,7 +25,7 @@ const INITIAL_MAP_STATE = {
 
 const mapReducer = (state, action) => {
   switch (action.type) {
-    case "CHANGE_DIMENSIONS": {
+    case 'CHANGE_DIMENSIONS': {
       const { dimensions } = action;
 
       if (!dimensions) return { ...state };
@@ -33,7 +33,7 @@ const mapReducer = (state, action) => {
       return { ...state, dimensions: { ...state.dimensions, ...dimensions } };
     }
 
-    case "UPDATE_TILES": {
+    case 'UPDATE_TILES': {
       const { tiles } = action;
 
       if (!tiles) return { ...state };
@@ -45,7 +45,7 @@ const mapReducer = (state, action) => {
       return { ...state, tiles: cleanedTiles }
     }
 
-    case "RESET_TILES": {
+    case 'RESET_TILES': {
       const { tiles } = action;
 
       // const stateTiles = Object.entries(state.tiles)

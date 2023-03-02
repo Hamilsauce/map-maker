@@ -70,7 +70,6 @@ export class MapBody extends MapSection {
       const tile = this.tiles.get(addr);
 
       tile.setType(t.tileType);
-
     });
   }
 

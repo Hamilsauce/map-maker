@@ -9,23 +9,6 @@ const StoreOptionsDef = {
   isDef: true,
 }
 
-
-class StoreRegistery extends Map {
-  constructor() {
-    super();
-  }
-
-  set(name, initialState) {
-    if (!(name && initialState)) throw new Error('Invalid name or state passed to store');
-
-    super.set(name, new BhsStore(name, initialState));
-  }
-}
-
-
-const storeRegistery = new StoreRegistery();
-
-
 class BhsStore extends BehaviorSubject {
   #updateSubject$ = new Subject();
   #reducePipe$ = null;
@@ -34,7 +17,7 @@ class BhsStore extends BehaviorSubject {
   #name = null;
 
   constructor(name, storeOptions = StoreOptionsDef) {
-    if (!(name && storeOptions.state && storeOptions.state) || storeOptions.isDef) return;
+    if (!(name && storeOptions.state && storeOptions.reducer) || storeOptions.isDef) return;
 
     super(storeOptions.state);
 
@@ -45,7 +28,7 @@ class BhsStore extends BehaviorSubject {
     this.#reducePipe$ = this.#updateSubject$
       .pipe(
         map(action => this.#reducer(this.snapshot(), action)),
-        tap(newValue => this.next(newValue, AUTH_KEY)),
+        tap(newState => this.next(newState, AUTH_KEY)),
       );
 
     this.#stateSubscription = this.#reducePipe$.subscribe();
@@ -73,7 +56,7 @@ class BhsStore extends BehaviorSubject {
     return this.asObservable()
       .pipe(
         map(selectorFn),
-        distinctUntilChanged(),
+        distinctUntilChanged( /* Put something good here */ ),
         shareReplay(1),
       );
   }
@@ -86,11 +69,33 @@ class BhsStore extends BehaviorSubject {
 }
 
 
-export const defineStore = (name, storeOptions = StoreOptionsDef) => {
-  let store;
+class StoreRegistery extends Map {
+  constructor() {
+    super();
+  }
 
+  set(name, initialState) {
+    if (!(name && initialState)) throw new Error('Invalid name or state passed to store');
+
+    super.set(name, new BhsStore(name, initialState));
+  }
+}
+
+
+const storeRegistery = new StoreRegistery();
+
+
+export const defineStore = (name, storeOptions = StoreOptionsDef) => {
   if (!storeRegistery.has(name)) {
     storeRegistery.set(name, storeOptions);
+  }
+
+  return () => storeRegistery.get(name);
+}
+
+export const defineStoreNoOptions = (name, reducer) => {
+  if (!storeRegistery.has(name)) {
+    storeRegistery.set(name, reducer);
   }
 
   return () => storeRegistery.get(name);

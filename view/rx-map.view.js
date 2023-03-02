@@ -2,7 +2,6 @@ import { View } from './view.js';
 import { MapSection } from './map/map-section.view.js';
 import { MapBody } from './map/map-body.view.js';
 import { MapHeader } from './map/map-header.view.js';
-// import { getMapStore } from '../store/map.store.js';
 import { getMapStore } from '../store/map/map.store.js';
 import { updateMapTiles, changeMapDimensions, resetMapTiles } from '../store/map/map.actions.js';
 import { tileBrushStore } from '../store/tile-brush.store.js';
