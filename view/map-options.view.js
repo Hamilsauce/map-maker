@@ -94,7 +94,7 @@ dims$.pipe(
     mapOptionInputs.height.value = height;
     mapOptionInputs.scale.value = scale;
   }),
-  tap(x => console.warn('dims$', x))
+  // tap(x => console.warn('dims$', x))
 ).subscribe()
 
 

@@ -25,7 +25,6 @@ const AppComponents = new Map([
 ]);
 
 
-
 const mapModel = new MapModel();
 const mapView = new MapView();
 const appMenu = new AppMenu();

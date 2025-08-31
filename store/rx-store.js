@@ -69,7 +69,7 @@ class BhsStore extends BehaviorSubject {
 }
 
 
-class StoreRegistery extends Map {
+class StoreRegistry extends Map {
   constructor() {
     super();
   }
@@ -82,21 +82,21 @@ class StoreRegistery extends Map {
 }
 
 
-const storeRegistery = new StoreRegistery();
+const storeRegistry = new StoreRegistry();
 
 
 export const defineStore = (name, storeOptions = StoreOptionsDef) => {
-  if (!storeRegistery.has(name)) {
-    storeRegistery.set(name, storeOptions);
+  if (!storeRegistry.has(name)) {
+    storeRegistry.set(name, storeOptions);
   }
 
-  return () => storeRegistery.get(name);
+  return () => storeRegistry.get(name);
 }
 
 export const defineStoreNoOptions = (name, reducer) => {
-  if (!storeRegistery.has(name)) {
-    storeRegistery.set(name, reducer);
+  if (!storeRegistry.has(name)) {
+    storeRegistry.set(name, reducer);
   }
 
-  return () => storeRegistery.get(name);
+  return () => storeRegistry.get(name);
 }

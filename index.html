@@ -36,7 +36,7 @@
           </div>
         </div>
         <div id="app-header-right">
-
+          
           <svg id="menu-open" class="app-button" width="40" height="40" viewBox="0 0  32 32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="bars" fill="#CDCDCD">
               <path id="top" d=" M 3,17 29,17 29,21.15 3,21.15 3,17 Z" transform="matrix(1,0,0,1,0,-3.1)" />
@@ -48,11 +48,11 @@
       </div>
       <div id="map-options-container"></div>
     </header>
-
+    
     <section id="app-body"></section>
-
+    
     <footer id="app-footer">
-
+      
       <div id="app-footer-top">
         <div class="scroll-fader"></div>
         <div id="controls" data-controls="tile-brushes" class="container">
@@ -65,7 +65,7 @@
         </div>
       </div>
       <div id="app-footer-bottom">
-
+        
         <div id="tool-labels">
           <div class="tool-label" data-active="false" data-tool-group="favorites" id="favorites-label">
             <svg _class="app-button heart" width="20" height="20" viewBox="0 0 122 107" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -80,20 +80,21 @@
           <div class="tool-label" data-active="false" data-tool-group="other" _id="label">Other</div>
         </div>
       </div>
+      
     </footer>
-
+    
     <div id="app-menu">
       <a id="app-menu-close">×</a>
       <div class="app-menu-items"></div>
     </div>
   </div>
-
+  
   <script src="./main.js" type="module"></script>
-
+  
   <template id="tile-template">
     <div class="tile" data-tile-type="" data-id="" data-address="">
   </template>
-
+  
   <template id="app-template">
     <main id="app">
       <div data-component-placeholder="app-header"></div>
@@ -101,14 +102,14 @@
       <div data-component-placeholder="app-footer"></div>
     </main>
   </template>
-
+  
   <template id="app-header-template">
     <header id="app-header">
       <div id="app-header-top">
         <div id="app-header-center">
           <div id="header-center-top">Current map:</div>
           <div id="header-center-bottom">
-            <h3>Mappy Mapper Man</h3>
+            <h3>Mappy Map Man</h3>
             <!-- <svg class="expand-icon" width="16" height="16" viewBox="-4 -4 32 32" xmlns="http://www.w3.org/2000/svg" style="transform-origin: center center;border:1px solid #FFFFFF00;" xmlns:xlink="http://www.w3.org/1999/xlink">
               <path d=" M 1,6 13.25,17.65 M 23,6.36 10.75,17.65" style="stroke:#FFFFFF99;stroke-width:4;" />
             </svg> -->
@@ -121,38 +122,38 @@
       <div id="map-options-container"></div>
     </header>
   </template>
-
-
+  
+  
   <template id="map-options-template">
     <div id="map-options" data-show="true"></div>
   </template>
-
+  
   <template id="map-option-template">
     <div id="" class="control-group map-option">
       <label for=""></label>
       <input type="number" name="" id="" value="0" />
     </div>
   </template>
-
+  
   <template id="app-body-template">
     <div id="app-body"></div>
   </template>
-
+  
   <template id="map-template">
     <div id="map" class="map template-map"></div>
   </template>
-
+  
   <template id="map-section-template">
     <div id="" class="map-section" data-map-section="" data-map-section-type=""></div>
   </template>
-
+  
   <template id="app-menu-template">
     <div id="app-menu">
       <div id="app-menu-close">×</div>
       <div id="app-menu-items"></div>
     </div>
   </template>
-
+  
   <template id="save-view-template">
     <div id="save-view">
       <header id="save-view-header" class="header">
@@ -161,13 +162,13 @@
       <section id="save-form">
         <label for="map-name-input">Map Name</label>
         <input type="text" name="map-name-input" id="map-name-input" value="" />
-
+        
         <input name="map-name-submit" id="map-name-submit" class="app-button" type="button" value="Done" />
         <button class="app-button cancel-button">Cancel</button>
       </section>
     </div>
   </template>
-
+  
   <template id="load-view-template">
     <div id="load-view">
       <div class="load-view-top">
@@ -179,7 +180,7 @@
       </div>
     </div>
   </template>
-
+  
   <template id="map-list-item-template">
     <div class="map-list-item app-button">
       <div id="list-item-title">Slut</div>
@@ -188,14 +189,14 @@
       </div>
     </div>
   </template>
-
+  
   <template id="property-input-template">
     <div class="property-input" data-name="">
       <label for="" class="property-label"></label>
       <input class="property-input-input" type="text" name="" id="">
     </div>
   </template>
-
+  
   <template id="app-footer-template">
     <footer id="app-footer">
       <!--   <div id="app-footer-top">

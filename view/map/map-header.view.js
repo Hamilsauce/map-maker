@@ -20,7 +20,7 @@ export class MapHeader extends MapSection {
         map(([first, second]) => first),
         map(e => e.target.closest('.header')),
         filter(_ => _),
-        tap(x => console.log('aftwr filtwr', x)),
+        // tap(x => console.log('aftwr filtwr', x)),
         map((target) => ({ sectionName: this.sectionName, address: target.dataset.address })),
       ),
       this.clickStreams$.dblClick$.pipe(

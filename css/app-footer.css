@@ -50,7 +50,8 @@
   border-bottom: 2px solid transparent;
   transition: 0.2s ease;
 }
-.tool-label[data-active=true]{
+
+.tool-label[data-active=true] {
   border-bottom: 2px solid var(--color-white0);
   color: #EFEFEF;
 }
@@ -81,5 +82,5 @@
   width: 100%;
   height: 100%;
   overflow: scroll;
-  padding:  4px;
+  padding: 4px;
 }

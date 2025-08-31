@@ -115,7 +115,7 @@ export class MapView extends View {
           }
           
         }),
-        tap(x => console.log('mapClicks$', x)),
+        // tap(x => console.log('mapClicks$', x)),
         tap(tiles => this.store.dispatch(updateMapTiles({ tiles: tiles }))),
       ).subscribe();
 
